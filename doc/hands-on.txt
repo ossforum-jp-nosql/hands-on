@@ -2,8 +2,8 @@
 
 :Author:      河野達也 Tatsuya_Kawano CloudianKK
 :Email:       tkawano@cloudian.com
-:Date:        2012年9月21日
-:Revision:    v1.0-draft-1
+:Date:        2012年9月25日
+:Revision:    v1.0-draft-2
 
 // この文書はAsciiDoc形式で記述されています。
 // HTML形式に変換するには以下のようにします。
@@ -112,7 +112,7 @@ https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md
 
 [source,shell]
 ----
-$ passwd
+$ passwd □
 (current) UNIX password: （現在のパスワード） □
 New password: （新しいパスワード） □
 Retype new password: （新しいパスワードを再入力） □
@@ -219,9 +219,14 @@ Retype new password: （新しいパスワードを再入力） □
 ----
 （□で改行）
 $ riak-start-ossforum.sh □
-*TODO* （出力メッセージの例）
-$ riak-status-ossforum.sh □
-*TODO* （出力メッセージの例）
+riak1 started
+riak2 started
+...（略）
+
+$ riak-ping-ossforum.sh □
+riak1 ... pong
+riak2 ... pong
+...（略）
 ----
 
 .Riakの停止（ハンズオン終了後）
@@ -231,9 +236,18 @@ $ riak-status-ossforum.sh □
 [source,shell]
 ----
 $ riak-stop-ossforum.sh □
-*TODO* （出力メッセージの例）
-$ riak-status-ossforum.sh □
-*TODO* （出力メッセージの例）
+ok
+ok
+...（略）
+riak2 stopped
+riak1 stopped
+
+$ riak-ping-ossforum.sh □
+riak1 ... Node 'riak1@127.0.0.1' not responding to pings.
+node riak1 ping failed
+riak2 ... Node 'riak2@127.0.0.1' not responding to pings.
+node riak2 ping failed
+...（略）
 ----
 
 
@@ -539,9 +553,14 @@ CassandraやHibariの設計を比較します。それぞれに長所と短所�
 [source,shell]
 ----
 $ hibari-start-ossforum.sh □
-*TODO*
-$ hibari-status-ossforum.sh □
-*TODO*
+hibari1 started
+hibari2 started
+...（略）
+
+$ hibari-ping-ossforum.sh □
+hibari1 ... pong
+hibari2 ... pong
+...（略）
 ----
 
 .Hibariの停止（ハンズオン終了後）
@@ -550,7 +569,18 @@ $ hibari-status-ossforum.sh □
 [source,shell]
 ----
 $ hibari-stop-ossforum.sh □
-*TODO*
+ok
+ok
+...（略）
+hibari2 stopped
+hibari1 stopped
+
+$ hibari-ping-ossforum.sh □
+hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
+node hibari1 ping failed
+hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
+node hibari2 ping failed
+...（略）
 ----
 
 
@@ -908,9 +938,18 @@ RiakやHibariと異なり、HBaseは１台のLinuxサーバー上で複数のメ
 [source,shell]
 ----
 $ hibari-stop-ossforum.sh □
-*TODO*
-$ hibari-status-ossforum.sh □
-*TODO*
+ok
+ok
+...（略）
+hibari2 stopped
+hibari1 stopped
+
+$ hibari-ping-ossforum.sh □
+hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
+node hibari1 ping failed
+hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
+node hibari2 ping failed
+...（略）
 ----
 
 次に、HBaseを起動します。
@@ -930,7 +969,7 @@ HBase is running
 ハンズオンの終了後、HBaseを停止してください。 +
 [source,shell]
 ----
-$ sudo service hbase-master stop
+$ sudo service hbase-master stop □
 stopping master....
 $ sudo service hbase-master status □
 HBase is not running.
@@ -1219,7 +1258,7 @@ Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しまし
 
 [source,shell]
 ----
-$ sudo service hbase-master stop
+$ sudo service hbase-master stop □
 stopping master....
 $ sudo service hbase-master status □
 HBase is not running.
@@ -1230,9 +1269,19 @@ HBase is not running.
 [source,shell]
 ----
 $ riak-stop-ossforum.sh □
-*TODO*
-$ riak-status-ossforum.sh □
-*TODO*
+ok
+ok
+...（略）
+riak2 stopped
+riak1 stopped
+
+$ riak-ping-ossforum.sh □
+riak1 ... Node 'riak1@127.0.0.1' not responding to pings.
+node riak1 ping failed
+riak2 ... Node 'riak2@127.0.0.1' not responding to pings.
+node riak2 ping failed
+...（略）
+
 $ riak-reset-ossforum.sh □
 *TODO*
 ----
@@ -1242,9 +1291,14 @@ Riakを起動します。
 [source,shell]
 ----
 $ riak-start-ossforum.sh □
-*TODO*
-$ riak-status-ossforum.sh □
-*TODO*
+riak1 started
+riak2 started
+...（略）
+
+$ riak-ping-ossforum.sh □
+riak1 ... pong
+riak2 ... pong
+...（略）
 ----
 
 
@@ -1356,9 +1410,18 @@ Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しま�
 [source,shell]
 ----
 $ riak-stop-ossforum.sh □
-*TODO*
-$ riak-status-ossforum.sh □
-*TODO*
+ok
+ok
+...（略）
+riak2 stopped
+riak1 stopped
+
+$ riak-ping-ossforum.sh □
+riak1 ... Node 'riak1@127.0.0.1' not responding to pings.
+node riak1 ping failed
+riak2 ... Node 'riak2@127.0.0.1' not responding to pings.
+node riak2 ping failed
+...（略）
 ----
 
 次に、Hibariの環境を初期化します。
@@ -1366,11 +1429,18 @@ $ riak-status-ossforum.sh □
 [source,shell]
 ----
 $ hibari-stop-ossforum.sh □
-*TODO*
-$ hibari-status-ossforum.sh □
-*TODO*
-$ hibari-reset-ossforum.sh □
-*TODO*
+ok
+ok
+...（略）
+hibari2 stopped
+hibari1 stopped
+
+$ hibari-ping-ossforum.sh □
+hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
+node hibari1 ping failed
+hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
+node hibari2 ping failed
+...（略）
 ----
 
 Hibariを起動します。
@@ -1378,9 +1448,14 @@ Hibariを起動します。
 [source,shell]
 ----
 $ hibari-start-ossforum.sh □
-*TODO*
-$ hibari-status-ossforum.sh □
-*TODO*
+hibari1 started
+hibari2 started
+...（略）
+
+$ hibari-ping-ossforum.sh □
+hibari1 ... pong
+hibari2 ... pong
+...（略）
 ----
 
 テーブルを作成します。
