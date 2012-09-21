@@ -1,0 +1,1570 @@
+// -*- mode:doc; coding:utf-8 -*-
+
+:Author:      河野達也 Tatsuya_Kawano CloudianKK
+:Email:       tkawano@cloudian.com
+:Date:        2012年9月21日
+:Revision:    v1.0-draft-1
+
+// この文書はAsciiDoc形式で記述されています。
+// HTML形式に変換するには以下のようにします。
+//
+// # Fedora、CentOSの場合
+// $ sudo yum install asciidoc source-highlight
+//
+// # Ubuntuの場合
+// $ sudo apt-get install asciidoc source-highlight
+//
+// # HTML形式に変換
+// $ asciidoc hands-on.txt
+//
+
+
+= 第２回　NOSQL実機ハンズオン（Riak、HBase、Hibari）
+
+*日本OSS推進フォーラム　若手技術者勉強会*
+
+
+== 1. ハンズオンの概要
+
+このハンズオンは *日本OSS推進フォーラム　第２回 若手技術者勉強会*
+（2012年9月27日実施）のために作成されました。
+
+ここでは、異なる特性を持つ、３つの分散型NOSQL製品を使用します。
+
+- *Basho Riak*
+  * 可用性重視（AP）、コンシステントハッシング
+- *Apache HBase*
+  * 一貫性重視（CP）、自動シャーディング
+- *Hibari*
+  * 一貫性重視（CP）、コンシステントハッシング
+
+また、２つの性能測定ツールを使用します。
+
+- *Basho Bench*
+  * Riak、Hibari向け
+- *Yahoo! Cloud Serving Benchmark (YCSB)*
+  * HBase向け
+  * Cassandra、MongoDB、Redisにも対応
+
+ハンズオンを終えると以下のことができるようになります。
+
+- NOSQLの３つの製品について、ごく基本的な操作ができる
+- 性能測定ツールの基本操作ができる
+- データの分散方法について、「コンシステント・ハッシング」と「自動シャー
+  ディング」の違いが説明できる
+- CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP」のものにつ
+  いて、違いが説明できる
+- ログ構造マージツリー（LSMTree）の特性が説明できる
+
+
+== 2. 環境のセットアップ
+
+ハンズオンの環境は仮想サーバーのディスクイメージとして用意されています。
+
+- NIIの仮想サーバー環境用
+  * 本日使用します
+
+- VirtualBox用ディスクイメージ
+  * 復習用　XX.XGB
+  * 公開期間：2012年10月31日まで
+  * http://
+
+参考までに、今回の環境を１から設定するための手順も用意してあります。
+詳細については以下の説明をご覧ください。
+
+https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md
+
+
+=== NIIの仮想サーバーの起動
+
+今回はマシンタイプに「c1.medium」を使用します。
+
+- CPU：Intel Xeon E5530 @2.40GHz  x １コア
+- メモリ：3 GB
+- 起動ディスク：10 GB
+
+（Ecripseベースの）管理ツールを立ち上げ... +
+
+*TODO*
+
+
+=== 仮想サーバーにディスクボリュームを追加
+
+*TODO*
+
+
+=== 仮想サーバーにsshでログイン
+
+（シンクライアントはWindows？？）
+
+●●●を立ち上げ、sshで接続します。
+
+*TODO* パスワード接続は可能？　それともsshキーを用意する？
+
+:handsonuser: ossforum
+:handsonpw:   nosql2
+
+- ユーザー名： {handsonuser}
+- パスワード： {handsonpw}
+
+ログインに成功したら、パスワードを変更してください。これにより、他の受
+講生があなたのサーバーに間違ってログインしてしまうことが防げます。
+
+[source,shell]
+----
+$ passwd
+(current) UNIX password: （現在のパスワード） □
+New password: （新しいパスワード） □
+Retype new password: （新しいパスワードを再入力） □
+----
+
+
+.仮想サーバーの停止（ハンズオン終了後）
+[NOTE]
+ハンズオンの終了後、仮想サーバーを停止してください。 +
+*TODO*
+
+
+=== 製品のバージョン
+
+仮想サーバーにはハンズオンで使用するNOSQLやツール類がすでに導入されて
+います。各製品のバージョンは以下の通りです。 +
+
+- *基本ソフトウェア*
+  * CentOS 6.3　64ビットバージョン
+
+- *Erlang、Java実行環境*
+  * Erlang/OTP -- R15B02
+  * Java -- Oracle JDK 1.6 update 31
+
+- *NOSQL*
+  * Basho Riak 1.2
+  * Apache HBase 0.92.1-cdh4.0.1
+    ** Cloudera社のCDHディストリビューションを使用
+  * Hibari 0.1.9
+
+- *性能測定ツール*
+  * Basho Bench X.XXX
+  * YCSB X.XXX
+
+*TODO*
+
+
+=== ディレクトリ構成
+
+----
+/home/
+    ossforum/
+        basho_bench/
+        bin/
+        erlang/
+
+        hands-on/
+            README.md
+            bin/　　　          ← ハンズオンで使用するスクリプトが含まれている
+            conf-bb/           ← Basho Benchのワークロード設定ファイル
+            conf-ycsb/         ← YCSBのワークロード設定ファイル
+            docs/
+                hands-on.txt
+                hands-on.html  ← このドキュメント
+                setup.txt
+                setup.html     ← 環境を一からセットアップするときの手順
+            logs-hbase/        ← HBaseのログディレクトリ（シンボリックリンク）
+            results-bb/        ← Basho Benchの結果（シンボリックリンク）
+            results-ycsb/      ← YCSBの結果（シンボリックリンク）
+
+        hibari/
+
+        Public/
+            web/               ← Webサーバーで公開されます。Bascho Benchの結果が入ります
+
+        riak/
+        ycsb/
+/opt/ ... *TODO*
+----
+
+.Linuxでテキストファイルの内容を表示、編集する
+[TIP]
+スクリプトのようなテキストファイルの内容を表示するには、 `less` コマン
+ドを使用します。また、テキストファイルの内容を編集するには、 `nano` コ
+マンド（または vi、emacs）を使用します。ファイルの編集がおわったら、
+`Control` キーと `x` キーを同時に押して保存します。
+
+
+== 3. Basho Riakの基本操作
+
+=== Riakの特徴
+
+- コンシステント・ハッシングによるデータ分散
+- 可用性を優先（AP）
+- キー・バリュー型
+  * *前回の訂正：* 前回「ドキュメント型」と説明しましたが、「キー・バ
+    リュー型」に分類するのが適切なようです
+- 豊富な機能
+  * 二次インデックス
+  * 全文検索（日本語の検索が可能かは未確認）
+  * Map Reduce（JavaScript、Erlang）
+- 高い安定性
+
+
+=== Riakの起動と停止
+
+今回は学習のために、１台のLinux仮想サーバー上で複数のRiakメンバーノー
+ドを動かします。実際の運用では１台のサーバーにつき１つのRiakメンバーノー
+ドを稼働させます。（構成図）
+
+今回用意したスクリプトを使ってRiakクラスターを起動します。
+
+[source,shell]
+----
+（□で改行）
+$ riak-start-ossforum.sh □
+*TODO* （出力メッセージの例）
+$ riak-status-ossforum.sh □
+*TODO* （出力メッセージの例）
+----
+
+.Riakの停止（ハンズオン終了後）
+[NOTE]
+ハンズオンの終了後、Riakを停止してください。
+
+[source,shell]
+----
+$ riak-stop-ossforum.sh □
+*TODO* （出力メッセージの例）
+$ riak-status-ossforum.sh □
+*TODO* （出力メッセージの例）
+----
+
+
+=== RiakのクライアントAPI
+
+Riakでは３種類のクライアントAPIが用意されています。
+
+- *HTTP REST*
+  * プログラム言語に依存せずにアクセスできる
+  * ウェブブラウザーで表示できる
+- *Protocol Buffers*
+  * Protocol BuffersはGoogle社が開発した異言語間の... *TODO*
+  * 様々なプログラミング言語からアクセスできる
+- *Erlangネイティブクライアント*
+  * プログラミング言語「Erlang」専用のクライアント
+  * Riak本体はErlangで書かれています
+
+今回はErlang版のProtocol Buffersクライアントを使用します。
+
+
+=== Protocol Buffersでアクセス（Erlang）
+
+==== Riakに接続
+
+Erlangのシェルを立ち上げ、Riakに接続します。
+
+[source,shell]
+----
+$ erl-riak-ossforum.sh □
+Erlang R15B02 (erts-5.9.2) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V5.9.2  (abort with ^G)
+1>
+----
+
+*TODO*
+
+Erlangシェルのプロンプト「1>」は、以下、「>」で示します。
+
+
+==== インデックス付きの、キーバリューを格納
+
+[source,erlang]
+----
+> {ok, Pid} = riakc_pb_socket:start_link("127.0.0.1", 8081). □
+{ok,<0.33.0>}
+
+
+> Value = riakc_obj:new(<<"employee">>, <<"jeremy">>, <<"engineer">>). □
+{riakc_obj,<<"employee">>,<<"jeremy">>,undefined,[],
+           undefined,<<"engineer">>}
+
+
+> MetaData = dict:store(<<"index">>, [{"age_int", "23"}, {"state_bin", "CA"}], dict:new()). □
+{dict,1,16,16,8,80,48,
+      {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+      {{[],[],[],[],[],[],[],[],[],[],[],
+        [[<<"index">>,{"age_int","23"},{"state_bin","CA"}]],
+        [],[],[],[]}}}
+
+
+> Obj = riakc_obj:update_metadata(Value, MetaData). □
+{riakc_obj,<<"employee">>,<<"jeremy">>,undefined,[],
+           {dict,1,16,16,8,80,48,
+                 {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],...},
+                 {{[],[],[],[],[],[],[],[],[],[],[],[[...]],[],...}}},
+           <<"engineer">>}
+
+
+> riakc_pb_socket:put(Pid, Obj). □
+ok
+----
+
+*TODO*
+
+==== インデックスを用いた検索
+*TODO*
+
+==== Map Reduceによる集計
+*TODO*
+
+
+== 4. データ分散について：コンシステント・ハッシング（その１）
+
+Riakを用いてコンシステント・ハッシングの基本を確認します。
+
+- Ringの状態
+- キーとハッシュ関数
+- メンバーノードの追加とデータの偏り
+
+
+[caption="問題 "]
+.4-1. クラスター構成の確認
+===========================================================
+このRiakクラスターには、いくつの *メンバーノード* がありますか？　以下
+のコマンドで調べてください。
+
+[source,shell]
+----
+$ riak-admin cluster-info □
+$ riak-admin member-status □
+*TODO* （出力メッセージの例）
+----
+
+****
+答え：　　　　　　　　個
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-2. リングサイズの確認
+===========================================================
+このRiakクラスターには、いくつの *仮想ノード（v-node）* がありますか？　
+以下のコマンドで調べてください。
+
+[source,shell]
+----
+$ riak-admin ring_status □
+*TODO* （出力メッセージの例）
+----
+
+****
+答え：　　　　　　　　個
+****
+===========================================================
+
+.リングのサイズについて
+[NOTE]
+今回はリングについて理解しやすいよう、リングサイズを小さく設定していま
+す。しかし、この設定ではデータの偏りが起こりやすくなってしまいます。
+Riakを業務で使用する際は、この値を大きく（数十〜数百に）設定してくださ
+い。
+
+[caption="問題 "]
+.4-3. バケット名とキーからハッシュ値を算出
+===========================================================
+Riakではバケット名とキーからハッシュ値を算出します。今回、そのハッシュ
+値をRiakクラスターに問い合わせるスクリプトを用意しました。
+
+[source,shell]
+----
+$ riak-keyhash-ossforum.sh バケット名 キー □
+*TODO* （出力メッセージの例）
+----
+
+このスクリプトを使って、同じバケット「 *b1* 」に格納されるよく似た２つ
+のキー「 *key1* 」と「 *key2* 」のハッシュ値を求めてください。 +
+
+この２つのハッシュ値は似ていますか？
+
+****
+答え： 1. 似ている　　2. 全く異なる
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-4. キーを格納するノードを算出
+===========================================================
+データがどのノードに格納されるか調べましょう。今回、以下のスクリプトを
+用意しました。
+
+[source,shell]
+----
+$ riak-preflist-ossforum.sh バケット名 キー □
+*TODO* （出力メッセージの例）
+----
+
+複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。
+キー「 *key1* 」と「 *key2* 」をバケット「 *b1* 」に格納した場合、どの
+メンバーノードに格納されるか検べて下さい。 +
+
+注意：メンバーノードには「riakN@127.0.0.1 」のような名前がついています。
+（Nは数字）　riakNの形で答えてください。
+
+****
+答え：
+
+b1 key1　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
+
+b1 key2　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-5. ２つ以上の複製が１つのメンバーノードに格納されるケース
+===========================================================
+Riakではそれぞれの仮想ノードがメンバーノードにランダムに割り当てられま
+す。その結果、データの３つの複製が２つのメンバーノードにしか格納されな
+いことがあります。その場合、一方のメンバーノードには１つの複製が格納さ
+れ、もう一方のメンバーノードには２つの複製が格納されます。 +
+
+キーを自由に変えて、そのようなケースが起こることを確認してください。
+
+****
+バケット　　キー　　　　　　　　ノード
+
+b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
+
+b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-6. ２つ以上の複製を１つのメンバーノードに置かない方法
+===========================================================
+仮にあなたがRiakクラスターを自由に設計できる立場にいたとしたら、問題
+2-5のケースをどうやって *起こりにくく* しますか？　あなたは以下の要素
+を決めることができます。
+
+- データの複製の数
+- メンバーノードの数（サーバーの台数）
+- リングのサイズ（仮想ノードの数）
+- バケットの名前やキー
+
+****
+答え：
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-7. メンバーノードの追加とデータ分散
+===========================================================
+Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバーノードを追加
+したり、取り除いたりできます。現在のクラスターにメンバーノードを追加し
+ましょう。
+
+[source,shell]
+----
+$ $RIAK_HOME/riak4/bin/riak-admin cluster join riak1@127.0.0.1 □
+$ $RIAK_HOME/riak4/bin/riak-admin cluster plan □
+$ $RIAK_HOME/riak4/bin/riak-admin cluster commit □
+----
+
+仮想ノードの分散状況を確認します。
+
+[source,shell]
+----
+$ riak-admin member-status □
+----
+
+Ringの割合は各ノードで均等になっていますか？
+
+****
+答え： 1. なっている　　2. なっていない
+****
+===========================================================
+
+
+== 5. 講義：データ分散について、Riak、Cassandra、Hibariを比較
+
+データ分散についてRiakと同様にコンシステント・ハッシングを採用した
+CassandraやHibariの設計を比較します。それぞれに長所と短所があります。
+
+- *Basho Riak*
+  * 2009年に最初のリリース
+  * Amazon Dynamoの設計を参考にした
+  * リングを仮想ノードで分割し、メンバーノードにランダムに配置
+    ** メンバーノードの追加時のリバランスが自動的に行われる
+    ** 複製の配置が偏ることがある
+
+- *Apache Cassandra*
+  * 2008年に最初のリリース
+  * データ分散はAmazon Dynamoを参考にし、データモデルはGoogle Bigtable
+    を参考にした
+  * リングをメンバーノードで分割
+    ** メンバーノード追加時後のリバランスが面倒
+    ** 複製の配置が偏らない
+
+- *Hibari*
+  * 2004年ごろから開発開始。50ノード超の商用利用を経て2010年にオープン
+    ソース化
+  * チェインレプリケーション論文を参考に設計
+  * リングをチェインに分割して、メンバーノードにまたがって配置
+    ** メンバーノードの追加時に手動でチェインを設定する
+    ** 複製の配置が偏らない
+
+
+== 6. Hibariの基本操作
+
+=== Hibariの特徴
+
+- コンシステント・ハッシングによるデータ分散
+- 整合性を優先（CP）
+  * チェインレプリケーションによる高速性
+  * マイクロトランザクション、CAS操作
+- キー・バリュー型
+- 軽快な動作と高い安定性
+
+
+=== Hibariの起動と停止
+
+今回は学習のために、１台のLinux仮想サーバー上で複数のHibariメンバーノー
+ド（「ブリックサーバー」と呼びます）を動かします。実際の運用では１台の
+サーバーにつき１つのブリックサーバーを稼働させます。（構成図）
+
+今回用意したスクリプトを使ってHibariクラスターを起動します。
+
+[source,shell]
+----
+$ hibari-start-ossforum.sh □
+*TODO*
+$ hibari-status-ossforum.sh □
+*TODO*
+----
+
+.Hibariの停止（ハンズオン終了後）
+[NOTE]
+ハンズオンの終了後、Hibariを停止してください。 +
+[source,shell]
+----
+$ hibari-stop-ossforum.sh □
+*TODO*
+----
+
+
+=== HibariのクライアントAPI
+
+Hibariでは３種類のクライアントAPIが用意されています。
+
+- *Erlangネイティブクライアント*
+  * プログラミング言語「Erlang」専用のクライアント
+  * Hibari本体はErlangで書かれています
+
+- *Thrift*
+  * 様々なプログラミング言語からアクセスできる
+  * 現状、一部の機能しか利用できない
+
+- *JSON-RPC*
+  * 様々なプログラミング言語からアクセスできる
+  * 現状、一部の機能しか利用できない
+
+今回はErlangネイティブクライアントを使用します。
+
+
+=== Erlangネイティブクライアントでアクセス
+
+==== テーブルを作成
+
+[source,shell]
+----
+$ hibari-create-tables-ossforum.sh □
+*TODO*
+----
+
+このスクリプトにより「basho_bench_test」というテーブルが作られました。
+
+*TODO*
+
+
+==== Hibariに接続
+
+----
+$ erl-hibari-ossforum.sh □
+Erlang R15B02 (erts-5.9.2) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] [kernel-poll:false]
+
+Eshell V5.9.2  (abort with ^G)
+1>
+----
+
+*TODO*
+
+以下、プロンプト「1>」は「>」で示します。
+
+
+==== メタデータ付きの、キーバリューを格納
+*TODO*
+
+==== キーの区切り文字とレンジスキャン
+*TODO*
+
+
+== 7. データ分散について：コンシステント・ハッシング（その２）
+
+Hibariと性能測定ツールのBasho Benchを用いて、データの分散状況を観察し
+ます。
+
+- チェインの確認
+- Basho Benchの使いかた
+- キーの採番方法とデータ分散の関係
+
+なお、RiakやCassandraも近い特性を持ちます。
+
+
+[caption="問題 "]
+.7-1. クラスター構成の確認
+===========================================================
+このHibariクラスターには、いくつの *ブリックサーバー* がありますか？　
+Web UIで調べてください。
+
+http://仮想サーバーのアドレス:23080/
+
+●●の欄を見ます。
+
+****
+答え：　　　　　　　　個
+****
+===========================================================
+
+
+[caption="問題 "]
+.7-2. チェインの確認
+===========================================================
+このHibariクラスターのテーブル「 *basho_bench_test* 」には、何本の
+*チェイン* がありますか？　Web UIで調べてください。
+
+http://仮想サーバーのアドレス:23080/
+
+●●の欄を見ます。
+
+****
+答え：　　　　　　　　本
+****
+===========================================================
+
+.チェイン数について
+[NOTE]
+*TODO*
+
+
+[caption="問題 "]
+.7-3. Basho Benchの実行
+===========================================================
+Basho Benchを実行しましょう。以下のコマンドを入力します。
+
+[source,shell]
+----
+$ cd ~/hands-on □
+$ basho_bench conf-bb/hibari-simple.config□
+*TODO* （出力メッセージ）
+----
+
+- 実行が終わると●●●●が出力されます。
+- 実行を途中でキャンセルするなら、`Control` + `c` を押し、プロンプトに
+  対して `a` を答えます。
+
+
+ワークロード（負荷）の設定ファイルの内容を確認しましょう。
+`less` コマンドで「hibari-simple.config」ファイルの内容を表示します。
+
+[source,shell]
+----
+$ less hibari-simple.config □
+----
+
+hibari-simple.configの内容（抜粋）
+[source,erlang]
+----
+*TODO*
+
+{mode, {rate, 8}}.
+{duration, 15}.
+{concurrent, 100}.
+{key_generator, {int_to_bin, {uniform_int, 99000}}}.
+{value_generator, {fixed_bin, 1000}}.
+{operations, [{get,4}, {put,4}, {delete, 1}]}.
+----
+
+- リクエストレートとワーカー？数の設定から、Basho Benchが生成する負荷
+  の大きさを、リクエスト/秒で表してください。以下の式で求められます。
+
+  * リクエスト/秒　＝　ワーカー毎のリクエスト/秒　×　ワーカー数
+
+- キーについて *TODO*
+
+- オペレーションについて *TODO*
+
+****
+答え：　
+****
+===========================================================
+
+[caption="補足 "]
+.Basho Benchのキー設定
+===========================================================
+Basho Benchでは以下のようなキーの分散設定ができます。
+
+*TODO*
+
+- *{sequential_int, MaxKey}*
+  * generates integers from 0..MaxKey in order and then stops the
+    system. Note that each instance of this keygen is specific to a
+    worker.
+
+- *{partitioned_sequential_int, MaxKey}*
+  * same as {sequential_int}, but splits the keyspace evenly among the
+    worker processes. This is useful for pre-loading a large dataset.
+
+- *{partitioned_sequential_int, StartKey, NumKeys}*
+  * same as partitioned_sequential_int, but starting at the defined
+    StartKey and going up to StartKey + NumKeys.
+
+- *{uniform_int, MaxKey}*
+  * selects an integer from uniform distribution of
+    0..MaxKey. I.e. all integers are equally probable.
+
+- *{pareto_int, MaxKey}*
+  * selects an integer from a Pareto distribution, such that 20% of
+    the available keys get selected 80% of the time. Note that the
+    current implementation of this generator MAY yield values larger
+    than MaxKey due to the mathematical properties of the Pareto
+    distribution.
+
+- *{truncated_pareto_int, MaxKey}*
+  * same as {pareto_int}, but will NOT yield values above MaxKey.
+
+- *{function, Module, Function, Args}*
+  * specifies an external function that should return a key generator
+    function. The worker Id will be prepended to Args when the
+    function is called.
+
+- *{int_to_bin, Generator}*
+  * takes any of the above _int generators and converts the number to
+    a 32-bit binary. This is needed for some drivers that require a
+    binary key.
+
+- *{int_to_str, Generator}*
+  * takes any of the above _int generators and converts the number to
+    a string. This is needed for some drivers that require a string
+    key.
+===========================================================
+
+
+[caption="補足 "]
+.Basho Benchのバリュー設定
+===========================================================
+Basho Benchでは以下のようなバリューを生成できます。
+
+- *{fixed_bin, Size}*
+  * generates a random binary of Size bytes. Every binary is the same
+    size, but varies in content.
+
+- *{exponential_bin, MinSize, Mean}*
+  * generates a random binary which has an exponentially-distributed
+    size. Most values will be approximately MinSize + Mean bytes in
+    size, with a long-tail of larger values.
+
+- *{uniform_bin, MinSize, MaxSize}*
+  * generates a random binary which has an evenly-distributed size
+    between MinSize and MaxSize.
+
+- *{function, Module, Function, Args}*
+  * specifies an external function that should return a value
+    generator function. The worker Id will be prepended to Args when
+    the function is called.
+===========================================================
+
+
+[caption="問題 "]
+.7-4. グラフのプロット（R言語）と結果の確認
+===========================================================
+実行結果をグラフにプロットしてみましょう。Basho_Benchには統計解析プロ
+グラミング言語の *R言語* で書かれたスクリプトが付属していますので、そ
+れを利用してグラフを生成しましょう。
+
+[source,shell]
+----
+$ bb-summary-ossforum.sh □
+*TODO* 生成されたpingファイルを見る方法（Webブラウザーでアクセス）
+----
+
+このグラフを見て、Hibariは書き込み（set）と読み出し（get）のどちらが得
+意だと思いますか？
+
+****
+答え：　
+1. 書き込み（set）　　2. 読み出し（get）
+****
+===========================================================
+
+
+[caption="問題 "]
+.7-5. キーに連番を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *順番に* 生成した時のリクエストの分散状況
+を確認しましょう。テストをスタートし、チェイン毎に処理したリクエスト数
+の増え方を、Web UIから観察します。
+
+[source,shell]
+----
+$ basho_bench conf-bb/hibari-sequential.config
+----
+
+キーの設定は以下のようになってます。
+
+.conf-bb/hibari-sequential.configのキー設定
+[source,erlang]
+----
+{key_generator, {int_to_bin, {sequential_int, 1000000}}}.
+----
+
+Basho BenchをスタートしたらすぐにHibariのWeb UIを開きます。
+
+http:// ...
+
+●●●の数字を観察してください。どのように増えていきますか？
+
+
+****
+答え：　1. 全チェインに均等に分散している　　2. 一部のチェインに偏っている
+****
+===========================================================
+
+
+[caption="問題 "]
+.7-6. キーにばらつきのある値を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *ランダムに* 生成した時のリクエストの分散
+状況を確認しましょう。テストをスタートし、チェイン毎に処理したリクエス
+ト数の増え方を、Web UIから観察します。
+
+[source,shell]
+----
+$ basho_bench conf-bb/hibari-random.config
+----
+
+キーの設定は以下のようになってます。
+
+.conf-bb/hibari-random.configのキー設定
+[source,erlang]
+----
+{key_generator, {int_to_bin, {uniform_int, 1000000}}}.
+----
+
+Basho BenchをスタートしてすぐにHibariのWeb UIを開きます。
+
+http:// ...
+
+●●●の数字を観察してください。どのように増えていきますか？
+
+****
+答え：　1. 全チェインに均等に分散している　　2. 一部のチェインに偏っている
+****
+===========================================================
+
+
+.時間が余ったら
+[NOTE]
+もし時間が余ったら、Basho BenchでRiakの性能も測ってみてください。
+
+[source,shell]
+----
+$ basho_bench conf-bb/riak-simple.config □
+$ basho_bench conf-bb/riak-sequential.config □
+$ basho_bench conf-bb/riak-random.conf □
+----
+
+
+== 8. Apache HBaseの基本操作
+
+=== HBaseの特徴
+
+- 自動シャーディングによるデータ分散
+- 整合性を優先（CP）
+  * CAS操作
+- ソート済みカラム指向型
+- Hadoopインフラ上で稼働
+
+
+=== HBaseの起動と停止
+
+RiakやHibariと異なり、HBaseは１台のLinuxサーバー上で複数のメンバーノー
+ド（「リージョンサーバー」と呼びます）を動かすことができません。今回は
+１つのメンバーノードだけを稼働させます。（構成図）
+
+まず、Hibariクラスターを停止します。
+
+[source,shell]
+----
+$ hibari-stop-ossforum.sh □
+*TODO*
+$ hibari-status-ossforum.sh □
+*TODO*
+----
+
+次に、HBaseを起動します。
+
+[source,shell]
+----
+$ sudo service hbase-master status □
+HBase is not running.
+$ sudo service hbase-master start □
+starting master, logging to /var/log/hbase/hbase-hbase-master-hostname.domainname.out
+$ sudo service hbase-master status □
+HBase is running
+----
+
+.HBaseの停止（ハンズオン終了後）
+[NOTE]
+ハンズオンの終了後、HBaseを停止してください。 +
+[source,shell]
+----
+$ sudo service hbase-master stop
+stopping master....
+$ sudo service hbase-master status □
+HBase is not running.
+----
+
+
+=== HBaseのクライアントAPI
+
+HBaseでは３種類のクライアントAPIが用意されています。
+
+- *Javaネイティブクライアント*
+  * プログラミング言語「Java」専用のクライアント
+  * HBaseはJavaで書かれています
+- *Thrift*
+  * 様々なプログラミング言語からアクセスできる
+  * ウェブブラウザーで表示できる
+
+また、HBaseシェル... *TODO*
+
+
+=== HBaseシェルでアクセス
+
+==== テーブルを作成
+
+[source,shell]
+----
+$ hbase-create-tables-ossforum.sh □
+*TODO*
+----
+
+このスクリプトにより「ycsb_test」というテーブルが作られました。
+
+*TODO*
+
+==== HBaseに接続
+*TODO*
+
+[source,shell]
+----
+$ hbase shell
+WARN conf.Configuration: hadoop.native.lib is deprecated. Instead, use io.native.lib.available
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 0.92.1-cdh4.0.1, rUnknown, Thu Jun 28 18:09:40 PDT 2012
+
+hbase(main):001:0>
+----
+
+以下、プロンプト「hbase(main):001:0>」は「hbase>」で示します。
+
+
+==== カラムを格納
+*TODO*
+
+==== レンジスキャン
+*TODO*
+
+
+== 9. データ分散について：自動シャーディング（その１）
+
+[caption="問題 "]
+.9-1. クラスター構成の確認
+===========================================================
+このHBaseクラスターにはリージョンサーバーが１つだけ稼働しています。
+
+以下のHBaseシェルコマンドで確認してください。
+
+[source,ruby]
+----
+hbase> status 'simple' □
+1 live servers
+    hostname.domainname:41932 1348176548890
+        requestsPerSecond=0, numberOfOnlineRegions=5, usedHeapMB=29, maxHeapMB=991
+0 dead servers
+Aggregate load: 0, regions: 5
+----
+
+「1 live servers」と表示されていればOKです。
+
+===========================================================
+
+
+[caption="問題 "]
+.9-2. リージョン数の確認
+===========================================================
+テーブル「ycsb_test」にはいくつのリージョンがありますか？　Web UIで調
+べてください。
+
+http://仮想サーバーのアドレス:60010/
+
+●●のリンクをクリックし、●●●ページが開いたら「●●●」を見ます。
+
+****
+答え：　　　　　　　　　　個　
+****
+===========================================================
+
+
+[caption="問題 "]
+.9-3. リージョンのスタートキー、エンドキーの確認
+===========================================================
+先ほどのWeb UIでは、それぞれのリージョンについて「Start Key」と「End
+Key」が表示されていました。RiakやHibariでは「キーのハッシュ値」が使わ
+れていましたが、HBaseではどのような値が使用されていますか？　Web UIで
+調べてください。
+
+****
+答え： 1. キーのハッシュ値　　2. キーの値そのもの　　3. HBaseが内部的に使用してる連番
+****
+===========================================================
+
+
+[caption="問題 "]
+.9-4. YCSBの実行
+===========================================================
+YCSBを実行しましょう。以下のコマンドを入力します。
+
+[source,shell]
+----
+$ cd ~/hands-on □
+$ ycsb run hbase -P conf-ycsb/hbase-simple.properties -s -threads 10 -target 5000 □
+*TODO* （出力メッセージ）
+----
+
+- 実行が終わると●●●●が出力されます。
+- 実行を途中でキャンセルするなら、`Control` + `c` を押します。
+
+ワークロード（負荷）の設定ファイルの内容を確認しましょう。
+`less` コマンドで「hbase-simple.properties」ファイルの内容を表示します。
+
+[source,shell]
+----
+$ less hbase-simple.properties □
+----
+
+.hbase-simple.propertiesの内容（抜粋）
+[source,properties]
+----
+recordcount=1000000
+operationcount=5000000
+workload=com.yahoo.ycsb.workloads.CoreWorkload
+
+readallfields=false
+
+readproportion=0.50
+updateproportion=0.15
+scanproportion=0
+insertproportion=0.35
+
+requestdistribution=zipfian
+
+table=ycsb-test
+columnfamily=cf
+----
+
+- リクエストレートとワーカー？数の設定から、YCSBが生成する負荷
+  の大きさを、リクエスト/秒で表してください。以下の式で求められます。
+
+  * リクエスト/秒　＝　ワーカー毎のリクエスト/秒　×　ワーカー数
+
+- キーの生成について　*TODO*
+
+- *TODO*
+
+****
+答え：　
+****
+===========================================================
+
+
+[caption="問題 "]
+.9-5. 結果の確認
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：　
+****
+===========================================================
+
+
+[caption="問題 "]
+.9-6. キーに連番を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *順番に* 生成した時のリクエストの分散状況
+を確認しましょう。テストをスタートし、チェイン毎に処理したリクエスト数
+の増え方を、Web UIから観察します。
+
+[source,shell]
+----
+$ ycsb conf-ycsb/hbase-sequential.properties
+----
+
+キーの設定は以下のようになってます。
+
+.conf-ycsb/hbase-sequential.propertiesのキー設定
+[source,properties]
+----
+requestdistribution=xxxxxxxx // *TODO*
+----
+
+YCSBをスタートしたらすぐにHBaseのWeb UIを開きます。
+
+http:// ...
+
+●●●の数字を観察してください。どのように増えていきますか？
+
+
+****
+答え：　1. 全リージョンに均等に分散している　　2. 一部のリージョンに偏っている
+****
+===========================================================
+
+
+[caption="問題 "]
+.9-7. キーにばらつきのある値を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *ランダムに* 生成した時のリクエストの分散
+状況を確認しましょう。テストをスタートし、チェイン毎に処理したリクエス
+ト数の増え方を、Web UIから観察します。
+
+[source,shell]
+----
+$ ycsb conf-ycsb/hbase-random.properties
+----
+
+キーの設定は以下のようになってます。
+
+.conf-ycsb/hbase-random.propertiesのキー設定
+[source,properties]
+----
+requestdistribution=xxxxxxxx // *TODO*
+----
+
+YCSBをスタートしたらすぐにHBaseのWeb UIを開きます。
+
+http:// ...
+
+●●●の数字を観察してください。どのように増えていきますか？
+
+****
+答え：　1. 全リージョンに均等に分散している　　2. 一部のリージョンに偏っている
+****
+===========================================================
+
+
+[caption="問題 "]
+.9-8. リージョンが分割されていく様子の観察
+===========================================================
+
+*TODO* +
+
+以下のコマンドで調べてください。
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：　
+****
+===========================================================
+
+
+== XX. 講義：コンシステントハッシングと自動シャーディングの優劣の比較
+
+*TODO*
+
+- データの分散（分布）の均一性
+- レンジスキャンの可否
+
+
+== 10. 可用性重視（AP）のNOSQLの挙動
+
+Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
+ノードを１つ停止して、読み出しと書き込みの動作を調べます。
+
+まず、HBaseを停止します。
+
+[source,shell]
+----
+$ sudo service hbase-master stop
+stopping master....
+$ sudo service hbase-master status □
+HBase is not running.
+----
+
+次に、Riakの環境を初期化します。
+
+[source,shell]
+----
+$ riak-stop-ossforum.sh □
+*TODO*
+$ riak-status-ossforum.sh □
+*TODO*
+$ riak-reset-ossforum.sh □
+*TODO*
+----
+
+Riakを起動します。
+
+[source,shell]
+----
+$ riak-start-ossforum.sh □
+*TODO*
+$ riak-status-ossforum.sh □
+*TODO*
+----
+
+
+[caption="問題 "]
+.10-1. １ノードダウン時の読み出し操作
+===========================================================
+メンバーノードの１つが停止しているときの読み出しの挙動を確認しましょう。
+まず、全ノードが稼働している状態で書き込みを行い、次に、メンバーノード
+の１つを停止します。
+
+sshターミナルのウィンドウを２つ開いてください。一方はErlangシェル、も
+う一方はLinuxシェル（bash）を動かしましょう。
+
+２つのウィンドウを開いたら、以下のコマンドを実行します。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのput(w=all)
+----
+
+オブジェクトを書き込んだらメンバーノードの１つを停止します。
+
+.bash用ウィンドウ
+[source,shell]
+----
+$ $RIAK_HOME/riak3/bin/riak stop □
+$ $RIAK_HOME/riak3/bin/riak ping □
+Node 'riak3@127.0.0.1' not responding to pings.
+$ riak-admin member_status
+*TODO*
+----
+
+R = quorumでの読み出を試みます。もし読み出しに失敗した場合は
+「key_notfound」が返されます。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのget(r=quorum)
+----
+
+R = allでの読み出を試みます。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのget(r=all)
+----
+
+読み出しは成功しましたか？
+
+****
+答え： +
+R = quorumの時　　1. 成功　　　2. 失敗 +
+R = allの時　　　　1. 成功　　　2. 失敗
+****
+===========================================================
+
+
+[caption="問題 "]
+.10-2. １ノードダウン時の書き込み操作
+===========================================================
+メンバーノードの１つが停止したまま書き込みの挙動を確認しましょう。
+
+W = quorumで書き込みを試みます。もし書き込みに失敗した場合は
+「●●●●」が返されます。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのput(w=quorum)
+----
+
+W = allでの書き込みを試みます。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのput(W=all)
+----
+
+書き込みは成功しましたか？
+
+****
+答え： +
+W = quorumの時　　1. 成功　　　2. 失敗 +
+W = allの時　　　　1. 成功　　　2. 失敗
+****
+===========================================================
+
+.Cassandraでの書き込み
+[NOTE]
+CassandraではW = allの時に書き込みが失敗します。
+
+
+== XX. 講義：Hited Hand-offとリードリペア
+
+*TODO*
+
+
+== 11. 整合性重視（CP）のNOSQLの挙動
+
+Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
+クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。
+
+まず、Riakを停止します。
+
+[source,shell]
+----
+$ riak-stop-ossforum.sh □
+*TODO*
+$ riak-status-ossforum.sh □
+*TODO*
+----
+
+次に、Hibariの環境を初期化します。
+
+[source,shell]
+----
+$ hibari-stop-ossforum.sh □
+*TODO*
+$ hibari-status-ossforum.sh □
+*TODO*
+$ hibari-reset-ossforum.sh □
+*TODO*
+----
+
+Hibariを起動します。
+
+[source,shell]
+----
+$ hibari-start-ossforum.sh □
+*TODO*
+$ hibari-status-ossforum.sh □
+*TODO*
+----
+
+テーブルを作成します。
+
+[source,shell]
+----
+$ hibari-create-tables-ossforum.sh □
+*TODO*
+----
+
+
+[caption="問題 "]
+.11-1. １ノードダウン時の読み出し操作
+===========================================================
+ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
+う。まず、全ノードが稼働している状態で書き込みを行い、次に、ブリックサー
+バーの１つを停止します。
+
+sshターミナルのウィンドウを２つ開いてください。一方はErlangシェル、も
+う一方はLinuxシェル（bash）を動かしましょう。
+
+２つのウィンドウを開いたら、以下のコマンドを実行します。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  キー・バリューのput
+----
+
+キー・バリューを書き込んだらブリックサーバーの１つを停止します。
+
+.bash用ウィンドウ
+[source,shell]
+----
+$ $HIBARI_HOME/hibari3/bin/hibari stop □
+$ $HIBARI_HOME/hibari3/bin/hibari ping □
+Node 'hibari3@127.0.0.1' not responding to pings.
+----
+
+Web UIでチェインの状態が「degrated」になっていることを確認してください。
+
+http://仮想サーバーのアドレス:23080/
+
+●●の欄を見ます。
+
+読み出を試みます。もし読み出しに失敗した場合は「brick_not_available」
+が返されます。なおHibariでは読み出しはR＝1に固定されています。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのget
+----
+
+読み出しは成功しましたか？
+
+****
+答え：　　1. 成功　　　2. 失敗
+****
+===========================================================
+
+
+[caption="問題 "]
+.11-2. １ノードダウン時の書き込み操作
+===========================================================
+ブリックサーバーの１つが停止したまま書き込みの挙動を確認しましょう。
+
+書き込みを試みます。もし書き込みに失敗した場合は「brick_not_available」
+が返されます。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+*TODO*  オブジェクトのput
+----
+
+書き込みは成功しましたか？
+
+****
+答え：　　　　1. 成功　　　2. 失敗
+****
+===========================================================
+
+
+[caption="問題 "]
+.11-3. CAS操作
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：
+****
+===========================================================
+
+
+[caption="問題 "]
+.11-4. Hibariのマイクロトランザクション
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：
+****
+===========================================================
+
+
+== XX. 講義：APとCPの違いのまとめ
+
+*TODO*
+
+
+== 12. ログ構造マージツリー（LSMTree）の特性
+
+[caption="問題 "]
+.12-1. 書き込みを繰り返した時の読み出し性能の劣化
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：
+****
+===========================================================
+
+
+[caption="問題 "]
+.12-2. メジャーコンパクション後の性能の回復
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：
+****
+===========================================================
+
+
+== 13. グループワーク：HBaseクラスターのセットアップ
+
+*TODO*
+
+
+== XX. 後片付け
+
+*TODO*
+
+=== 仮想サーバーの停止、削除
+
+
+== XX. 参考資料
+
+=== Basho Riak
+
+*TODO*
+
+
+=== Apache HBase
+
+*TODO*
+
+
+=== Hibari
+
+*TODO*
+
