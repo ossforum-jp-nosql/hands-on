@@ -1,7 +1,6 @@
 #!/bin/sh
-# -*- coding:utf-8 -*-
+# -*- mode:shell-script; coding:utf-8 -*-
 
-RIAK_HOME=${HOME}/nosql2/riak/rel
 ALL_NODES=(riak1 riak2 riak3)
 
 die() {
@@ -17,7 +16,7 @@ start() {
    for I in `seq 0 $N`; do
        (
            local NODE=${ALL_NODES[$I]}
-           cd $RIAK_HOME/$NODE; ./bin/riak start || \
+           cd $RIAK_HOME/rel/$NODE; ./bin/riak start || \
                die "node $NODE start failed"
            echo $NODE started
        ) &

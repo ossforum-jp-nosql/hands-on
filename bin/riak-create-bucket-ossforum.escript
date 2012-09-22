@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
 %% -*- mode:erlang; coding:utf-8 -*-
-%%! -smp enable -name riak_client@127.0.0.1 -pz /home/tatsuya/nosql2/riak/deps/riak_core/ebin -pz /home/tatsuya/nosql2/riak/deps/riak_kv/ebin
+%%! -smp enable -name riak_client@127.0.0.1 -pa /home/ossforum/riak/deps/riak_core/ebin -pa /home/ossforum/riak/deps/riak_kv/ebin
 
 main(_Args) ->
     BucketNames = [<<"b1">>, <<"basho_bench_test">>],

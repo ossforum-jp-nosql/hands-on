@@ -1,7 +1,6 @@
 #!/bin/sh
-# -*- coding:utf-8 -*-
+# -*- mode:shell-script; coding:utf-8 -*-
 
-RIAK_HOME=${HOME}/nosql2/riak/rel
 ALL_NODES=(riak1 riak2 riak3)
 
 die() {
@@ -17,7 +16,7 @@ ping() {
        (
            local NODE=${ALL_NODES[$I]}
            echo -n "$NODE ... "
-           cd $RIAK_HOME/$NODE; ./bin/riak ping || \
+           cd $RIAK_HOME/rel/$NODE; ./bin/riak ping || \
                die "node $NODE ping failed"
        )
    done
