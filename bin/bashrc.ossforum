@@ -1,0 +1,14 @@
+# -*- mode:shell-script; coding:utf-8 -*-
+
+export RIAK_HOME=$HOME/riak
+export HIBARI_HOME=$HOME/hibari/hibari
+export BASHO_BENCH_HOME=$HOME/basho_bench
+export YCSB_HOME=$HOME/ycsb
+export MVN_HOME=$HOME/apache-maven-3.0.4
+
+PATH=$PATH:$HOME/bin:$HOME/hands-on/bin
+PATH=$PATH:$RIAK_HOME/rel/riak1/bin:$HIBARI_HOME/rel/hibari/bin
+PATH=$PATH:$BASHO_BENCH_HOME:$YCSB_HOME/bin
+PATH=$PATH:$MVN_HOME/bin
+
+export PATH
