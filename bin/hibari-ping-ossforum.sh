@@ -1,8 +1,7 @@
 #!/bin/sh
 # -*- mode:shell-script; coding:utf-8 -*-
 
-# ALL_NODES=(hibari1 hibari2 hibari3)
-ALL_NODES=(hibari)
+ALL_NODES=(hibari1 hibari2 hibari3)
 
 die() {
     echo $@
