@@ -187,7 +187,7 @@ Retype new password: （新しいパスワードを再入力） □
 [TIP]
 スクリプトのようなテキストファイルの内容を表示するには、 `less` コマン
 ドを使用します。また、テキストファイルの内容を編集するには、 `nano` コ
-マンド（または vi、emacs）を使用します。ファイルの編集がおわったら、
+マンド（または vi、emacs）を使用します。ファイルの編集が終わったら、
 `Control` キーと `x` キーを同時に押して保存します。
 
 
@@ -223,30 +223,10 @@ riak1 started
 riak2 started
 ...（略）
 
+（起動後の確認。pongと帰ってくればOK）
 $ riak-ping-ossforum.sh □
 riak1 ... pong
 riak2 ... pong
-...（略）
-----
-
-.Riakの停止（ハンズオン終了後）
-[NOTE]
-ハンズオンの終了後、Riakを停止してください。
-
-[source,shell]
-----
-$ riak-stop-ossforum.sh □
-ok
-ok
-...（略）
-riak2 stopped
-riak1 stopped
-
-$ riak-ping-ossforum.sh □
-riak1 ... Node 'riak1@127.0.0.1' not responding to pings.
-node riak1 ping failed
-riak2 ... Node 'riak2@127.0.0.1' not responding to pings.
-node riak2 ping failed
 ...（略）
 ----
 
@@ -347,10 +327,24 @@ Riakを用いてコンシステント・ハッシングの基本を確認しま�
 
 [source,shell]
 ----
-$ riak-admin cluster-info □
 $ riak-admin member-status □
-*TODO* （出力メッセージの例）
 ----
+
+.サンプル出力
+[source,shell]
+----
+ ================================= Membership ==================================
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid      34.4%      --      'riak1@127.0.0.1'
+ valid      32.8%      --      'riak2@127.0.0.1'
+ valid      32.8%      --      'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+ Valid:3 / Leaving:0 / Exiting:0 / Joining:0 / Down:0
+----
+
+この例では３個のメンバーノードがあります。（ハンズオン用の構成はこれとは異なります）
+
 
 ****
 答え：　　　　　　　　個
@@ -366,8 +360,14 @@ $ riak-admin member-status □
 
 [source,shell]
 ----
-$ riak-admin ring_status □
-*TODO* （出力メッセージの例）
+$ riak-admin vnode-status | grep VNode □
+VNode: 0
+VNode: 91343852333181432387730302044767688728495783936
+VNode: 182687704666362864775460604089535377456991567872
+VNode: 274031556999544297163190906134303066185487351808
+...（略）
+$ riak-admin vnode-status | grep VNode | wc -l □
+22 （ハンズオン用の構成はこれとは異なります）
 ----
 
 ****
@@ -390,8 +390,8 @@ Riakではバケット名とキーからハッシュ値を算出します。今�
 
 [source,shell]
 ----
-$ riak-keyhash-ossforum.sh バケット名 キー □
-*TODO* （出力メッセージの例）
+$ riak-keyhash-ossforum.escripts バケット名 キー □
+バケット名/キー: 1105587885383052304283168935552548319333692233768
 ----
 
 このスクリプトを使って、同じバケット「 *b1* 」に格納されるよく似た２つ
@@ -413,13 +413,23 @@ $ riak-keyhash-ossforum.sh バケット名 キー □
 
 [source,shell]
 ----
-$ riak-preflist-ossforum.sh バケット名 キー □
-*TODO* （出力メッセージの例）
+$ riak-preflist-ossforum.escripts バケット名 キー □
+バケット名/キー: 1105587885383052304283168935552548319333692233768
+
+Targets:
+[{1118962191081472546749696200048404186924073353216,'riak2@127.0.0.1'},
+ {1141798154164767904846628775559596109106197299200,'riak3@127.0.0.1'},
+ {1164634117248063262943561351070788031288321245184,'riak1@127.0.0.1'}]
+
+Fallbacks:
+[{1187470080331358621040493926581979953470445191168,'riak1@127.0.0.1'},
+ {1210306043414653979137426502093171875652569137152,'riak2@127.0.0.1'},
+...（略）
 ----
 
 複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。
 キー「 *key1* 」と「 *key2* 」をバケット「 *b1* 」に格納した場合、どの
-メンバーノードに格納されるか検べて下さい。 +
+メンバーノードに格納されるか調べて下さい。
 
 注意：メンバーノードには「riakN@127.0.0.1 」のような名前がついています。
 （Nは数字）　riakNの形で答えてください。
@@ -501,6 +511,28 @@ Ringの割合は各ノードで均等になっていますか？
 ===========================================================
 
 
+=== Riakの停止
+
+作業が終わったらRiakを停止します。
+
+[source,shell]
+----
+$ riak-stop-ossforum.sh □
+ok
+ok
+...（略）
+riak2 stopped
+riak1 stopped
+
+$ riak-ping-ossforum.sh □
+riak1 ... Node 'riak1@127.0.0.1' not responding to pings.
+node riak1 ping failed
+riak2 ... Node 'riak2@127.0.0.1' not responding to pings.
+node riak2 ping failed
+...（略）
+----
+
+
 == 5. 講義：データ分散について、Riak、Cassandra、Hibariを比較
 
 データ分散についてRiakと同様にコンシステント・ハッシングを採用した
@@ -563,26 +595,6 @@ hibari2 ... pong
 ...（略）
 ----
 
-.Hibariの停止（ハンズオン終了後）
-[NOTE]
-ハンズオンの終了後、Hibariを停止してください。 +
-[source,shell]
-----
-$ hibari-stop-ossforum.sh □
-ok
-ok
-...（略）
-hibari2 stopped
-hibari1 stopped
-
-$ hibari-ping-ossforum.sh □
-hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
-node hibari1 ping failed
-hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
-node hibari2 ping failed
-...（略）
-----
-
 
 === HibariのクライアントAPI
 
@@ -610,12 +622,12 @@ Hibariでは３種類のクライアントAPIが用意されています。
 [source,shell]
 ----
 $ hibari-create-tables-ossforum.sh □
-*TODO*
+ok
+ok
+Table basho_bench_test created
 ----
 
 このスクリプトにより「basho_bench_test」というテーブルが作られました。
-
-*TODO*
 
 
 ==== Hibariに接続
@@ -655,12 +667,14 @@ Hibariと性能測定ツールのBasho Benchを用いて、データの分散状
 [caption="問題 "]
 .7-1. クラスター構成の確認
 ===========================================================
-このHibariクラスターには、いくつの *ブリックサーバー* がありますか？　
+このHibariクラスターのbasho_bench_testテーブルでは、いくつの *ブリック
+サーバー* が使われていますか？　
+
 Web UIで調べてください。
 
 http://仮想サーバーのアドレス:23080/
 
-●●の欄を見ます。
+「Nodes」と書かれた表を見ます。
 
 ****
 答え：　　　　　　　　個
@@ -674,9 +688,9 @@ http://仮想サーバーのアドレス:23080/
 このHibariクラスターのテーブル「 *basho_bench_test* 」には、何本の
 *チェイン* がありますか？　Web UIで調べてください。
 
-http://仮想サーバーのアドレス:23080/
+http://仮想サーバーのアドレス:23080/table?name=basho_bench_test
 
-●●の欄を見ます。
+Chainsの表の「Name」の欄を見ます。
 
 ****
 答え：　　　　　　　　本
@@ -697,10 +711,26 @@ Basho Benchを実行しましょう。以下のコマンドを入力します。
 ----
 $ cd ~/hands-on □
 $ basho_bench conf-bb/hibari-simple.config□
-*TODO* （出力メッセージ）
+hh:mm:ss.sss [debug] Lager installed handler lager_console_backend into lager_event
+...（省略）
+hh:mm:ss.sss [info] Starting 100.0 ms/req fixed rate worker: < ... >
+hh:mm:ss.sss [info] Starting 100.0 ms/req fixed rate worker: < ... >
+hh:mm:ss.sss [info] Starting 100.0 ms/req fixed rate worker: < ... >
+...（省略）
+hh:mm:ss.sss [info] Application basho_bench started on node 'basho_bench@127.0.0.1'
+...（省略）
+
+...（１分後）
+hh:mm:ss.sss [info] Total Errors:
+hh:mm:ss.sss [info]   {{put,put},{txn_fail,[{0,brick_not_available}]}}: 1
+（または）
+hh:mm:ss.sss [info] No Errors.
+
+hh:mm:ss.sss [info] Application basho_bench exited with reason: stopped
+hh:mm:ss.sss [info] Test completed after 1 mins.
 ----
 
-- 実行が終わると●●●●が出力されます。
+- 実行が終わると「Test completed」が出力されます。
 - 実行を途中でキャンセルするなら、`Control` + `c` を押し、プロンプトに
   対して `a` を答えます。
 
@@ -846,6 +876,16 @@ $ bb-summary-ossforum.sh □
 を確認しましょう。テストをスタートし、チェイン毎に処理したリクエスト数
 の増え方を、Web UIから観察します。
 
+テーブルから全データを削除します。
+
+[source,shell]
+----
+$ hibari-clear-table-ossforum.sh
+*TODO*
+----
+
+Basho Benchを実行します。
+
 [source,shell]
 ----
 $ basho_bench conf-bb/hibari-sequential.config
@@ -861,9 +901,10 @@ $ basho_bench conf-bb/hibari-sequential.config
 
 Basho BenchをスタートしたらすぐにHibariのWeb UIを開きます。
 
-http:// ...
+http://仮想サーバーのアドレス:23080/table?name=basho_bench_test
 
-●●●の数字を観察してください。どのように増えていきますか？
+Chainsの表の「Size」の数字を観察してください。どのように増えていきます
+か？
 
 
 ****
@@ -878,6 +919,16 @@ http:// ...
 キーとして1〜100万まで数字を *ランダムに* 生成した時のリクエストの分散
 状況を確認しましょう。テストをスタートし、チェイン毎に処理したリクエス
 ト数の増え方を、Web UIから観察します。
+
+テーブルから全データを削除します。
+
+[source,shell]
+----
+$ hibari-clear-table-ossforum.sh
+*TODO*
+----
+
+Basho Benchを実行します。
 
 [source,shell]
 ----
@@ -894,14 +945,36 @@ $ basho_bench conf-bb/hibari-random.config
 
 Basho BenchをスタートしてすぐにHibariのWeb UIを開きます。
 
-http:// ...
+http://仮想サーバーのアドレス:23080/table?name=basho_bench_test
 
-●●●の数字を観察してください。どのように増えていきますか？
+Chainsの表の「Size」の数字を観察してください。どのように増えていきます
+か？
 
 ****
 答え：　1. 全チェインに均等に分散している　　2. 一部のチェインに偏っている
 ****
 ===========================================================
+
+
+=== Hibariの停止
+
+作業が終わったらHibariを停止します。
+[source,shell]
+----
+$ hibari-stop-ossforum.sh □
+ok
+ok
+...（略）
+hibari2 stopped
+hibari1 stopped
+
+$ hibari-ping-ossforum.sh □
+hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
+node hibari1 ping failed
+hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
+node hibari2 ping failed
+...（略）
+----
 
 
 .時間が余ったら
@@ -933,27 +1006,6 @@ RiakやHibariと異なり、HBaseは１台のLinuxサーバー上で複数のメ
 ド（「リージョンサーバー」と呼びます）を動かすことができません。今回は
 １つのメンバーノードだけを稼働させます。（構成図）
 
-まず、Hibariクラスターを停止します。
-
-[source,shell]
-----
-$ hibari-stop-ossforum.sh □
-ok
-ok
-...（略）
-hibari2 stopped
-hibari1 stopped
-
-$ hibari-ping-ossforum.sh □
-hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
-node hibari1 ping failed
-hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
-node hibari2 ping failed
-...（略）
-----
-
-次に、HBaseを起動します。
-
 [source,shell]
 ----
 $ sudo service hbase-master status □
@@ -962,17 +1014,6 @@ $ sudo service hbase-master start □
 starting master, logging to /var/log/hbase/hbase-hbase-master-hostname.domainname.out
 $ sudo service hbase-master status □
 HBase is running
-----
-
-.HBaseの停止（ハンズオン終了後）
-[NOTE]
-ハンズオンの終了後、HBaseを停止してください。 +
-[source,shell]
-----
-$ sudo service hbase-master stop □
-stopping master....
-$ sudo service hbase-master status □
-HBase is not running.
 ----
 
 
@@ -1241,6 +1282,19 @@ $ *TODO* □
 ===========================================================
 
 
+=== HBaseの停止
+
+作業が終わったらHBaseを停止します。
+
+[source,shell]
+----
+$ sudo service hbase-master stop □
+stopping master....
+$ sudo service hbase-master status □
+HBase is not running.
+----
+
+
 == XX. 講義：コンシステントハッシングと自動シャーディングの優劣の比較
 
 *TODO*
@@ -1254,36 +1308,24 @@ $ *TODO* □
 Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
 ノードを１つ停止して、読み出しと書き込みの動作を調べます。
 
-まず、HBaseを停止します。
+Riakの環境を初期化します。
 
 [source,shell]
 ----
-$ sudo service hbase-master stop □
-stopping master....
-$ sudo service hbase-master status □
-HBase is not running.
-----
-
-次に、Riakの環境を初期化します。
-
-[source,shell]
-----
+（Riakの停止。すでに停止しているのでエラーになります）
 $ riak-stop-ossforum.sh □
-ok
-ok
+Node 'riak1@127.0.0.1' not responding to pings.
+Node 'riak2@127.0.0.1' not responding to pings.
 ...（略）
-riak2 stopped
-riak1 stopped
+node riak1 stop failed
+node riak2 stop failed
+...（略)
 
-$ riak-ping-ossforum.sh □
-riak1 ... Node 'riak1@127.0.0.1' not responding to pings.
-node riak1 ping failed
-riak2 ... Node 'riak2@127.0.0.1' not responding to pings.
-node riak2 ping failed
-...（略）
-
+（Riakのデータを全て削除します）
 $ riak-reset-ossforum.sh □
-*TODO*
+deleted data on riak1
+deleted data on riak2
+...（略)
 ----
 
 Riakを起動します。
@@ -1300,6 +1342,53 @@ riak1 ... pong
 riak2 ... pong
 ...（略）
 ----
+
+Riakクラスターを組み直します。
+[source,shell]
+----
+$ riak-build-cluster.sh □
+Success: staged join request for 'riak2@127.0.0.1' to 'riak1@127.0.0.1'
+Success: staged join request for 'riak3@127.0.0.1' to 'riak1@127.0.0.1'
+ =============================== Staged Changes ================================
+ Action         Nodes(s)
+ -------------------------------------------------------------------------------
+ join           'riak2@127.0.0.1'
+ join           'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+
+
+ NOTE: Applying these changes will result in 1 cluster transition
+
+ ###############################################################################
+                         After cluster transition 1/1
+ ###############################################################################
+
+ ================================= Membership ==================================
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid     100.0%     50.0%    'riak1@127.0.0.1'
+ valid       0.0%     25.0%    'riak2@127.0.0.1'
+ valid       0.0%     25.0%    'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+ Valid:3 / Leaving:0 / Exiting:0 / Joining:0 / Down:0
+
+ WARNING: Not all replicas will be on distinct nodes
+
+ Transfers resulting from cluster changes: 4
+   2 transfers from 'riak1@127.0.0.1' to 'riak3@127.0.0.1'
+   2 transfers from 'riak1@127.0.0.1' to 'riak2@127.0.0.1'
+
+ Cluster changes committed
+ ================================= Membership ==================================
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid      50.0%      --      'riak1@127.0.0.1'
+ valid      25.0%      --      'riak2@127.0.0.1'
+ valid      25.0%      --      'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+ Valid:3 / Leaving:0 / Exiting:0 / Joining:0 / Down:0
+----
+
 
 
 [caption="問題 "]
@@ -1395,17 +1484,9 @@ W = allの時　　　　1. 成功　　　2. 失敗
 CassandraではW = allの時に書き込みが失敗します。
 
 
-== XX. 講義：Hited Hand-offとリードリペア
+=== Riakの停止
 
-*TODO*
-
-
-== 11. 整合性重視（CP）のNOSQLの挙動
-
-Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
-クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。
-
-まず、Riakを停止します。
+作業が終わったらRiakを停止します。
 
 [source,shell]
 ----
@@ -1424,23 +1505,35 @@ node riak2 ping failed
 ...（略）
 ----
 
-次に、Hibariの環境を初期化します。
+
+== XX. 講義：Hited Hand-offとリードリペア
+
+*TODO*
+
+
+== 11. 整合性重視（CP）のNOSQLの挙動
+
+Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
+クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。
+
+Hibariの環境を初期化します。
 
 [source,shell]
 ----
+（Hibariの停止。すでに停止しているのでエラーになります）
 $ hibari-stop-ossforum.sh □
-ok
-ok
+Node 'hibari1@127.0.0.1' not responding to pings.
+Node 'hibari2@127.0.0.1' not responding to pings.
 ...（略）
-hibari2 stopped
-hibari1 stopped
+node hibari1 stop failed
+node hibari2 stop failed
+...（略)
 
-$ hibari-ping-ossforum.sh □
-hibari1 ... Node 'hibari1@127.0.0.1' not responding to pings.
-node hibari1 ping failed
-hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
-node hibari2 ping failed
-...（略）
+（Hibariのデータを全て削除します）
+$ riak-reset-ossforum.sh □
+deleted data on hibari1
+deleted data on hibari2
+...（略)
 ----
 
 Hibariを起動します。
@@ -1463,7 +1556,9 @@ hibari2 ... pong
 [source,shell]
 ----
 $ hibari-create-tables-ossforum.sh □
-*TODO*
+ok
+ok
+Table basho_bench_test created
 ----
 
 
