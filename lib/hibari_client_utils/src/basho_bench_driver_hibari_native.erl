@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% Copyright (c) 2012 Clodian, KK & Inc.  All rights reserved.
+%%% Copyright (c) 2012 Cloudian, KK & Inc.  All rights reserved.
 %%% Copyright (c) 2008-2011 Gemini Mobile Technologies, Inc.  All rights reserved.
 %%%
 %%% Licensed under the Apache License, Version 2.0 (the "License");
