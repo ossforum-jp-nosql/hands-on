@@ -1,0 +1,12 @@
+{application, hibari_client_utils,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { hibari_client_utils_app, []}},
+  {env, []}
+ ]}.

@@ -1,0 +1,9 @@
+{application,hibari_client_utils,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {mod,{hibari_client_utils_app,[]}},
+              {env,[]},
+              {modules,[basho_bench_driver_hibari_native,hibari_client_utils,
+                        hibari_client_utils_app]}]}.
