@@ -1,7 +1,7 @@
 #!/bin/sh
 # -*- mode:shell-script; coding:utf-8 -*-
 
-TABLES=(basho_bench_test_simple basho_bench_test_sequential basho_bench_test_random)
+TABLES=(employee basho_bench_test_simple basho_bench_test_sequential basho_bench_test_random)
 NODES='hibari1@127.0.0.1 hibari2@127.0.0.1 hibari3@127.0.0.1'
 
 die() {
@@ -28,7 +28,9 @@ create_table() {
     #    [-blockmultfactor <num>]
 
     ${HIBARI_HOME}/rel/hibari1/bin/hibari-admin create-table $TABLE \
-        -bricksperchain 3 $NODES || \
+        -varprefix -varprefixsep 47 -varprefixnum 1 \
+        -bricksperchain 3 \
+            $NODES || \
         die "Can't create table $TABLE"
     echo Table $TABLE created
 }
