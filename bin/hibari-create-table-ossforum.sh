@@ -1,7 +1,7 @@
 #!/bin/sh
 # -*- mode:shell-script; coding:utf-8 -*-
 
-TABLE=basho_bench_test
+TABLES=(basho_bench_test_simple basho_bench_test_sequential basho_bench_test_random)
 NODES='hibari1@127.0.0.1 hibari2@127.0.0.1 hibari3@127.0.0.1'
 
 die() {
@@ -15,6 +15,7 @@ bootstrap() {
 }
 
 create_table() {
+    local TABLE=$1
     # create-table <table name>
     #    [-bigdata]
     #    [-disklogging]
@@ -32,6 +33,17 @@ create_table() {
     echo Table $TABLE created
 }
 
-bootstrap
-create_table
+create_tables() {
+   local N0=${#TABLES[@]}
+   local N=$(($N0 - 1))
 
+   for I in `seq 0 $N`; do
+       (
+           local TABLE=${TABLES[$I]}
+           create_table $TABLE
+       )
+   done
+}
+
+bootstrap
+create_tables
