@@ -935,8 +935,6 @@ Erlang R15B02 <span style="color: #990000">(</span>erts-<span style="color: #993
 
 Eshell V5<span style="color: #990000">.</span><span style="color: #993399">9.2</span>  <span style="color: #990000">(</span>abort with <span style="color: #990000">^</span>G<span style="color: #990000">)</span>
 <span style="color: #993399">1</span><span style="color: #990000">&gt;</span>
-
-<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> rlwrapによるコマンド履歴の保存
 </tt></pre></div></div>
 <div class="paragraph"><p>Erlangシェルのプロンプト「1&gt;」は、以下、「&gt;」で示します。</p></div>
 <h4 id="__6">インデックス付きの、キー・バリューを格納</h4>
@@ -1556,8 +1554,6 @@ Erlang R15B02 <span style="color: #990000">(</span>erts-<span style="color: #993
 
 Eshell V5<span style="color: #990000">.</span><span style="color: #993399">9.2</span>  <span style="color: #990000">(</span>abort with <span style="color: #990000">^</span>G<span style="color: #990000">)</span>
 <span style="color: #990000">(</span>hibari_client@<span style="color: #993399">127.0</span><span style="color: #990000">.</span><span style="color: #993399">0.1</span><span style="color: #990000">)</span><span style="color: #993399">1</span><span style="color: #990000">&gt;</span>
-
-<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> rlwrapによるコマンド履歴の保存
 </tt></pre></div></div>
 <div class="paragraph"><p>以下、プロンプト「(<a href="mailto:hibari_client@127.0.0.1">hibari_client@127.0.0.1</a>)1&gt;」は「&gt;」で示します。</p></div>
 <h4 id="__11">キーバリューの書き込み</h4>
@@ -1586,9 +1582,9 @@ ok<span style="color: #990000">.</span>
 ok
 
 <span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
-<span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/age、バリュー："23"</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/age、バリュー：23（符号なし８ビット整数）</span></span>
 
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/age"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"23"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/age"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">23</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
 ok
 
 
@@ -1623,12 +1619,12 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="color: #990000">&gt;</span> Ops <span style="color: #990000">=</span> [<span style="font-weight: bold"><span style="color: #000000">brick_server:make_txn</span></span>(),
          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>),
-         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,   <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"29"</span><span style="color: #990000">&gt;&gt;</span>),
+         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,   <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>),
          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>)]<span style="color: #990000">.</span> □
 
 [txn,
  {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
- {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"29"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
  {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]}]
 
 
@@ -1648,8 +1644,8 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-style: italic"><span style="color: #9A1900">%% キーは辞書順にソートされて格納されています。</span></span>
 
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #993399">10</span>, [{<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
-{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"29"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
-       [{val<span style="color: #990000">_</span>len,<span style="color: #993399">2</span>}]},
+{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+       [{val<span style="color: #990000">_</span>len,<span style="color: #993399">1</span>}]},
       {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
        [{val<span style="color: #990000">_</span>len,<span style="color: #993399">2</span>}]},
       {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
@@ -1746,7 +1742,7 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ cd <span style="color: #990000">~</span>/hands-on □
-$ basho_bench conf-bb/hibari-simple<span style="color: #990000">.</span>config□
+$ basho_bench conf-bb/hibari-simple<span style="color: #990000">.</span>config □
 hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>debug<span style="color: #990000">]</span> Lager installed handler lager_console_backend into lager_event
 <span style="color: #990000">...</span>（省略）
 hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Starting <span style="color: #993399">100.0</span> ms/req fixed rate worker<span style="color: #990000">:</span> <span style="color: #990000">&lt;</span> <span style="color: #990000">...</span> <span style="color: #990000">&gt;</span>
@@ -2065,7 +2061,8 @@ Riakは使用するストレージエンジンによって特性が異なりま�
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ basho_bench conf-bb/hibari-sequential<span style="color: #990000">.</span>config</tt></pre></div></div>
+<pre><tt>$ cd <span style="color: #990000">~</span>/hands-on □
+$ basho_bench conf-bb/hibari-sequential<span style="color: #990000">.</span>config □</tt></pre></div></div>
 <div class="paragraph"><p>キーの設定は以下のようになってます。</p></div>
 <div class="listingblock">
 <div class="title">conf-bb/hibari-sequential.configのキー設定</div>
@@ -2095,7 +2092,8 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ basho_bench conf-bb/hibari-random<span style="color: #990000">.</span>config</tt></pre></div></div>
+<pre><tt>$ cd <span style="color: #990000">~</span>/hands-on □
+$ basho_bench conf-bb/hibari-random<span style="color: #990000">.</span>config □</tt></pre></div></div>
 <div class="paragraph"><p>キーの設定は以下のようになってます。</p></div>
 <div class="listingblock">
 <div class="title">conf-bb/hibari-random.configのキー設定</div>
@@ -2994,7 +2992,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footer">
 <div id="footer-text">
 Version v1.0-draft-2<br />
-Last updated 2012-09-25 05:18:11 JST
+Last updated 2012-09-25 06:01:02 JST
 </div>
 </div>
 </body>

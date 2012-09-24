@@ -293,8 +293,6 @@ Erlang R15B02 (erts-5.9.2) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] 
 Eshell V5.9.2  (abort with ^G)
 1>
 
-*TODO* rlwrapによるコマンド履歴の保存
-
 ----
 
 Erlangシェルのプロンプト「1>」は、以下、「>」で示します。
@@ -779,8 +777,6 @@ Erlang R15B02 (erts-5.9.2) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] 
 Eshell V5.9.2  (abort with ^G)
 (hibari_client@127.0.0.1)1>
 
-*TODO* rlwrapによるコマンド履歴の保存
-
 ----
 
 以下、プロンプト「(hibari_client@127.0.0.1)1>」は「>」で示します。
@@ -810,9 +806,9 @@ ok.
 ok
 
 %% キーバリューをHibariに格納。
-%% テーブル：employee、キー：jeremy/age、バリュー："23"
+%% テーブル：employee、キー：jeremy/age、バリュー：23（符号なし８ビット整数）
 
-> brick_simple:set(employee, <<"jeremy/age">>, <<"23">>). □
+> brick_simple:set(employee, <<"jeremy/age">>, <<23:8/unsigned-little-integer>>). □
 ok
 
 
@@ -853,12 +849,12 @@ key_not_exist
 ----
 > Ops = [brick_server:make_txn(),
          brick_server:make_set(<<"helena/title">>, <<"scientist">>),
-         brick_server:make_set(<<"helena/age">>,   <<"29">>),
+         brick_server:make_set(<<"helena/age">>,   <<29:8/unsigned-little-integer>>),
          brick_server:make_set(<<"helena/state">>, <<"CA">>)]. □
 
 [txn,
  {set,<<"helena/title">>,1348514414223763,<<"scientist">>,0,[]},
- {set,<<"helena/age">>,1348514414223771,<<"29">>,0,[]},
+ {set,<<"helena/age">>,1348514414223771,<<29>>,0,[]},
  {set,<<"helena/state">>,1348514414223778,<<"CA">>,0,[]}]
 
 
@@ -880,8 +876,8 @@ key_not_exist
 %% キーは辞書順にソートされて格納されています。
 
 > brick_simple:get_many(employee, <<"helena">>, 10, [{'binary_prefix', <<"helena">>}]). □
-{ok,{[{<<"helena/age">>,1348514414223771,<<"29">>,0,
-       [{val_len,2}]},
+{ok,{[{<<"helena/age">>,1348514414223771,<<29>>,0,
+       [{val_len,1}]},
       {<<"helena/state">>,1348514414223778,<<"CA">>,0,
        [{val_len,2}]},
       {<<"helena/title">>,1348514414223763,<<"scientist">>,0,
@@ -976,7 +972,7 @@ Basho Benchを実行しましょう。以下のコマンドを入力します。
 [source,shell]
 ----
 $ cd ~/hands-on □
-$ basho_bench conf-bb/hibari-simple.config□
+$ basho_bench conf-bb/hibari-simple.config □
 hh:mm:ss.sss [debug] Lager installed handler lager_console_backend into lager_event
 ...（省略）
 hh:mm:ss.sss [info] Starting 100.0 ms/req fixed rate worker: < ... >
@@ -1153,7 +1149,8 @@ Basho Benchを実行します。このテストは２分後で自動停止しま
 
 [source,shell]
 ----
-$ basho_bench conf-bb/hibari-sequential.config
+$ cd ~/hands-on □
+$ basho_bench conf-bb/hibari-sequential.config □
 ----
 
 キーの設定は以下のようになってます。
@@ -1189,7 +1186,8 @@ Basho Benchを実行します。このテストは２分後で自動停止しま
 
 [source,shell]
 ----
-$ basho_bench conf-bb/hibari-random.config
+$ cd ~/hands-on □
+$ basho_bench conf-bb/hibari-random.config □
 ----
 
 キーの設定は以下のようになってます。
