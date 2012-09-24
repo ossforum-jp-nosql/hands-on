@@ -78,11 +78,12 @@ init() ->
     MyNode  = basho_bench_config:get(hibari_mynode, [basho_bench, shortnames]),
     ok = hibari_client_utils:start_net_kernel(MyNode),
 
-    HibariNode = basho_bench_config:get(hibari_node, 'hibari@127.0.0.1'),
+    HibariAdminNode = basho_bench_config:get(hibari_node, 'hibari1@127.0.0.1'),
+    HibariNodes = ['hibari1@127.0.0.1', 'hibari2@127.0.0.1', 'hibari3@127.0.0.1'],
+
     Table  = basho_bench_config:get(hibari_table, tab1),
     Cookie = 'hibari',
-    true = erlang:set_cookie(HibariNode, Cookie),
-    true = erlang:set_cookie('hibari2@127.0.0.1', Cookie),
-    true = erlang:set_cookie('hibari3@127.0.0.1', Cookie),
-    hibari_client_utils:hibari_init(Table, HibariNode).
+    hibari_client_utils:set_cookie(HibariNodes, Cookie),
+    hibari_client_utils:connect(HibariAdminNode),
+    hibari_client_utils:wait_for_tables(HibariAdminNode, [Table]).
 

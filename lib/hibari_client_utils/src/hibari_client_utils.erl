@@ -16,7 +16,7 @@
 
 -module(hibari_client_utils).
 
--export([hibari_init/2,
+-export([connect/1,
          wait_for_tables/2,
          go_async/2,
          go_sync/2,
@@ -24,6 +24,7 @@
         ]).
 
 -export([start_net_kernel/1,
+         set_cookie/2,
          ping/1
         ]).
 
@@ -34,44 +35,38 @@
 %% ====================================================================
 
 %% TODO: Use erlando
-hibari_init(Table, HibariNode) ->
+connect(HibariAdmin) ->
     case start_app(sasl) of
         ok ->
             case start_app(gmt_util) of
                 ok ->
                     case start_app(gdss_client) of
                         ok ->
-                            case add_client_monitor(HibariNode, node()) of
-                                ok ->
-                                    wait_for_tables(HibariNode, [Table]),
-                                    table_exists(HibariNode, Table);
-                                Err1 ->
-                                    Err1
-                            end;
-                        Err2 ->
-                            Err2
+                            add_client_monitor(HibariAdmin, node());
+                        Err1 ->
+                            Err1
                     end;
-                Err3 ->
-                    Err3
+                Err2 ->
+                    Err2
             end;
-        Err4 ->
-            Err4
+        Err3 ->
+            Err3
     end.
 
-wait_for_tables(GDSSAdmin, Tables) ->
-    [ ok = gmt_loop:do_while(fun poll_table/1, {GDSSAdmin,not_ready,Tab})
+wait_for_tables(HibariAdmin, Tables) ->
+    [ ok = gmt_loop:do_while(fun poll_table/1, {HibariAdmin, not_ready, Tab})
       || {Tab,_,_} <- Tables ],
     ok.
 
-go_async(GDSSAdmin, Table) ->
-    go_sync(GDSSAdmin, Table, false).
+go_async(HibariAdmin, Table) ->
+    go_sync(HibariAdmin, Table, false).
 
-go_sync(GDSSAdmin, Table) ->
-    go_sync(GDSSAdmin, Table, true).
+go_sync(HibariAdmin, Table) ->
+    go_sync(HibariAdmin, Table, true).
 
-checkpoint(GDSSAdmin, Table) ->
+checkpoint(HibariAdmin, Table) ->
     [rpc(Node, brick_server, checkpoint, [Brick, Node])
-     || {Brick, Node} <- running_bricks(GDSSAdmin, Table)].
+     || {Brick, Node} <- running_bricks(HibariAdmin, Table)].
 
 start_net_kernel(Node) ->
     case net_kernel:start(Node) of
@@ -85,6 +80,10 @@ start_net_kernel(Node) ->
             io:format("Failed to start net_kernel for ~p: ~p\n", [?MODULE, Reason]),
             Result
     end.
+
+set_cookie(HibariNodes, Cookie) ->
+    [ erlang:set_cookie(Node, Cookie) || Node <- HibariNodes ],
+    ok.
 
 ping(Node) ->
     case net_adm:ping(Node) of
@@ -100,15 +99,15 @@ ping(Node) ->
 %% Internal functions
 %% ====================================================================
 
-add_client_monitor(HibariNode, ClientNode) ->
-    rpc(HibariNode, brick_admin, add_client_monitor, [ClientNode]).
+add_client_monitor(HibariAdmin, ClientNode) ->
+    rpc(HibariAdmin, brick_admin, add_client_monitor, [ClientNode]).
 
-%% delete_client_monitor(HibariNode, ClientNode) ->
-%%     rpc(HibariNode, brick_admin, delete_client_monitor, [ClientNode]).
+%% delete_client_monitor(HibariAdmin, ClientNode) ->
+%%     rpc(HibariAdmin, brick_admin, delete_client_monitor, [ClientNode]).
 
-poll_table({GDSSAdmin,not_ready,Tab} = T) ->
+poll_table({HibariAdmin,not_ready,Tab} = T) ->
     TabCh = gmt_util:atom_ify(gmt_util:list_ify(Tab) ++ "_ch1"),
-    case rpc(GDSSAdmin, brick_sb, get_status, [chain, TabCh]) of
+    case rpc(HibariAdmin, brick_sb, get_status, [chain, TabCh]) of
         {ok, healthy} ->
             {false, ok};
         _ ->
@@ -116,20 +115,20 @@ poll_table({GDSSAdmin,not_ready,Tab} = T) ->
             {true, T}
     end.
 
-table_exists(HibariNode, Table) ->
-    case rpc(HibariNode, brick_admin, get_table_info, [Table]) of
-        {ok, _} ->
-            ok;
-        error ->
-            io:format("Table '~p' does not exist on Hibari ~p.\n",
-                      [Table, HibariNode]),
-            halt(1)
-    end.
+%% table_exists(HibariAdmin, Table) ->
+%%     case rpc(HibariAdmin, brick_admin, get_table_info, [Table]) of
+%%         {ok, _} ->
+%%             ok;
+%%         error ->
+%%             io:format("Table '~p' does not exist on Hibari ~p.\n",
+%%                       [Table, HibariAdmin]),
+%%             halt(1)
+%%     end.
 
-go_sync(GDSSAdmin, Table, Bool) ->
+go_sync(HibariAdmin, Table, Bool) ->
     [rpc(Node, brick_server, set_do_sync, [{Brick, Node}, Bool])
-     || {Brick, Node} <- running_bricks(GDSSAdmin, Table)],
-    SyncStatus = get_sync_properties(GDSSAdmin, Table),
+     || {Brick, Node} <- running_bricks(HibariAdmin, Table)],
+    SyncStatus = get_sync_properties(HibariAdmin, Table),
     Result = lists:foldl(fun(Status, Acc) ->
                                  Status =:= Bool andalso Acc
                          end,
@@ -142,17 +141,17 @@ go_sync(GDSSAdmin, Table, Bool) ->
             {error, SyncStatus}
     end.
 
-get_sync_properties(GDSSAdmin, Table) ->
+get_sync_properties(HibariAdmin, Table) ->
     BrickStatusList = [rpc(Node, brick_server, status, [Brick, Node])
-                       || {Brick, Node} <- running_bricks(GDSSAdmin, Table)],
+                       || {Brick, Node} <- running_bricks(HibariAdmin, Table)],
     lists:map(fun({ok, BrickStatus}) ->
                       BrickImpl = proplists:get_value(implementation, BrickStatus, undefined),
                       proplists:get_value(do_sync, BrickImpl, undefined)
               end,
               BrickStatusList).
 
-running_bricks(GDSSAdmin, Table) ->
-    {ok, Properties} = rpc(GDSSAdmin, brick_admin, get_table_info,
+running_bricks(HibariAdmin, Table) ->
+    {ok, Properties} = rpc(HibariAdmin, brick_admin, get_table_info,
                         [{global, brick_admin}, Table]),
     GHash = proplists:get_value(ghash, Properties),
     Chains = lists:usort(brick_hash:all_chains(GHash, current)
