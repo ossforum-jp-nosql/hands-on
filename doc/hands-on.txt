@@ -24,6 +24,11 @@
 *日本OSS推進フォーラム　若手技術者勉強会*
 
 
+== 目次
+
+*TODO*
+
+
 == 1. ハンズオンの概要
 
 このハンズオンは *日本OSS推進フォーラム　第２回 若手技術者勉強会*
@@ -63,7 +68,7 @@
 ハンズオンの環境は仮想サーバーのディスクイメージとして用意されています。
 
 - NIIの仮想サーバー環境用
-  * 本日使用します
+  * 9月27日に使用します
 
 - VirtualBox用ディスクイメージ
   * 復習用　XX.XGB
@@ -94,11 +99,7 @@ https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md
 
 === 仮想サーバーにsshでログイン
 
-（シンクライアントはWindows？？）
-
-●●●を立ち上げ、sshで接続します。
-
-*TODO* パスワード接続は可能？　それともsshキーを用意する？
+PuTTYを立ち上げ、sshで接続します。
 
 :handsonuser: ossforum
 :handsonpw:   nosql2
@@ -177,12 +178,19 @@ Retype new password: （新しいパスワードを再入力） □
 /opt/ ... *TODO*
 ----
 
-.Linuxでテキストファイルの内容を表示、編集する
+.Linuxシェルでテキストファイルの内容を表示、編集する
 [TIP]
 スクリプトのようなテキストファイルの内容を表示するには、 `less` コマン
 ドを使用します。また、テキストファイルの内容を編集するには、 `nano` コ
 マンド（または vi、emacs）を使用します。ファイルの編集が終わったら、
 `Control` キーと `x` キーを同時に押して保存します。
+
+.Linuxシェルの履歴検索やコマンド補完
+[TIP]
+上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。また
+`Control` キーと `r` キーを同時に押すとコマンドの入力履歴を検索できま
+す。さらに、コマンドの入力途中で `Tab` キーを押すと、残りの部分が補完
+されます。
 
 
 == 3. Basho Riakの基本操作
@@ -244,6 +252,35 @@ Riakでは３種類のクライアントAPIが用意されています。
 
 === Protocol Buffersでアクセス（Erlang）
 
+==== バケットの作成
+
+最初にバケットを作りましょう。バケットは一般的なデータベースのテーブル
+にあたります。
+
+実はRiakではバケットを作成するコマンドは用意されておらず、クライアント
+が初めてキー・バリューを書き込もうとした時に自動的に作られます。同様に
+バケットを削除するコマンドもなく、バケットないのキー・バリューが全て削
+除された後に自動的に消滅します。
+
+ここではキー・バリューの複製の数などのバケットの属性を明示的に設定した
+いので、スクリプトを使って、キー・バリューを１つ書き込み、バケットの設
+定を変更しましょう。
+
+[source,shell]
+----
+$ riak-create-buckets-ossforum.escript
+Created {<<"b1">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {<<"employee">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {<<"basho_bench_test">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+
+----
+
+- `n_val` はキー・バリューの複製（レプリカ）の数
+- `r`　は読み出し時に応答が必要なノード数
+- `w`　は書き込み時に応答が必要なノード数
+- `dw`　は書き込み時にディスクへの書き込みまで行う必要のあるノード数
+
+
 ==== Riakに接続
 
 Erlangのシェルを立ち上げ、Riakに接続します。
@@ -255,9 +292,10 @@ Erlang R15B02 (erts-5.9.2) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] 
 
 Eshell V5.9.2  (abort with ^G)
 1>
-----
 
-*TODO*
+*TODO* rlwrapによるコマンド履歴の保存
+
+----
 
 Erlangシェルのプロンプト「1>」は、以下、「>」で示します。
 
@@ -265,14 +303,14 @@ Erlangシェルのプロンプト「1>」は、以下、「>」で示します�
 ==== インデックス付きの、キー・バリューを格納
 
 「employee（社員）」というバケットに、１つ目のキー・バリューを格納しま
-しょう。後で検索がしやすいよう、インデックス（索引）に「age_int（年齢）」
-と「state_bin（居住している州）」を登録します。
+しょう。後で検索がしやすいよう、インデックス（索引）に「age_int（年齢、
+整数型）」と「state_bin（居住している州、バイナリー型）」を登録します。
 
 [source,erlang]
 ----
 %% パーセントマークから改行まではコメントです
 
-%% Riakのプロトコルバッファのポートに接続。
+%% RiakのProtocol Buffersサービスに接続。
 %% デフォルトポートは8087ですが、今回は１台のサーバーに複数のメンバーノー
 %% ドを稼働させるため、デフォルトから変更し、メンバーノード毎に違うポー
 %% トを割り当てています）
@@ -282,7 +320,7 @@ Erlangシェルのプロンプト「1>」は、以下、「>」で示します�
 
 
 %% キーバリューを作成。
-%% バケット：employee、キー：jermy、バリュー：engineer。
+%% バケット：employee、キー：jermy、バリュー：engineer
 %% まだこの時点ではRiakへ送信されていません。最後のput操作で格納されます）
 
 > Obj1a = riakc_obj:new(<<"employee">>, <<"jeremy">>, <<"engineer">>). □
@@ -341,7 +379,7 @@ ok
 ok
 ----
 
-==== キーを指定してキー・バリューを取り出し。
+==== キーを指定してキー・バリューを取り出し
 
 キーを指定してキー・バリューを取り出します。
 
@@ -393,11 +431,26 @@ ok
 
 ----
 
+==== キー・バリューの削除
+
+*TODO*
+
+
 ==== Map Reduceによる集計
 *TODO*
 
+
 ==== Erlangシェルの終了
-*TODO*
+
+q()コマンド（quitコマンド）でErlangシェルを終了します。
+
+[source,erlang]
+----
+> q().
+ok
+>
+$
+----
 
 
 == 4. データ分散について：コンシステント・ハッシング（その１）
@@ -563,7 +616,7 @@ b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) �
 
 
 [caption="問題 "]
-.4-7. メンバーノードの追加とデータ分散
+.4-7. メンバーノードの追加とデータのリバランス（再配置）
 ===========================================================
 Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバーノードを追加
 したり、取り除いたりできます。現在のクラスターにメンバーノードを追加し
@@ -697,12 +750,14 @@ Hibariでは３種類のクライアントAPIが用意されています。
 
 === Erlangネイティブクライアントでアクセス
 
-==== テーブルを作成
+==== テーブルの作成
 
 [source,shell]
 ----
 $ hibari-create-tables-ossforum.sh □
 ok
+ok
+Table employee created
 ok
 Table basho_bench_test_simple created
 ok
@@ -711,29 +766,157 @@ ok
 Table basho_bench_test_random created
 ----
 
-このスクリプトにより３つのテーブルが作られました。
+このスクリプトにより４つのテーブルが作られました。
 
 
 ==== Hibariに接続
 
+[source,shell]
 ----
 $ erl-hibari-ossforum.sh □
 Erlang R15B02 (erts-5.9.2) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] [kernel-poll:false]
 
 Eshell V5.9.2  (abort with ^G)
-1>
+(hibari_client@127.0.0.1)1>
+
+*TODO* rlwrapによるコマンド履歴の保存
+
 ----
 
+以下、プロンプト「(hibari_client@127.0.0.1)1>」は「>」で示します。
+
+
+==== キーバリューの書き込み
+
+[source,erlang]
+----
+%% Hibariに接続
+
+> AdminNode = 'hibari1@127.0.0.1'. □
+'hibari1@127.0.0.1'
+
+> hibari_client_utils:connect(AdminNode). □
+...（略）
+ok.
+
+> hibari_client_utils:wait_for_tables(AdminNode, [employee]). □
+ok.
+
+
+%% キーバリューをHibariに格納。
+%% テーブル：employee、キー：jeremy/title、バリュー："engineer"
+
+> brick_simple:set(employee, <<"jeremy/title">>, <<"engineer">>). □
+ok
+
+%% キーバリューをHibariに格納。
+%% テーブル：employee、キー：jeremy/age、バリュー："23"
+
+> brick_simple:set(employee, <<"jeremy/age">>, <<"23">>). □
+ok
+
+
+%% キーバリューをHibariに格納。
+%% テーブル：employee、キー：jeremy/age、バリュー："CA"
+
+> brick_simple:set(employee, <<"jeremy/state">>, <<"CA">>). □
+ok
+----
+
+
+==== キー・バリューの読み出し
+
+[source,erlang]
+----
+> brick_simple:get(employee, <<"jeremy/title">>). □
+{ok,1348490264725016,<<"engineer">>}
+
+
+> brick_simple:get(employee, <<"gary/title">>). □
+key_not_exist
+
+----
+
+
+==== メタデータ付きの、キーバリューを書き込み
+
 *TODO*
 
-以下、プロンプト「1>」は「>」で示します。
+
+==== 複数のキー・バリューをアトミックに書き込み
+
+同一テーブルの同一チェイン上なら、複数のキー・バリューをアトミックに追
+加できます。この場合は、すべての操作が成功するか、あるいは、すべての操
+作が実行されないか、のどちらかになります。
+
+[source,erlang]
+----
+> Ops = [brick_server:make_txn(),
+         brick_server:make_set(<<"helena/title">>, <<"scientist">>),
+         brick_server:make_set(<<"helena/age">>,   <<"29">>),
+         brick_server:make_set(<<"helena/state">>, <<"CA">>)]. □
+
+[txn,
+ {set,<<"helena/title">>,1348514414223763,<<"scientist">>,0,[]},
+ {set,<<"helena/age">>,1348514414223771,<<"29">>,0,[]},
+ {set,<<"helena/state">>,1348514414223778,<<"CA">>,0,[]}]
 
 
-==== メタデータ付きの、キーバリューを格納
-*TODO*
+> brick_simple:do(employee, Ops). □
+[ok,ok,ok]
+
+*TODO* トランザクションが失敗する例を追加する
+
+----
+
 
 ==== キーの区切り文字とレンジスキャン
+
+*TODO* employee テーブルではキーの区切り文字として「/」が使われていることを解説する
+
+[source,erlang]
+----
+%% binary_prefixを指定することで、キーがhelenaで始まるものだけを読み出します。
+%% キーは辞書順にソートされて格納されています。
+
+> brick_simple:get_many(employee, <<"helena">>, 10, [{'binary_prefix', <<"helena">>}]). □
+{ok,{[{<<"helena/age">>,1348514414223771,<<"29">>,0,
+       [{val_len,2}]},
+      {<<"helena/state">>,1348514414223778,<<"CA">>,0,
+       [{val_len,2}]},
+      {<<"helena/title">>,1348514414223763,<<"scientist">>,0,
+       [{val_len,9}]}],
+     false}}
+
+
+%% キーだけを取り出すこともできます。Hibariではキーとメタデータはメモ
+%% リー上に常駐していますのでディスクアクセスなしで結果を得られます。
+
+> brick_simple:get_many(employee, <<"helena">>, 10, [witness, {'binary_prefix', <<"helena">>}]). □
+{ok,{[{<<"helena/age">>,1348514414223771},
+      {<<"helena/state">>,1348514414223778},
+      {<<"helena/title">>,1348514414223763}],
+     false}}
+
+----
+
+
+==== キー・バリューの削除
+
 *TODO*
+
+
+==== Erlangシェルの終了
+
+q()コマンド（quitコマンド）でErlangシェルを終了します。
+
+[source,erlang]
+----
+> q().
+ok
+>
+$
+----
 
 
 == 7. データ分散について：コンシステント・ハッシング（その２）
@@ -940,11 +1123,12 @@ Basho Benchでは以下のようなバリューを生成できます。
 [source,shell]
 ----
 $ bb-summary-ossforum.sh □
+*TODO* まだスクリプトが準備できてません
 *TODO* 生成されたpingファイルを見る方法（Webブラウザーでアクセス）
 ----
 
 このグラフを見て、Hibariは書き込み（set）と読み出し（get）のどちらが得
-意だと思いましたか？
+意（高速）だと思いましたか？
 
 ****
 答え：　
@@ -954,7 +1138,7 @@ $ bb-summary-ossforum.sh □
 
 .RiakやCassandraの特性
 [NOTE]
-- Cassandraは書き込みのほうが読み出しより得意です。
+- Cassandraは書き込みのほうが読み出しより高速です。
 - Riakは使用するストレージエンジンによって特性が異なります。
 
 
@@ -1047,6 +1231,12 @@ node hibari1 ping failed
 hibari2 ... Node 'hibari2@127.0.0.1' not responding to pings.
 node hibari2 ping failed
 ...（略）
+
+$ hibari-reset-ossforum.sh □
+...（略）
+deleted data on hibari2
+deleted data on hibari1
+
 ----
 
 
@@ -1059,6 +1249,7 @@ node hibari2 ping failed
 $ basho_bench conf-bb/riak-simple.config □
 $ basho_bench conf-bb/riak-sequential.config □
 $ basho_bench conf-bb/riak-random.conf □
+
 ----
 
 
@@ -1073,7 +1264,7 @@ $ basho_bench conf-bb/riak-random.conf □
 - Hadoopインフラ上で稼働
 
 
-=== HBaseの起動と停止
+=== HBaseの起動
 
 *TODO* +
 
@@ -1081,8 +1272,6 @@ $ basho_bench conf-bb/riak-random.conf □
 
 [source,shell]
 ----
-*TODO* HDFSの擬似分散モードを使用する。
-
 $ sudo service hbase-master status □
 HBase is not running.
 $ sudo service hbase-master start □
@@ -1090,7 +1279,9 @@ starting master, logging to /var/log/hbase/hbase-hbase-master-hostname.domainnam
 $ sudo service hbase-master status □
 HBase is running
 
-*TODO* local-regionservers.sh
+*TODO* HDFSの擬似分散モードを使用する
+*TODO* local-regionservers.shで複数のリージョンサーバーを起動する
+
 ----
 
 
@@ -1118,9 +1309,8 @@ $ hbase-create-tables-ossforum.sh □
 *TODO*
 ----
 
-このスクリプトにより「ycsb_test」というテーブルが作られました。
+このスクリプトにより４つのテーブルが作られました。
 
-*TODO*
 
 ==== HBaseに接続
 *TODO*
@@ -1139,7 +1329,10 @@ hbase(main):001:0>
 以下、プロンプト「hbase(main):001:0>」は「hbase>」で示します。
 
 
-==== カラムを格納
+==== 行の書き込み
+*TODO*
+
+==== 行の読み出し
 *TODO*
 
 ==== レンジスキャン
@@ -1369,10 +1562,13 @@ $ sudo service hbase-master stop □
 stopping master....
 $ sudo service hbase-master status □
 HBase is not running.
+
+*TODO* HBaseのリセット
+
 ----
 
 
-== XX. 講義：コンシステントハッシングと自動シャーディングの優劣の比較
+== 10. 講義：コンシステントハッシングと自動シャーディングの優劣の比較
 
 *TODO*
 
@@ -1380,7 +1576,7 @@ HBase is not running.
 - レンジスキャンの可否
 
 
-== 10. 可用性重視（AP）のNOSQLの挙動
+== 11. 可用性重視（AP）のNOSQLの挙動
 
 Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
 ノードを１つ停止して、読み出しと書き込みの動作を調べます。
@@ -1467,10 +1663,20 @@ Success: staged join request for 'riak3@127.0.0.1' to 'riak1@127.0.0.1'
  Valid:3 / Leaving:0 / Exiting:0 / Joining:0 / Down:0
 ----
 
+バケットを作成します。
+
+[source,shell]
+----
+$ riak-create-buckets-ossforum.escript
+Created {<<"b1">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {<<"employee">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {<<"basho_bench_test">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+
+----
 
 
 [caption="問題 "]
-.10-1. １ノードダウン時の読み出し操作
+.11-1. １ノードダウン時の読み出し操作
 ===========================================================
 メンバーノードの１つが停止しているときの読み出しの挙動を確認しましょう。
 まず、全ノードが稼働している状態で書き込みを行い、次に、メンバーノード
@@ -1481,39 +1687,86 @@ sshターミナルのウィンドウを２つ開いてください。一方はEr
 
 ２つのウィンドウを開いたら、以下のコマンドを実行します。
 
+
 .Erlangシェル用ウィンドウ
 [source,erlang]
 ----
-*TODO*  オブジェクトのput(w=all)
+$ erl-riak-ossforum.sh □
+> {ok, Pid} = riakc_pb_socket:start_link("127.0.0.1", 8091). □
+> Obj1 = riakc_obj:new(<<"employee">>, <<"ann">>, <<"sales">>). □
+
+%% W = allで書き込みます
+> riakc_pb_socket:put(Pid, Obj1, [{w, all}]). □
+
 ----
 
-オブジェクトを書き込んだらメンバーノードの１つを停止します。
+
+オブジェクトを書き込んだらメンバーノードの１つを停止しましょう。まず
+キー・バリューがどのノードに書き込まれたか調べます。
 
 .bash用ウィンドウ
 [source,shell]
 ----
-$ $RIAK_HOME/riak3/bin/riak stop □
-$ $RIAK_HOME/riak3/bin/riak ping □
+$ riak-preflist-ossforum.escript □
+Targets:
+[{1096126227998177188652763624537212264741949407232,'riak3@127.0.0.1'},
+ {1278813932664540053428224228626747642198940975104,'riak1@127.0.0.1'},
+ {0,'riak1@127.0.0.1'}]
+...（略）
+----
+
+該当するメンバーノードを停止します。ただしriak1を停止することは避けて
+ください（本環境ではriak1を使ってriak-adminコマンドを動かしているため、
+riak1を停止するとriak-adminコマンドが使えなくなります）
+
+.bash用ウィンドウ
+[source,shell]
+----
+$ $RIAK_HOME/rel/riak3/bin/riak stop □
+$ $RIAK_HOME/rel/riak3/bin/riak ping □
 Node 'riak3@127.0.0.1' not responding to pings.
-$ riak-admin member_status
-*TODO*
+
+
+%% Ringステータスの「Unreachable Nodes」を確認します。
+
+$ riak-admin ring-status □
+================================== Claimant ===================================
+Claimant:  'riak1@127.0.0.1'
+Status:     up
+Ring Ready: true
+
+============================== Ownership Handoff ==============================
+No pending changes.
+
+============================== Unreachable Nodes ==============================
+The following nodes are unreachable: ['riak3@127.0.0.1']
+
+WARNING: The cluster state will not converge until all nodes
+are up. Once the above nodes come back online, convergence
+will continue. If the outages are long-term or permanent, you
+can either mark the nodes as down (riak-admin down NODE) or
+forcibly remove the nodes from the cluster (riak-admin
+force-remove NODE) to allow the remaining nodes to settle.
+
 ----
 
-R = quorumでの読み出を試みます。もし読み出しに失敗した場合は
-「key_notfound」が返されます。
+R = quorumの読み出しを試みます。もし読み出しに失敗した場合は
+「notfound」が返されます。
 
 .Erlangシェル用ウィンドウ
 [source,erlang]
 ----
-*TODO*  オブジェクトのget(r=quorum)
+> riakc_pb_socket:get(Pid, <<"employee">>, <<"ann">>, [{r, quorum}]).
+
 ----
 
-R = allでの読み出を試みます。
+R = allの読み出しを試みます。
 
 .Erlangシェル用ウィンドウ
 [source,erlang]
 ----
-*TODO*  オブジェクトのget(r=all)
+> riakc_pb_socket:get(Pid, <<"employee">>, <<"ann">>, [{r, all}]).
+
 ----
 
 読み出しは成功しましたか？
@@ -1527,7 +1780,7 @@ R = allの時　　　　1. 成功　　　2. 失敗
 
 
 [caption="問題 "]
-.10-2. １ノードダウン時の書き込み操作
+.11-2. １ノードダウン時の書き込み操作
 ===========================================================
 メンバーノードの１つが停止したまま書き込みの挙動を確認しましょう。
 
@@ -1584,12 +1837,12 @@ node riak2 ping failed
 ----
 
 
-== XX. 講義：Hinted Hand-offとリードリペア
+== 12. 講義：Hinted Hand-offとリードリペア
 
 *TODO*
 
 
-== 11. 整合性重視（CP）のNOSQLの挙動
+== 13. 整合性重視（CP）のNOSQLの挙動
 
 Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
 クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。
@@ -1647,7 +1900,7 @@ Table basho_bench_test_random created
 
 
 [caption="問題 "]
-.11-1. １ノードダウン時の読み出し操作
+.13-1. １ノードダウン時の読み出し操作
 ===========================================================
 ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
 う。まず、全ノードが稼働している状態で書き込みを行い、次に、ブリックサー
@@ -1661,7 +1914,15 @@ sshターミナルのウィンドウを２つ開いてください。一方はEr
 .Erlangシェル用ウィンドウ
 [source,erlang]
 ----
-*TODO*  キー・バリューのput
+$ erl-hibari-ossforum.sh □
+> AdminNode = 'hibari1@127.0.0.1'. □
+> hibari_client_utils:connect(AdminNode). □
+> hibari_client_utils:wait_for_tables(AdminNode, [employee]). □
+
+%% キーバリューをHibariに格納
+
+> brick_simple:set(employee, <<"ann/title">>, <<"sales">>). □
+
 ----
 
 キー・バリューを書き込んだらブリックサーバーの１つを停止します。
@@ -1669,8 +1930,8 @@ sshターミナルのウィンドウを２つ開いてください。一方はEr
 .bash用ウィンドウ
 [source,shell]
 ----
-$ $HIBARI_HOME/hibari3/bin/hibari stop □
-$ $HIBARI_HOME/hibari3/bin/hibari ping □
+$ $HIBARI_HOME/rel/hibari3/bin/hibari stop □
+$ $HIBARI_HOME/rel/hibari3/bin/hibari ping □
 Node 'hibari3@127.0.0.1' not responding to pings.
 ----
 
@@ -1686,7 +1947,7 @@ http://仮想サーバーのアドレス:23080/
 .Erlangシェル用ウィンドウ
 [source,erlang]
 ----
-*TODO*  オブジェクトのget
+> brick_simple:get(employee, <<"ann/title">>). □
 ----
 
 読み出しは成功しましたか？
@@ -1698,7 +1959,7 @@ http://仮想サーバーのアドレス:23080/
 
 
 [caption="問題 "]
-.11-2. １ノードダウン時の書き込み操作
+.13-2. １ノードダウン時の書き込み操作
 ===========================================================
 ブリックサーバーの１つが停止したまま書き込みの挙動を確認しましょう。
 
@@ -1708,7 +1969,7 @@ http://仮想サーバーのアドレス:23080/
 .Erlangシェル用ウィンドウ
 [source,erlang]
 ----
-*TODO*  オブジェクトのput
+> brick_simple:set(employee, <<"bob/title">>, <<"designer">>). □
 ----
 
 書き込みは成功しましたか？
@@ -1720,7 +1981,7 @@ http://仮想サーバーのアドレス:23080/
 
 
 [caption="問題 "]
-.11-3. CAS操作
+.13-3. CAS操作
 ===========================================================
 
 *TODO* +
@@ -1737,7 +1998,7 @@ $ *TODO* □
 
 
 [caption="問題 "]
-.11-4. Hibariのマイクロトランザクション
+.13-4. Hibariのマイクロトランザクション
 ===========================================================
 
 *TODO* +
@@ -1753,15 +2014,15 @@ $ *TODO* □
 ===========================================================
 
 
-== XX. 講義：APとCPの違いのまとめ
+== 14. 講義：APとCPの違いのまとめ
 
 *TODO*
 
 
-== 12. ログ構造マージツリー（LSMTree）の特性
+== 15. ログ構造マージツリー（LSMTree）の特性
 
 [caption="問題 "]
-.12-1. 書き込みを繰り返した時の読み出し性能の劣化
+.15-1. 書き込みを繰り返した時の読み出し性能の劣化
 ===========================================================
 
 *TODO* +
@@ -1778,7 +2039,7 @@ $ *TODO* □
 
 
 [caption="問題 "]
-.12-2. メジャーコンパクション後の性能の回復
+.15-2. メジャーコンパクション後の性能の回復
 ===========================================================
 
 *TODO* +
@@ -1794,19 +2055,14 @@ $ *TODO* □
 ===========================================================
 
 
-== 13. グループワーク：HBaseクラスターのセットアップ
-
-*TODO*
-
-
-== XX. 後片付け
+== 16. 後片付け
 
 *TODO*
 
 === 仮想サーバーの停止、削除
 
 
-== XX. 参考資料
+== 付録. 参考資料
 
 === Basho Riak
 
