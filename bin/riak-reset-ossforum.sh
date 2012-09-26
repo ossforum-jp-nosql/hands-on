@@ -1,7 +1,7 @@
 #!/bin/sh
 # -*- mode:shell-script; coding:utf-8 -*-
 
-ALL_NODES=(riak1 riak2 riak3)
+ALL_NODES=(riak1 riak2 riak3 riak4)
 
 die() {
     echo $@
