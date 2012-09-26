@@ -1,0 +1,499 @@
+// -*- mode:doc; coding:utf-8 -*-
+
+:Author:      河野達也 Tatsuya_Kawano CloudianKK
+:Email:       tkawano@cloudian.com
+:Date:        2012年9月26日
+:Revision:    v1.0-draft-3
+
+// この文書はAsciiDoc形式で記述されています。
+// HTML形式に変換するには以下のようにします。
+//
+// # Fedora、CentOSの場合
+// $ sudo yum install asciidoc source-highlight
+//
+// # Ubuntuの場合
+// $ sudo apt-get install asciidoc source-highlight
+//
+// # HTML形式に変換
+// $ asciidoc hands-on-extras.txt
+//
+
+
+= 第２回　NOSQL実機ハンズオン　別冊（HBase）
+
+*日本OSS推進フォーラム　若手技術者勉強会*
+
+
+== 目次
+
+*TODO*
+
+
+== 1. 別冊の概要
+
+このハンズオンは *日本OSS推進フォーラム　第２回 若手技術者勉強会*
+（2012年9月28日実施）のために作成されました。
+
+*TODO*
+
+
+== 2. 環境のセットアップ
+
+=== 2-1. 仮想サーバーの要件
+
+*TODO*
+
+
+=== 2-2. 仮想環境のセットアップ
+
+*TODO*
+
+https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md
+
+
+=== 2-3. 仮想サーバーにsshでログイン
+
+*TODO*
+
+
+== 3. Apache HBaseの基本操作
+
+=== HBaseの特徴
+
+- 自動シャーディングによるデータ分散
+- 整合性を優先（CP）
+  * CAS操作
+- ソート済みカラム指向型
+- Hadoopインフラ上で稼働
+
+
+=== HBaseの起動
+
+*TODO* +
+
+（構成図）
+
+[source,shell]
+----
+$ sudo service hbase-master status □
+HBase is not running.
+$ sudo service hbase-master start □
+starting master, logging to /var/log/hbase/hbase-hbase-master-hostname.domainname.out
+$ sudo service hbase-master status □
+HBase is running
+
+*TODO* HDFSの擬似分散モードを使用する
+*TODO* local-regionservers.shで複数のリージョンサーバーを起動する
+
+----
+
+
+=== HBaseのクライアントAPI
+
+HBaseでは３種類のクライアントAPIが用意されています。
+
+- *Javaネイティブクライアント*
+  * プログラミング言語「Java」専用のクライアント
+  * HBaseはJavaで書かれています
+- *Thrift*
+  * 様々なプログラミング言語からアクセスできる
+  * ウェブブラウザーで表示できる
+
+また、HBaseシェル... *TODO*
+
+
+=== HBaseシェルでアクセス
+
+==== テーブルを作成
+
+[source,shell]
+----
+$ hbase-create-tables-ossforum.sh □
+*TODO*
+----
+
+このスクリプトにより４つのテーブルが作られました。
+
+
+==== HBaseに接続
+*TODO*
+
+[source,shell]
+----
+$ hbase shell
+WARN conf.Configuration: hadoop.native.lib is deprecated. Instead, use io.native.lib.available
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 0.92.1-cdh4.0.1, rUnknown, Thu Jun 28 18:09:40 PDT 2012
+
+hbase(main):001:0>
+----
+
+以下、プロンプト「hbase(main):001:0>」は「hbase>」で示します。
+
+
+==== 行の書き込み
+*TODO*
+
+==== 行の読み出し
+*TODO*
+
+==== レンジスキャン
+*TODO*
+
+
+== 4. データ分散について：自動シャーディング
+
+[caption="問題 "]
+.4-1. クラスター構成の確認
+===========================================================
+このHBaseクラスターにはリージョンサーバーが１つだけ稼働しています。
+
+以下のHBaseシェルコマンドで確認してください。
+
+[source,ruby]
+----
+hbase> status 'simple' □
+1 live servers
+    hostname.domainname:41932 1348176548890
+        requestsPerSecond=0, numberOfOnlineRegions=5, usedHeapMB=29, maxHeapMB=991
+0 dead servers
+Aggregate load: 0, regions: 5
+----
+
+「1 live servers」と表示されていればOKです。
+
+===========================================================
+
+
+[caption="問題 "]
+.4-2. リージョン数の確認
+===========================================================
+テーブル「ycsb_test」にはいくつのリージョンがありますか？　Web UIで調
+べてください。
+
+http://仮想サーバーのアドレス:60010/
+
+●●のリンクをクリックし、●●●ページが開いたら「●●●」を見ます。
+
+****
+答え：　　　　　　　　　　個　
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-3. リージョンのスタートキー、エンドキーの確認
+===========================================================
+先ほどのWeb UIでは、それぞれのリージョンについて「Start Key」と「End
+Key」が表示されていました。RiakやHibariでは「キーのハッシュ値」が使わ
+れていましたが、HBaseではどのような値が使用されていますか？　Web UIで
+調べてください。
+
+****
+答え： 1. キーのハッシュ値　　2. キーの値そのもの
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-4. YCSBの実行
+===========================================================
+YCSBを実行しましょう。以下のコマンドを入力します。
+
+[source,shell]
+----
+$ cd ~/hands-on □
+$ ycsb run hbase -P conf-ycsb/hbase-simple.properties -s -threads 10 -target 5000 □
+*TODO* （出力メッセージ）
+----
+
+- 実行が終わると●●●●が出力されます。
+- 実行を途中でキャンセルするなら、`Control` + `c` を押します。
+
+ワークロード（負荷）の設定ファイルの内容を確認しましょう。
+`less` コマンドで「hbase-simple.properties」ファイルの内容を表示します。
+
+[source,shell]
+----
+$ less hbase-simple.properties □
+----
+
+.hbase-simple.propertiesの内容（抜粋）
+[source,properties]
+----
+recordcount=1000000
+operationcount=5000000
+workload=com.yahoo.ycsb.workloads.CoreWorkload
+
+readallfields=false
+
+readproportion=0.50
+updateproportion=0.15
+scanproportion=0
+insertproportion=0.35
+
+requestdistribution=zipfian
+
+table=ycsb-test
+columnfamily=cf
+----
+
+- リクエストレートとワーカー？数の設定から、YCSBが生成する負荷
+  の大きさを、リクエスト/秒で表してください。以下の式で求められます。
+
+  * リクエスト/秒　＝　ワーカー毎のリクエスト/秒　×　ワーカー数
+
+- キーの生成について　*TODO*
+
+- *TODO*
+
+****
+答え：　
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-5. 結果の確認
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：　
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-6. キーに連番を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *順番に* 生成した時のリクエストの分散状況
+を確認しましょう。テストをスタートし、チェイン毎に処理したリクエスト数
+の増え方を、Web UIから観察します。
+
+[source,shell]
+----
+$ ycsb conf-ycsb/hbase-sequential.properties
+----
+
+キーの設定は以下のようになってます。
+
+.conf-ycsb/hbase-sequential.propertiesのキー設定
+[source,properties]
+----
+requestdistribution=xxxxxxxx // *TODO*
+----
+
+YCSBをスタートしたらすぐにHBaseのWeb UIを開きます。
+
+http:// ...
+
+●●●の数字を観察してください。どのように増えていきますか？
+
+
+****
+答え：　1. 全リージョンに均等に分散している　　2. 一部のリージョンに偏っている
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-7. キーにばらつきのある値を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *ランダムに* 生成した時のリクエストの分散
+状況を確認しましょう。テストをスタートし、チェイン毎に処理したリクエス
+ト数の増え方を、Web UIから観察します。
+
+[source,shell]
+----
+$ ycsb conf-ycsb/hbase-random.properties
+----
+
+キーの設定は以下のようになってます。
+
+.conf-ycsb/hbase-random.propertiesのキー設定
+[source,properties]
+----
+requestdistribution=xxxxxxxx // *TODO*
+----
+
+YCSBをスタートしたらすぐにHBaseのWeb UIを開きます。
+
+http:// ...
+
+●●●の数字を観察してください。どのように増えていきますか？
+
+****
+答え：　1. 全リージョンに均等に分散している　　2. 一部のリージョンに偏っている
+****
+===========================================================
+
+
+[caption="問題 "]
+.4-8. リージョンが分割されていく様子の観察
+===========================================================
+
+*TODO* +
+
+以下のコマンドで調べてください。
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：　
+****
+===========================================================
+
+
+=== HBaseの停止
+
+作業が終わったらHBaseを停止します。
+
+[source,shell]
+----
+$ sudo service hbase-master stop □
+stopping master....
+$ sudo service hbase-master status □
+HBase is not running.
+
+*TODO* HBaseのリセット
+
+----
+
+
+== 5. データ分散について：コンシステント・ハッシング
+
+HBaseの自動シャーディングとの比較のために、Hibariを使います。
+
+[caption="問題 "]
+.5-1. Hibariの起動
+===========================================================
+*TODO*
+
+===========================================================
+
+[caption="問題 "]
+.5-2. キーに連番を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *順番に* 生成した時のリクエストの分散状況
+を確認しましょう。テストをスタートし、チェイン毎に処理したリクエスト数
+の増え方を、Web UIから観察します。
+
+Basho Benchを実行します。このテストは２分後で自動停止します。
+
+[source,shell]
+----
+$ cd ~/hands-on □
+$ basho_bench conf-bb/hibari-sequential.config □
+----
+
+キーの設定は以下のようになってます。
+
+.conf-bb/hibari-sequential.configのキー設定
+[source,erlang]
+----
+{key_generator, {int_to_bin, {sequential_int, 1000000}}}.
+----
+
+Basho BenchをスタートしたらすぐにHibariのWeb UIを開きます。
+
+http://仮想サーバーのアドレス:23080/table?name=basho_bench_test_sequential
+
+Chainsの表の「Size」の数字を観察してください。どのように増えていきます
+か？
+
+
+****
+答え：　1. 全チェインに均等に分散している　　2. 一部のチェインに偏っている
+****
+===========================================================
+
+
+[caption="問題 "]
+.5-3. キーにばらつきのある値を使用した場合の分散状況
+===========================================================
+キーとして1〜100万まで数字を *ランダムに* 生成した時のリクエストの分散
+状況を確認しましょう。テストをスタートし、チェイン毎に処理したリクエス
+ト数の増え方を、Web UIから観察します。
+
+Basho Benchを実行します。このテストは２分後で自動停止します。
+
+[source,shell]
+----
+$ cd ~/hands-on □
+$ basho_bench conf-bb/hibari-random.config □
+----
+
+キーの設定は以下のようになってます。
+
+.conf-bb/hibari-random.configのキー設定
+[source,erlang]
+----
+{key_generator, {int_to_bin, {uniform_int, 1000000}}}.
+----
+
+Basho BenchをスタートしてすぐにHibariのWeb UIを開きます。
+
+http://仮想サーバーのアドレス:23080/table?name=basho_bench_test_random
+
+Chainsの表の「Size」の数字を観察してください。どのように増えていきます
+か？
+
+****
+答え：　1. 全チェインに均等に分散している　　2. 一部のチェインに偏っている
+****
+===========================================================
+
+
+== 7. ログ構造マージツリー（LSMTree）の特性
+
+[caption="問題 "]
+.7-1. 書き込みを繰り返した時の読み出し性能の劣化
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：
+****
+===========================================================
+
+
+[caption="問題 "]
+.7-2. メジャーコンパクション後の性能の回復
+===========================================================
+
+*TODO* +
+
+[source,shell]
+----
+$ *TODO* □
+----
+
+****
+答え：
+****
+===========================================================
+
+
+== 付録. 参考資料
+
+=== Apache HBase
+
+*TODO*
+
