@@ -447,9 +447,8 @@ Riak、Hibari向け
 </ul></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>また、別冊としてHBaseのハンズオン手順も用意しましたので、興味のある方
-は、後日、自習していただくことができます。もちろん、本日時間が余った場
-合もお試しいただけます。</p></div>
+<div class="paragraph"><p>また、別冊としてHBaseのハンズオン手順も用意しますので、自習にお役立て
+ください。（ <strong>後日公開予定</strong> ）</p></div>
 <div class="paragraph"><p><strong>NOSQL製品</strong></p></div>
 <div class="ulist"><ul>
 <li>
@@ -514,8 +513,9 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 </div>
 <h2 id="_2">2. 環境のセットアップ</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>ハンズオンの環境は仮想サーバーのディスクイメージとして用意されています。
-仮想サーバーの起動は勉強会運営メンバーの指示に従ってください。</p></div>
+<div class="paragraph"><p>9月28日のハンズオン環境は、仮想サーバーのディスクイメージとして用意さ
+れています。仮想サーバーの起動は勉強会運営メンバーの指示に従ってくださ
+い。</p></div>
 <div class="paragraph"><p>また自習のために、今回の環境を１から設定するための手順も用意します。
 詳細については以下の説明をご覧ください。（ <strong>後日公開予定</strong> ）</p></div>
 <div class="paragraph"><p><a href="https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md">https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md</a></p></div>
@@ -534,7 +534,7 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 </li>
 </ul></div>
 <div class="paragraph"><p>ログインに成功したら、パスワードを変更してください。これにより、他の受
-講生があなたのサーバーに間違ってログインしてしまうことを防げます。</p></div>
+講生があなたのサーバーに誤ってログインしてしまうことを防げます。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -545,8 +545,8 @@ http://www.gnu.org/software/src-highlite -->
 New password<span style="color: #990000">:</span> （新しいパスワード） □
 Retype new password<span style="color: #990000">:</span> （新しいパスワードを再入力） □</tt></pre></div></div>
 <h3 id="__3">製品のバージョン</h3><div style="clear:left"></div>
-<div class="paragraph"><p>仮想サーバーにはハンズオンで使用するNOSQLとツールがすでに導入されてい
-ます。各製品のバージョンは以下の通りです。</p></div>
+<div class="paragraph"><p>仮想サーバーにはハンズオンで使用するNOSQLと性能測定ツールがすでに導入
+されています。各製品のバージョンは以下の通りです。</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -672,7 +672,7 @@ Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
         ycsb/
 /opt/ ... *TODO*</tt></pre>
 </div></div>
-<h3 id="_linix">Linixシェルの便利な操作</h3><div style="clear:left"></div>
+<h3 id="_linix">Linixシェルのごく基本的な操作。</h3><div style="clear:left"></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -727,12 +727,17 @@ Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
 </li>
 <li>
 <p>
+ストレージエンジンを選択可能（Bitcask、LevelDBなど）
+</p>
+</li>
+<li>
+<p>
 豊富な機能
 </p>
 <div class="ulist"><ul>
 <li>
 <p>
-二次インデックス
+二次インデックス（ストレージエンジンがLevelDBの時のみ使用出来る）
 </p>
 </li>
 <li>
@@ -814,8 +819,8 @@ http://www.gnu.org/software/src-highlite -->
  valid      <span style="color: #993399">50.0</span><span style="color: #990000">%</span>      --      <span style="color: #FF0000">'riak2@127.0.0.1'</span>
  -------------------------------------------------------------------------------
  Valid<span style="color: #990000">:</span><span style="color: #993399">2</span> <span style="color: #990000">/</span> Leaving<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Exiting<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Joining<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Down<span style="color: #990000">:</span><span style="color: #993399">0</span></tt></pre></div></div>
-<div class="paragraph"><p>この例では「riak1」と「riak2」の２個のメンバーノードがあります。（ハン
-ズオン用の構成は、この例とは異なります）</p></div>
+<div class="paragraph"><p>「Node」の欄を見ると、この例では「riak1」と「riak2」の２個のメンバーノー
+ドがあることがわかります。（ハンズオン用の構成はこの例とは異なります）</p></div>
 </div></div>
 <h3 id="_riak_api">RiakのクライアントAPI</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Riakには３種類のクライアントAPIが用意されています。</p></div>
@@ -1070,12 +1075,12 @@ exception
 <div class="ulist"><ul>
 <li>
 <p>
-キー：　　　jeremy
+キー：　　　<strong>jeremy</strong>
 </p>
 </li>
 <li>
 <p>
-バリュー：　engineer
+バリュー：　<strong>engineer</strong>
 </p>
 </li>
 </ul></div>
@@ -1084,9 +1089,7 @@ exception
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% パーセントマークから改行まではコメントです</span></span>
-
-<span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューを作成</span></span>
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューを作成</span></span>
 <span style="color: #990000">&gt;</span> Je <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
 {riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,undefined,[],
            undefined,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}
@@ -1157,7 +1160,6 @@ http://www.gnu.org/software/src-highlite -->
 
 
 <span style="font-style: italic"><span style="color: #9A1900">%% メタデータにインデックス情報を追加します。</span></span>
-
 <span style="font-style: italic"><span style="color: #9A1900">%% age_intは年齢を整数型で表したもの。</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">%% state_binは居住している州をバイナリー型で表したもの。</span></span>
 <span style="color: #990000">&gt;</span> JeM2 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">dict:store</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"index"</span><span style="color: #990000">&gt;&gt;</span>, [{<span style="color: #FF0000">"age_int"</span>, <span style="color: #FF0000">"23"</span>}, {<span style="color: #FF0000">"state_bin"</span>, <span style="color: #FF0000">"CA"</span>}], JeM1)<span style="color: #990000">.</span> □
@@ -1247,9 +1249,6 @@ http://www.gnu.org/software/src-highlite -->
 {ok,[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>]}
 </tt></pre></div></div>
 </div></div>
-<div class="paragraph"><p><strong>TODO</strong>
-なおこの機能（二次インデックス）は、RiakのストレージエンジンにLevelDB
-を選択した時のみ利用できます。</p></div>
 <div class="exampleblock">
 <div class="title">3-9. キー・バリューの削除</div>
 <div class="exampleblock-content">
@@ -1265,7 +1264,7 @@ ok
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:delete</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
 ok</tt></pre></div></div>
 <div class="paragraph"><p>Riakでは存在しないキー・バリューに対する削除もエラーになりません。
-理由についてはHibariを試した後に説明します。</p></div>
+（その理由は整合性重視のHibariを試した後に説明します）</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1311,17 +1310,44 @@ Ringの状態
 </li>
 </ul></div>
 <h3 id="_riak_4">Riakのリング</h3><div style="clear:left"></div>
+<div class="paragraph"><p><a href="http://wiki.basho.com/What-is-Riak%3F.html">http://wiki.basho.com/What-is-Riak%3F.html</a></p></div>
 <div class="paragraph"><p><strong>TODO</strong>
 - リング
-- 仮想ノード
-- 物理ノード</p></div>
+- 仮想ノード（vnode）
+- 物理ノード（メンバーノード）</p></div>
 <h3 id="__5">やってみよう</h3><div style="clear:left"></div>
 <div class="exampleblock">
 <div class="title">4-1. リングサイズの確認</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p>このRiakクラスターには、いくつの <strong>仮想ノード（v-node）</strong> がありますか？　
-以下のコマンドで調べてください。<br /></p></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="paragraph"><p>このRiakクラスターのリングを確認しましょう。今回、以下のスクリプトを用
+意しました。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-ring-ossforum<span style="color: #990000">.</span>escript □</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">結果の例</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ring Size<span style="color: #990000">:</span> <span style="color: #993399">8</span>
+
+<span style="color: #990000">[</span>{<span style="color: #993399">1</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">5</span><span style="color: #990000">,</span><span style="color: #993399">730750818665451459101842416358141509827966271488</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">6</span><span style="color: #990000">,</span><span style="color: #993399">913438523331814323877303020447676887284957839360</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">7</span><span style="color: #990000">,</span><span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">8</span><span style="color: #990000">,</span><span style="color: #993399">1278813932664540053428224228626747642198940975104</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p>それぞれの行をRiakでは「仮想ノード（vnode）」と呼びます。
+左側の数字が仮想ノードの番号、真ん中がハッシュ値、右側の名前がRiakのメ
+ンバーノード名です。</p></div>
+<div class="paragraph"><p>「Ring Size」の欄にリングの大きさ（仮想ノードの数）が表示されています。
+仮想ノードはいくつありますか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え：　　　　　　　　個</p></div>
@@ -1341,7 +1367,9 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ riak-keyhash-ossforum<span style="color: #990000">.</span>escript employee key1 □
 employee/key<span style="color: #993399">1</span><span style="color: #990000">:</span> <span style="color: #993399">571163913345190032512049582966850509153338820326</span></tt></pre></div></div>
-<div class="paragraph"><p>同様に「key2」のハッシュ値を求めてください。</p></div>
+<div class="paragraph"><p>「571163913345190032512049582966850509153338820326」がハッシュ値です。</p></div>
+<div class="paragraph"><p>同様に「employee」バケットに「key2」を格納する際のハッシュ値を求めてく
+ださい。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1376,16 +1404,16 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>employee/key<span style="color: #993399">1</span><span style="color: #990000">:</span> <span style="color: #993399">571163913345190032512049582966850509153338820326</span>
 
 Targets<span style="color: #990000">:</span>
-<span style="color: #990000">[</span>{<span style="color: #993399">730750818665451459101842416358141509827966271488</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
- {<span style="color: #993399">913438523331814323877303020447676887284957839360</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
- {<span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">]</span>
+<span style="color: #990000">[</span>{<span style="color: #993399">5</span><span style="color: #990000">,</span><span style="color: #993399">730750818665451459101842416358141509827966271488</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">6</span><span style="color: #990000">,</span><span style="color: #993399">913438523331814323877303020447676887284957839360</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">7</span><span style="color: #990000">,</span><span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">]</span>
 
 Fallbacks<span style="color: #990000">:</span>
-<span style="color: #990000">[</span>{<span style="color: #993399">1278813932664540053428224228626747642198940975104</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
- {<span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
- {<span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
- {<span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
- {<span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
+<span style="color: #990000">[</span>{<span style="color: #993399">8</span><span style="color: #990000">,</span><span style="color: #993399">1278813932664540053428224228626747642198940975104</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">1</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
 <div class="paragraph"><p><strong>TODO</strong> TargetsとFallbacksの説明</p></div>
 <div class="paragraph"><p>Targetsはキー・バリューが格納される&#8230;
 複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。</p></div>
@@ -2007,15 +2035,6 @@ Web UIで調べてください。</p></div>
 <div class="paragraph"><p>答え：　　　　　　　　本</p></div>
 </div></div>
 </div></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="title">運用環境でのチェイン数について</div><strong>TODO</strong></td>
-</tr></table>
-</div>
 <h3 id="_hibari_api">HibariのクライアントAPI</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Hibariでは３種類のクライアントAPIが用意されています。</p></div>
 <div class="ulist"><ul>
@@ -2924,7 +2943,7 @@ $ basho_bench conf-bb/riak-random<span style="color: #990000">.</span>conf □
 <div id="footer">
 <div id="footer-text">
 Version v1.0-draft-3<br />
-Last updated 2012-09-26 17:24:49 JST
+Last updated 2012-09-27 07:47:50 JST
 </div>
 </div>
 </body>
