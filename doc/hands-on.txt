@@ -2,8 +2,8 @@
 
 :Author:      河野達也 Tatsuya_Kawano CloudianKK
 :Email:       tkawano@cloudian.com
-:Date:        2012年9月26日
-:Revision:    v1.0-draft-4
+:Date:        2012年9月28日
+:Revision:    v1.0-draft-5
 
 // この文書はAsciiDoc形式で記述されています。
 // HTML形式に変換するには以下のようにします。
@@ -119,7 +119,7 @@ Retype new password: （新しいパスワードを再入力） □
   * Hibari 0.1.9
 
 - *性能測定ツール*
-  * Basho Bench X.XXX
+  * Basho Bench 開発版（2012年9月10日版）
 
 - *Erlang実行環境*
   * Erlang/OTP -- R15B02
@@ -148,9 +148,6 @@ Retype new password: （新しいパスワードを再入力） □
             lib/
 
         hibari/
-        Public/
-            web/               ← Webサーバーで公開されます。Bascho Benchの結果が入ります
-
         riak/
         riak-client-erlang/
 ----
@@ -1695,6 +1692,7 @@ http://仮想サーバーのアドレス:23080/
 一見、できて当たり前と思える機能ですが、キー・バリューの全ての複製の整
 合性している必要があるため、整合性重視のNOSQLだけで実現できます。
 
+[source,erlang]
 ----
 %% caren/titleを新規に登録
 > brick_simple:add(employee, "caren/title", "engineer"). □
@@ -1729,7 +1727,7 @@ CAS操作（Check And Swap）を使うと、複数クライアントの同時更
 重視のNOSQLだけで実現できます。
 
 
-[source,shell]
+[source,erlang]
 ----
 %% クライアント１がログインカウンターを読み出し
 %% Ts1にはキー・バリューが最後に更新された時刻が入る
@@ -1814,14 +1812,15 @@ CassandraやHibariの設計を比較します。それぞれに長所と短所�
   * Amazon Dynamoの設計を参考にした
   * リングを仮想ノードで分割し、メンバーノードにランダムに配置
     ** メンバーノードの追加時のリバランスが自動的に行われる
-    ** 複製の配置が偏ることがある
+    ** 複製の配置が偏ることがある（１つのメンバーノードに２つの複製が
+       置かれることがある）
 
 - *Apache Cassandra*
   * 2008年に最初のリリース
   * データ分散はAmazon Dynamoを参考にし、データモデルはGoogle Bigtable
     を参考にした
   * リングをメンバーノードで分割
-    ** メンバーノード追加時後のリバランスが面倒
+    ** メンバーノード追加時後のリバランスが面倒（仮想ノードの概念がないため）
     ** 複製の配置が偏らない
 
 - *Hibari*
@@ -1830,6 +1829,8 @@ CassandraやHibariの設計を比較します。それぞれに長所と短所�
   * チェインレプリケーション論文を参考に設計
   * リングをチェインに分割して、メンバーノードにまたがって配置
     ** メンバーノードの追加時に手動でチェインを設定する
+    ** 複数のハッシュ区画を１つのチェインに割り当てられるため、リバラ
+       ンスが容易にできる
     ** 複製の配置が偏らない
 
 
@@ -1840,9 +1841,6 @@ Hibariと性能測定ツールのBasho Benchを用いて、データの分散状
 
 - チェインの確認
 - Basho Benchの使いかた
-- キーの採番方法とデータ分散の関係
-
-なお、RiakやCassandraもデータの分散に関しては近い特性を持ちます。
 
 
 [caption=""]
@@ -2055,10 +2053,22 @@ Basho Benchでは以下のようなバリューを生成できます。
 
 [source,shell]
 ----
-$ bb-summary-ossforum.sh □
-*TODO* まだスクリプトが準備できてません
-*TODO* 生成されたpingファイルを見る方法（Webブラウザーでアクセス）
+$ cd ~/hands-on
+$ $BASHO_BENCH_HOME/priv/summary.r -i tests/current/
+
 ----
+
+グラフはPNG形式の画像ファイルになります。WindowsシンクライアントのPSCP
+を使って、画像ファイルをダウンロードしましょう。
+
+.WindowsシンクライアントのDOSウィンドウ
+[source,shell]
+----
+$ pscp ossforum@仮想サーバーのIP:/home/ossforum/hands-on/tests/current/summary.png .
+
+----
+
+summary.pngがダウンロードできたら、ダブルクリックして開きます。
 
 このグラフを見て、Hibariは書き込み（set）と読み出し（get）のどちらが得
 意（高速）だと思いましたか？
@@ -2111,8 +2121,6 @@ deleted data on hibari1
 [source,shell]
 ----
 $ basho_bench conf-bb/riak-simple.config □
-$ basho_bench conf-bb/riak-sequential.config □
-$ basho_bench conf-bb/riak-random.conf □
 
 ----
 
