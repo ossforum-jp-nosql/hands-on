@@ -1,0 +1,2950 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.5" />
+<title>第２回　NOSQL実機ハンズオン（Riak、Hibari、HBase）</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revnumber, span#revdate, span#revremark {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+</head>
+<body>
+<div id="header">
+<h1>第２回　NOSQL実機ハンズオン（Riak、Hibari、HBase）</h1>
+<span id="author">河野達也 Tatsuya Kawano CloudianKK</span><br />
+<span id="email"><tt>&lt;<a href="mailto:tkawano@cloudian.com">tkawano@cloudian.com</a>&gt;</tt></span><br />
+<span id="revnumber">version v1.0-draft-3,</span>
+<span id="revdate">2012年9月26日</span>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p><strong>日本OSS推進フォーラム　若手技術者勉強会</strong></p></div>
+</div>
+</div>
+<h2 id="_">目次</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+</div>
+<h2 id="_1">1. ハンズオンの概要</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>このハンズオンは <strong>日本OSS推進フォーラム　第２回 若手技術者勉強会</strong>
+（2012年9月28日実施）のために作成されました。</p></div>
+<div class="paragraph"><p>ここでは、Linuxサーバーを１人１台使用して、異なる特性を持つ２つの分散
+型NOSQL製品と性能測定ツールを試します。</p></div>
+<div class="paragraph"><p><strong>NOSQL製品</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Basho Riak</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+可用性重視（AP）、コンシステントハッシング
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>Hibari</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+一貫性重視（CP）、コンシステントハッシング
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>性能測定ツール</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Basho Bench</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Riak、Hibari向け
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>また、別冊としてHBaseのハンズオン手順も用意しますので、自習にお役立て
+ください。（ <strong>後日公開予定</strong> ）</p></div>
+<div class="paragraph"><p><strong>NOSQL製品</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Apache HBase</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+一貫性重視（CP）、自動シャーディング
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>性能測定ツール</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Yahoo! Cloud Serving Benchmark (YCSB)</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+HBase向け
+</p>
+</li>
+<li>
+<p>
+Cassandra、MongoDB、Redisにも対応
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<h3 id="__2">ハンズオンの目的</h3><div style="clear:left"></div>
+<div class="paragraph"><p>ハンズオンを終えると以下のことができるようになります。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+NOSQLの２つ（または３つ）の製品について、ごく基本的な操作ができる
+</p>
+</li>
+<li>
+<p>
+性能測定ツールの基本操作ができる
+</p>
+</li>
+<li>
+<p>
+データの分散方法について、「コンシステント・ハッシング」と「自動シャー
+  ディング」の違いが説明できる
+</p>
+</li>
+<li>
+<p>
+CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP」のものにつ
+  いて、違いが説明できる
+</p>
+</li>
+</ul></div>
+</div>
+<h2 id="_2">2. 環境のセットアップ</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>9月28日のハンズオン環境は、仮想サーバーのディスクイメージとして用意さ
+れています。仮想サーバーの起動は勉強会運営メンバーの指示に従ってくださ
+い。</p></div>
+<div class="paragraph"><p>また自習のために、今回の環境を１から設定するための手順も用意します。
+詳細については以下の説明をご覧ください。（ <strong>後日公開予定</strong> ）</p></div>
+<div class="paragraph"><p><a href="https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md">https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md</a></p></div>
+<h3 id="_ssh">仮想サーバーにsshでログイン</h3><div style="clear:left"></div>
+<div class="paragraph"><p>PuTTYを立ち上げ、sshで接続します。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+ユーザー名： <strong>ossforum</strong>
+</p>
+</li>
+<li>
+<p>
+パスワード： <strong>nosql2</strong>
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>ログインに成功したら、パスワードを変更してください。これにより、他の受
+講生があなたのサーバーに誤ってログインしてしまうことを防げます。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ passwd □
+<span style="color: #990000">(</span>current<span style="color: #990000">)</span> UNIX password<span style="color: #990000">:</span> （現在のパスワード） □
+New password<span style="color: #990000">:</span> （新しいパスワード） □
+Retype new password<span style="color: #990000">:</span> （新しいパスワードを再入力） □</tt></pre></div></div>
+<h3 id="__3">製品のバージョン</h3><div style="clear:left"></div>
+<div class="paragraph"><p>仮想サーバーにはハンズオンで使用するNOSQLと性能測定ツールがすでに導入
+されています。各製品のバージョンは以下の通りです。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>NOSQL</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Basho Riak 1.2
+</p>
+</li>
+<li>
+<p>
+Hibari 0.1.9
+</p>
+</li>
+<li>
+<p>
+Apache HBase 0.92.1-cdh4.0.1
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Cloudera社のCDHディストリビューションを使用
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>性能測定ツール</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Basho Bench X.XXX
+</p>
+</li>
+<li>
+<p>
+YCSB X.XXX
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>Erlang、Java実行環境</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Erlang/OTP&#8201;&#8212;&#8201;R15B02
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Riak、Hibari、Basho Benchで使用
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Java&#8201;&#8212;&#8201;Oracle JDK 1.6 update 31
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+HBaseとYCSBで使用
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>基本ソフトウェア</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<h3 id="__4">ディレクトリ構成</h3><div style="clear:left"></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>/home/
+    ossforum/
+        basho_bench/
+        bin/
+        erlang/
+
+        hands-on/
+            README.md
+            bin/　　　          ← ハンズオンで使用するスクリプトが含まれている
+            conf-bb/           ← Basho Benchのワークロード設定ファイル
+            conf-ycsb/         ← YCSBのワークロード設定ファイル
+            docs/
+                hands-on.txt
+                hands-on.html  ← このドキュメント
+                setup.txt
+                setup.html     ← 環境を一からセットアップするときの手順
+            lib/
+            logs-hbase/        ← HBaseのログディレクトリ（シンボリックリンク）
+            results-bb/        ← Basho Benchの結果（シンボリックリンク）
+            results-ycsb/      ← YCSBの結果（シンボリックリンク）
+
+        hibari/
+
+        Public/
+            web/               ← Webサーバーで公開されます。Bascho Benchの結果が入ります
+
+        riak/
+        riak-client-erlang/
+        ycsb/
+/opt/ ... *TODO*</tt></pre>
+</div></div>
+<h3 id="_linix">Linixシェルのごく基本的な操作。</h3><div style="clear:left"></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="title">Linuxシェルでテキストファイルの内容を表示、編集する</div>スクリプトのようなテキストファイルの内容を表示するには、 <tt>less</tt> コマン
+ドを使用します。また、テキストファイルの内容を編集するには、 <tt>nano</tt> コ
+マンド（または vi、emacs）を使用します。ファイルの編集が終わったら、
+<tt>Control</tt> キーと <tt>x</tt> キーを同時に押して保存します。</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="title">Linuxシェルの履歴検索やコマンド補完</div>上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。また
+<tt>Control</tt> キーと <tt>r</tt> キーを同時に押すとコマンドの入力履歴を検索できま
+す。さらに、コマンドの入力途中で <tt>Tab</tt> キーを押すと、残りの部分が補完
+されます。</td>
+</tr></table>
+</div>
+</div>
+<h2 id="_3_basho_riak">3. Basho Riakの基本操作</h2>
+<div class="sectionbody">
+<h3 id="_riak">Riakの特徴</h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+コンシステント・ハッシングによるデータ分散
+</p>
+</li>
+<li>
+<p>
+可用性を優先（AP）
+</p>
+</li>
+<li>
+<p>
+キー・バリュー型
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>前回の訂正：</strong> 前回「ドキュメント型」と説明しましたが、「キー・バ
+    リュー型」に分類するのが適切なようです
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+ストレージエンジンを選択可能（Bitcask、LevelDBなど）
+</p>
+</li>
+<li>
+<p>
+豊富な機能
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+二次インデックス（ストレージエンジンがLevelDBの時のみ使用出来る）
+</p>
+</li>
+<li>
+<p>
+全文検索（日本語の検索が可能かは未確認）
+</p>
+</li>
+<li>
+<p>
+Map Reduce（JavaScript、Erlang）
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+高い安定性
+</p>
+</li>
+</ul></div>
+<h3 id="_riak_2">Riakの起動とクラスター構成の確認</h3><div style="clear:left"></div>
+<div class="paragraph"><p>今回は学習のために、１台のLinux仮想サーバー上で複数のRiakメンバーノー
+ドを動かします。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>TODO</strong> 構成図
+</p>
+</li>
+</ul></div>
+<div class="exampleblock">
+<div class="title">3-1. Riakの起動</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>今回用意したスクリプトを使ってRiakクラスターを起動します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># □で改行キーを押します</span></span>
+
+$ riak-start-ossforum<span style="color: #990000">.</span>sh □
+
+riak1 started
+riak2 started
+<span style="color: #990000">...</span>（略）
+
+
+<span style="font-style: italic"><span style="color: #9A1900"># 起動後の確認。pongと帰ってくればOK</span></span>
+
+$ riak-ping-ossforum<span style="color: #990000">.</span>sh □
+
+riak1 <span style="color: #990000">...</span> pong
+riak2 <span style="color: #990000">...</span> pong
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">3-2. クラスター構成の確認</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>このRiakクラスターには、いくつの <strong>メンバーノード</strong> がありますか？　以下
+のコマンドで調べましょう。</p></div>
+<div class="listingblock">
+<div class="title">コマンド</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-admin member-status □</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">サンプル出力</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt> <span style="color: #990000">=================================</span> Membership <span style="color: #990000">==================================</span>
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid      <span style="color: #993399">50.0</span><span style="color: #990000">%</span>      --      <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+ valid      <span style="color: #993399">50.0</span><span style="color: #990000">%</span>      --      <span style="color: #FF0000">'riak2@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+ Valid<span style="color: #990000">:</span><span style="color: #993399">2</span> <span style="color: #990000">/</span> Leaving<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Exiting<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Joining<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Down<span style="color: #990000">:</span><span style="color: #993399">0</span></tt></pre></div></div>
+<div class="paragraph"><p>「Node」の欄を見ると、この例では「riak1」と「riak2」の２個のメンバーノー
+ドがあることがわかります。（ハンズオン用の構成はこの例とは異なります）</p></div>
+</div></div>
+<h3 id="_riak_api">RiakのクライアントAPI</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Riakには３種類のクライアントAPIが用意されています。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Protocol Buffers</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Protocol BuffersはGoogle社が開発した異言語間の&#8230; <strong>TODO</strong>
+</p>
+</li>
+<li>
+<p>
+様々なプログラミング言語からアクセスできます
+</p>
+</li>
+<li>
+<p>
+Bashoによるオフィシャルなクライアント
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Erlang、Java、Python、Ruby
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+コミュニティが開発したクライアント
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+C++
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>HTTP REST</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+様々なプログラミング言語からアクセスできます
+</p>
+</li>
+<li>
+<p>
+<tt>curl</tt> コマンドや、ウェブブラウザーでアクセスできます
+</p>
+</li>
+<li>
+<p>
+Bashoによるオフィシャルなクライアント
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Erlang、Java、PHP、Python、Ruby
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+コミュニティが開発したクライアント
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+JavaScript
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>Erlangネイティブクライアント</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Erlang専用のクライアント
+</p>
+</li>
+<li>
+<p>
+Riak本体はErlangで書かれています
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>今回はプログラミング言語にはErlangを使用し、Protocol Buffersで接続しま
+す。他の言語でも基本的な操作方法は変わりませんので、後日、お気に入りの
+言語で試してみてもいいでしょう。</p></div>
+<h3 id="_riak_3">Riakのデータモデル</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+バケット（バケツ）
+</p>
+</li>
+<li>
+<p>
+キー
+</p>
+</li>
+<li>
+<p>
+バリュー
+</p>
+</li>
+<li>
+<p>
+メタデータ
+</p>
+</li>
+<li>
+<p>
+二次インデックス
+</p>
+</li>
+</ul></div>
+<h3 id="_protocol_buffers_erlang">Protocol Buffersでアクセス（Erlang）</h3><div style="clear:left"></div>
+<div class="exampleblock">
+<div class="title">3-3. バケットの作成</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>最初にバケットを作りましょう。バケットは一般的なデータベースのテーブル
+にあたります。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>$ riak-create-buckets-ossforum.escript □
+
+Created {&lt;&lt;"b1"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {&lt;&lt;"employee"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {&lt;&lt;"basho_bench_test"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}</tt></pre>
+</div></div>
+</div></div>
+<div class="paragraph"><p>３つのバケットが作られました。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>n_val</tt> はキー・バリューの複製（レプリカ）の数
+</p>
+</li>
+<li>
+<p>
+`r`　は読み出し時に応答が必要なノード数
+</p>
+</li>
+<li>
+<p>
+`w`　は書き込み時に応答が必要なノード数
+</p>
+</li>
+<li>
+<p>
+`dw`　は書き込み時にディスクへの書き込みまで行う必要のあるノード数
+</p>
+</li>
+</ul></div>
+<div class="exampleblock">
+<div class="title">3-4. Riakに接続</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>RiakへProtocol Buffersで接続しましょう。</p></div>
+<div class="paragraph"><p>まず、Erlangのシェルを立ち上げます。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ erl-riak-ossforum<span style="color: #990000">.</span>sh □
+
+Erlang R15B02 <span style="color: #990000">(</span>erts-<span style="color: #993399">5.9</span><span style="color: #990000">.</span><span style="color: #993399">2</span><span style="color: #990000">)</span> <span style="color: #990000">[</span><span style="font-weight: bold"><span style="color: #0000FF">source</span></span><span style="color: #990000">]</span> <span style="color: #990000">[</span><span style="color: #993399">64</span>-bit<span style="color: #990000">]</span> <span style="color: #990000">[</span>smp<span style="color: #990000">:</span><span style="color: #993399">4</span><span style="color: #990000">:</span><span style="color: #993399">4</span><span style="color: #990000">]</span> <span style="color: #990000">[</span>async-threads<span style="color: #990000">:</span><span style="color: #993399">0</span><span style="color: #990000">]</span> <span style="color: #990000">[</span>hipe<span style="color: #990000">]</span> <span style="color: #990000">[</span>kernel-poll<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">]</span>
+
+Eshell V5<span style="color: #990000">.</span><span style="color: #993399">9.2</span>  <span style="color: #990000">(</span>abort with <span style="color: #990000">^</span>G<span style="color: #990000">)</span>
+<span style="color: #993399">1</span><span style="color: #990000">&gt;</span>
+</tt></pre></div></div>
+<div class="paragraph"><p>Erlangシェルのプロンプト「1&gt;」は、以下、「&gt;」で示します。</p></div>
+<div class="paragraph"><p>次に、Riakに接続します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> {ok, Conn} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:start</span></span>(<span style="color: #FF0000">"127.0.0.1"</span>, <span style="color: #993399">8091</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #990000">&lt;</span><span style="color: #993399">0.33</span><span style="color: #990000">.</span><span style="color: #993399">0</span><span style="color: #990000">&gt;</span>}</tt></pre></div></div>
+<div class="paragraph"><p>デフォルトのポート番号は8087ですが、今回は１台の仮想サーバーに複数のメ
+ンバーノードを稼働させるために設定を変更してあります。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+各メンバーノードのProtocol Buffersポート
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+riak1: 8091
+</p>
+</li>
+<li>
+<p>
+riak2: 8092
+</p>
+</li>
+<li>
+<p>
+riak3: 8093
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>TODO</strong> Erlangのエラーについて説明
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+exception
+</p>
+</li>
+<li>
+<p>
+変数のリセット
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="exampleblock">
+<div class="title">3-5. キー・バリューを格納</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>「employee（社員）」というバケットに、１つ目のキー・バリューを格納しま
+しょう。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+キー：　　　<strong>jeremy</strong>
+</p>
+</li>
+<li>
+<p>
+バリュー：　<strong>engineer</strong>
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューを作成</span></span>
+<span style="color: #990000">&gt;</span> Je <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+{riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,undefined,[],
+           undefined,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% Riakに書き込み</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, Je)<span style="color: #990000">.</span> □
+ok
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">3-6. キーを指定してキー・バリューを取り出し</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>キーを指定してキー・バリューを取り出します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+{ok,{riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,
+               <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">107</span>,<span style="color: #993399">206</span>,<span style="color: #993399">97</span>,<span style="color: #993399">96</span>,<span style="color: #993399">96</span>,<span style="color: #993399">96</span>,<span style="color: #993399">204</span>,<span style="color: #993399">96</span>,<span style="color: #993399">202</span>,<span style="color: #993399">5</span>,<span style="color: #993399">82</span>,<span style="color: #993399">28</span>,<span style="color: #993399">7</span>,<span style="color: #993399">47</span>,<span style="color: #993399">197</span>,<span style="color: #993399">115</span>,<span style="color: #993399">6</span>,
+                 <span style="color: #993399">36</span>,<span style="color: #993399">181</span>,<span style="color: #993399">50</span>,<span style="color: #993399">100</span>,<span style="color: #993399">48</span>,<span style="color: #993399">37</span>,<span style="color: #990000">...&gt;&gt;</span>,
+               [{{dict,<span style="color: #993399">2</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+                       {[],[],[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>},
+                       {{[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>}}},
+                 <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}],
+               undefined,undefined}}
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーが存在しないときは「notfound」になります。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"gary"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+{error,notfound}</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">3-7. インデックス付きの、キー・バリューを格納</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>後で検索できるよう、インデックス（索引）に「age_int（年齢、整数型）」
+と「state_bin（居住している州、バイナリー型）」を登録します。</p></div>
+<div class="paragraph"><p><strong>TODO</strong> メタデータの説明。カラムにインデックスを定義するのではなく、などなど</p></div>
+<div class="paragraph"><p>先ほど作成したキー・バリューに索引情報を追加しましょう。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% Riakからキー・バリューを取り出します。</span></span>
+<span style="color: #990000">&gt;</span> {ok, Je1} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+{ok,{riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,
+               <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">107</span>,<span style="color: #993399">206</span>,<span style="color: #993399">97</span>,<span style="color: #993399">96</span>,<span style="color: #993399">96</span>,<span style="color: #993399">96</span>,<span style="color: #993399">204</span>,<span style="color: #993399">96</span>,<span style="color: #993399">202</span>,<span style="color: #993399">5</span>,<span style="color: #993399">82</span>,<span style="color: #993399">28</span>,<span style="color: #993399">7</span>,<span style="color: #993399">47</span>,<span style="color: #993399">197</span>,<span style="color: #993399">115</span>,<span style="color: #993399">6</span>,
+                 <span style="color: #993399">36</span>,<span style="color: #993399">181</span>,<span style="color: #993399">50</span>,<span style="color: #993399">100</span>,<span style="color: #993399">48</span>,<span style="color: #993399">37</span>,<span style="color: #990000">...&gt;&gt;</span>,
+               [{{dict,<span style="color: #993399">2</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+                       {[],[],[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>},
+                       {{[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>}}},
+                 <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}],
+               undefined,undefined}}
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューに付いているメタデータを取り出します。</span></span>
+<span style="color: #990000">&gt;</span> JeM1 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:get_metadata</span></span>(Je1)<span style="color: #990000">.</span> □
+{dict,<span style="color: #993399">2</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+      {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+      {{[],[],[],[],[],[],[],[],[],[],
+        [[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"X-Riak-VTag"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">49</span>,<span style="color: #993399">55</span>,<span style="color: #993399">99</span>,<span style="color: #993399">104</span>,<span style="color: #993399">99</span>,<span style="color: #993399">105</span>|<span style="color: #990000">...</span>]],
+        [],[],
+        [[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"X-Riak-Last-"</span><span style="color: #990000">...&gt;&gt;</span>|{<span style="color: #993399">1348</span>,<span style="color: #993399">634022</span>,<span style="color: #990000">...</span>}]],
+        [],[]}}}
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% メタデータにインデックス情報を追加します。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% age_intは年齢を整数型で表したもの。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% state_binは居住している州をバイナリー型で表したもの。</span></span>
+<span style="color: #990000">&gt;</span> JeM2 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">dict:store</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"index"</span><span style="color: #990000">&gt;&gt;</span>, [{<span style="color: #FF0000">"age_int"</span>, <span style="color: #FF0000">"23"</span>}, {<span style="color: #FF0000">"state_bin"</span>, <span style="color: #FF0000">"CA"</span>}], JeM1)<span style="color: #990000">.</span> □
+{dict,<span style="color: #993399">3</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+      {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+      {{[],[],[],[],[],[],[],[],[],[],
+        [[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"X-Riak-VTag"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">49</span>,<span style="color: #993399">55</span>,<span style="color: #993399">99</span>,<span style="color: #993399">104</span>,<span style="color: #993399">99</span>,<span style="color: #993399">105</span>|<span style="color: #990000">...</span>]],
+        [[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"index"</span><span style="color: #990000">&gt;&gt;</span>,{<span style="color: #FF0000">"age_int"</span>,<span style="color: #FF0000">"23"</span>},{<span style="color: #FF0000">"state_bin"</span>,<span style="color: #FF0000">"CA"</span>}]],
+        [],
+        [[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"X-Riak-Last-"</span><span style="color: #990000">...&gt;&gt;</span>|{<span style="color: #993399">1348</span>,<span style="color: #993399">634022</span>,<span style="color: #990000">...</span>}]],
+        [],[]}}}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューのメタデータを新しいものに置き換えます。</span></span>
+<span style="color: #990000">&gt;</span> Je2 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:update_metadata</span></span>(Je1, JeM2)<span style="color: #990000">.</span> □
+{riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,
+           <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">107</span>,<span style="color: #993399">206</span>,<span style="color: #993399">97</span>,<span style="color: #993399">96</span>,<span style="color: #993399">96</span>,<span style="color: #993399">96</span>,<span style="color: #993399">204</span>,<span style="color: #993399">96</span>,<span style="color: #993399">202</span>,<span style="color: #993399">5</span>,<span style="color: #993399">82</span>,<span style="color: #993399">28</span>,<span style="color: #993399">7</span>,<span style="color: #993399">47</span>,<span style="color: #993399">197</span>,<span style="color: #993399">115</span>,<span style="color: #993399">6</span>,
+             <span style="color: #993399">36</span>,<span style="color: #993399">181</span>,<span style="color: #993399">50</span>,<span style="color: #993399">100</span>,<span style="color: #993399">48</span>,<span style="color: #993399">37</span>,<span style="color: #993399">50</span>,<span style="color: #993399">230</span>,<span style="color: #990000">...&gt;&gt;</span>,
+           [{{dict,<span style="color: #993399">2</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+                   {[],[],[],[],[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>},
+                   {{[],[],[],[],[],[],[],[],[],[],[[<span style="color: #990000">...</span>]],[],<span style="color: #990000">...</span>}}},
+             <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}],
+           {dict,<span style="color: #993399">3</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+                 {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>},
+                 {{[],[],[],[],[],[],[],[],[],[],
+                   [[<span style="color: #990000">&lt;&lt;...&gt;&gt;</span>|<span style="color: #990000">...</span>]],
+                   [[<span style="color: #990000">...</span>]],
+                   [],<span style="color: #990000">...</span>}}},
+           undefined}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% Riakに書き込みます（Je2の方を書き込みます）</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, Je2)<span style="color: #990000">.</span> □
+ok
+</tt></pre></div></div>
+<div class="paragraph"><p>２つ目のキー・バリューを格納します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> He1 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+{riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>,undefined,[],
+           undefined,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>}
+
+<span style="color: #990000">&gt;</span> HeM1 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">dict:store</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"index"</span><span style="color: #990000">&gt;&gt;</span>, [{<span style="color: #FF0000">"age_int"</span>, <span style="color: #FF0000">"29"</span>}, {<span style="color: #FF0000">"state_bin"</span>, <span style="color: #FF0000">"CA"</span>}], <span style="font-weight: bold"><span style="color: #000000">dict:new</span></span>())<span style="color: #990000">.</span> □
+{dict,<span style="color: #993399">1</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+      {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+      {{[],[],[],[],[],[],[],[],[],[],[],
+        [[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"index"</span><span style="color: #990000">&gt;&gt;</span>,{<span style="color: #FF0000">"age_int"</span>,<span style="color: #FF0000">"29"</span>},{<span style="color: #FF0000">"state_bin"</span>,<span style="color: #FF0000">"CA"</span>}]],
+        [],[],[],[]}}}
+
+<span style="color: #990000">&gt;</span> He2 <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:update_metadata</span></span>(He1, HeM1)<span style="color: #990000">.</span> □
+{riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>,undefined,[],
+           {dict,<span style="color: #993399">1</span>,<span style="color: #993399">16</span>,<span style="color: #993399">16</span>,<span style="color: #993399">8</span>,<span style="color: #993399">80</span>,<span style="color: #993399">48</span>,
+                 {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],<span style="color: #990000">...</span>},
+                 {{[],[],[],[],[],[],[],[],[],[],[],[[<span style="color: #990000">...</span>]],[],<span style="color: #990000">...</span>}}},
+           <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>}
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, He2)<span style="color: #990000">.</span> □
+ok</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">3-8. インデックスを用いた検索</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>インデックス情報を用いてキー・バリューを検索しましょう。 <tt>get_index</tt>
+では指定した条件に合致するキー・バリューを見つけて、一連のキーを返しま
+す。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% employeeバケットの中で、state_binが「CA」のもの</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get_index</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #FF0000">"state_bin"</span>, <span style="color: #FF0000">"CA"</span>)<span style="color: #990000">.</span> □
+{ok,[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>]}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% employeeバケットの中で、state_binが「NY」のもの</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% 該当するキー・バリューがない場合は、空のリストが返されます</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get_index</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #FF0000">"state_bin"</span>, <span style="color: #FF0000">"NY"</span>)<span style="color: #990000">.</span> □
+{ok,[]}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% employeeバケットの中で、age_intが「23」のもの</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get_index</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #FF0000">"age_int"</span>, <span style="color: #FF0000">"23"</span>)<span style="color: #990000">.</span> □
+{ok,[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>]}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% employeeバケットの中で、age_intが「20」以上、「29」以下のもの</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get_index</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #FF0000">"age_int"</span>, <span style="color: #FF0000">"20"</span>, <span style="color: #FF0000">"29"</span>)<span style="color: #990000">.</span> □
+{ok,[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>]}
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">3-9. キー・バリューの削除</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>キー・バリューを削除しましょう。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:delete</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+ok
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:delete</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+ok</tt></pre></div></div>
+<div class="paragraph"><p>Riakでは存在しないキー・バリューに対する削除もエラーになりません。
+（その理由は整合性重視のHibariを試した後に説明します）</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューが存在しない時もエラーになりません！</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:delete</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"gary"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span>
+ok</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">3-10. Erlangシェルの終了</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>q()コマンド（quitコマンド）でErlangシェルを終了します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> q()<span style="color: #990000">.</span>
+ok
+<span style="color: #990000">&gt;</span>
+$</tt></pre></div></div>
+</div></div>
+</div>
+<h2 id="_4">4. データ分散について：コンシステント・ハッシング</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Riakを用いてコンシステント・ハッシングの基本を確認します。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Ringの状態
+</p>
+</li>
+<li>
+<p>
+キーとハッシュ関数
+</p>
+</li>
+<li>
+<p>
+メンバーノードの追加とデータの偏り
+</p>
+</li>
+</ul></div>
+<h3 id="_riak_4">Riakのリング</h3><div style="clear:left"></div>
+<div class="paragraph"><p><a href="http://wiki.basho.com/What-is-Riak%3F.html">http://wiki.basho.com/What-is-Riak%3F.html</a></p></div>
+<div class="paragraph"><p><strong>TODO</strong>
+- リング
+- 仮想ノード（vnode）
+- 物理ノード（メンバーノード）</p></div>
+<h3 id="__5">やってみよう</h3><div style="clear:left"></div>
+<div class="exampleblock">
+<div class="title">4-1. リングサイズの確認</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>このRiakクラスターのリングを確認しましょう。今回、以下のスクリプトを用
+意しました。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-ring-ossforum<span style="color: #990000">.</span>escript □</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">結果の例</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ring Size<span style="color: #990000">:</span> <span style="color: #993399">8</span>
+
+<span style="color: #990000">[</span>{<span style="color: #993399">1</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">5</span><span style="color: #990000">,</span><span style="color: #993399">730750818665451459101842416358141509827966271488</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">6</span><span style="color: #990000">,</span><span style="color: #993399">913438523331814323877303020447676887284957839360</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">7</span><span style="color: #990000">,</span><span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">8</span><span style="color: #990000">,</span><span style="color: #993399">1278813932664540053428224228626747642198940975104</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p>それぞれの行をRiakでは「仮想ノード（vnode）」と呼びます。
+左側の数字が仮想ノードの番号、真ん中がハッシュ値、右側の名前がRiakのメ
+ンバーノード名です。</p></div>
+<div class="paragraph"><p>「Ring Size」の欄にリングの大きさ（仮想ノードの数）が表示されています。
+仮想ノードはいくつありますか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　　　　　　　　個</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-2. バケット名とキーからハッシュ値を算出</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Riakではバケット名とキーからハッシュ値を算出します。今回、そのハッシュ
+値をRiakクラスターに問い合わせるスクリプトを用意しました。</p></div>
+<div class="paragraph"><p>このスクリプトを使って「employee」バケットにキー「key1」を格納する際の
+ハッシュ値を求めてください。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-keyhash-ossforum<span style="color: #990000">.</span>escript employee key1 □
+employee/key<span style="color: #993399">1</span><span style="color: #990000">:</span> <span style="color: #993399">571163913345190032512049582966850509153338820326</span></tt></pre></div></div>
+<div class="paragraph"><p>「571163913345190032512049582966850509153338820326」がハッシュ値です。</p></div>
+<div class="paragraph"><p>同様に「employee」バケットに「key2」を格納する際のハッシュ値を求めてく
+ださい。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-keyhash-ossforum<span style="color: #990000">.</span>escript employee key2 □
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>この２つのキーはとてもよく似ています。生成された２つのハッシュ値は似て
+いますか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え： 1. 似ている　　2. 全く異なる</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-3. キーを格納するノードを算出</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>データがどのノードに格納されるか調べましょう。今回、以下のスクリプトを
+用意しました。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-preflist-ossforum<span style="color: #990000">.</span>escript employee key1 □</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">結果の例</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>employee/key<span style="color: #993399">1</span><span style="color: #990000">:</span> <span style="color: #993399">571163913345190032512049582966850509153338820326</span>
+
+Targets<span style="color: #990000">:</span>
+<span style="color: #990000">[</span>{<span style="color: #993399">5</span><span style="color: #990000">,</span><span style="color: #993399">730750818665451459101842416358141509827966271488</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">6</span><span style="color: #990000">,</span><span style="color: #993399">913438523331814323877303020447676887284957839360</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">7</span><span style="color: #990000">,</span><span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">]</span>
+
+Fallbacks<span style="color: #990000">:</span>
+<span style="color: #990000">[</span>{<span style="color: #993399">8</span><span style="color: #990000">,</span><span style="color: #993399">1278813932664540053428224228626747642198940975104</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">1</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p><strong>TODO</strong> TargetsとFallbacksの説明</p></div>
+<div class="paragraph"><p>Targetsはキー・バリューが格納される&#8230;
+複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。</p></div>
+<div class="paragraph"><p>同様に「key2」の場合も調べて下さい。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-preflist-ossforum<span style="color: #990000">.</span>escript employee key2 □</tt></pre></div></div>
+<div class="paragraph"><p>注意：メンバーノードには「<a href="mailto:riakN@127.0.0.1">riakN@127.0.0.1</a> 」のような名前がついています。
+（Nは数字）　riakNの形で答えてください。</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：</p></div>
+<div class="paragraph"><p>employee key1　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
+<div class="paragraph"><p>employee key2　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-4. ２つ以上の複製が１つのメンバーノードに格納されるケース</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Riakではそれぞれの仮想ノードがメンバーノードにランダムに割り当てられま
+す。その結果、データの３つの複製が２つのメンバーノードにしか格納されな
+いことがあります。その場合、一方のメンバーノードには１つの複製が格納さ
+れ、もう一方のメンバーノードには２つの複製が格納されます。</p></div>
+<div class="paragraph"><p>キーを自由に変えて、そのようなケースが起こることを確認してください。</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>バケット　　キー　　　　　　　　ノード</p></div>
+<div class="paragraph"><p>b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
+<div class="paragraph"><p>b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-5. ２つ以上の複製を１つのメンバーノードに置かない方法</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>仮にあなたがRiakクラスターを自由に設計できる立場にいたとしたら、やってみよう
+2-5のケースをどうやって <strong>起こりにくく</strong> しますか？　あなたは以下の要素
+を決めることができます。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+データの複製の数
+</p>
+</li>
+<li>
+<p>
+メンバーノードの数（サーバーの台数）
+</p>
+</li>
+<li>
+<p>
+リングのサイズ（仮想ノードの数）
+</p>
+</li>
+<li>
+<p>
+バケットの名前やキー
+</p>
+</li>
+</ul></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-6. メンバーノードの追加とデータのリバランス（再配置）</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバーノードを追加
+したり、取り除いたりできます。現在のクラスターにメンバーノードを追加し
+ましょう。</p></div>
+<div class="paragraph"><p><strong>TODO</strong>
+まず現在のリングの状態を確認しましょう。&#8230; メモ帳に保存しておきます。</p></div>
+<div class="paragraph"><p>新しいノード「riak4」を起動しましょう。riak4/bin/riakコマンドを使いま
+す。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak start □
+
+$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak ping □
+pong</tt></pre></div></div>
+<div class="paragraph"><p>riak4/bin/riak-adminの「cluster join」コマンドを使い、riak1に向かって
+既存のクラスターへの参加要求を送ります。（参加要求を送る先はクラスター
+のメンバーノードならどれでも構いません。riak2やriak3でも大丈夫です）</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak-admin cluster join riak1@<span style="color: #993399">127.0</span><span style="color: #990000">.</span><span style="color: #993399">0.1</span> □
+Success<span style="color: #990000">:</span> staged join request <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #FF0000">'riak4@127.0.0.1'</span> to <span style="color: #FF0000">'riak1@127.0.0.1'</span></tt></pre></div></div>
+<div class="paragraph"><p>参加要求がステージングされました。この時点では、まだクラスターの構成は
+変更されていません。「cluster plan」コマンドを使って、現在の構成と、変
+更後の構成を確認します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak-admin cluster plan □</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">結果の例</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt> <span style="color: #990000">===============================</span> Staged Changes <span style="color: #990000">================================</span>
+ Action         Nodes<span style="color: #990000">(</span>s<span style="color: #990000">)</span>
+ -------------------------------------------------------------------------------
+ join           <span style="color: #FF0000">'riak4@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+
+
+ NOTE<span style="color: #990000">:</span> Applying these changes will result <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> <span style="color: #993399">1</span> cluster transition
+
+ <span style="font-style: italic"><span style="color: #9A1900">###############################################################################</span></span>
+                          After cluster transition <span style="color: #993399">1</span><span style="color: #990000">/</span><span style="color: #993399">1</span>
+ <span style="font-style: italic"><span style="color: #9A1900">###############################################################################</span></span>
+
+ <span style="color: #990000">=================================</span> Membership <span style="color: #990000">==================================</span>
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid      <span style="color: #993399">50.0</span><span style="color: #990000">%</span>     <span style="color: #993399">25.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+ valid      <span style="color: #993399">25.0</span><span style="color: #990000">%</span>     <span style="color: #993399">25.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak2@127.0.0.1'</span>
+ valid      <span style="color: #993399">25.0</span><span style="color: #990000">%</span>     <span style="color: #993399">25.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak3@127.0.0.1'</span>
+ valid       <span style="color: #993399">0.0</span><span style="color: #990000">%</span>     <span style="color: #993399">25.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak4@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+ Valid<span style="color: #990000">:</span><span style="color: #993399">4</span> <span style="color: #990000">/</span> Leaving<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Exiting<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Joining<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Down<span style="color: #990000">:</span><span style="color: #993399">0</span>
+
+ Transfers resulting from cluster changes<span style="color: #990000">:</span> <span style="color: #993399">2</span>
+   <span style="color: #993399">2</span> transfers from <span style="color: #FF0000">'riak1@127.0.0.1'</span> to <span style="color: #FF0000">'riak4@127.0.0.1'</span></tt></pre></div></div>
+<div class="paragraph"><p>「Membership」の表の「Ring」に現在の状態が、「Pending」に変更後の状態
+が表示されています。</p></div>
+<div class="paragraph"><p>「cluster commit」コマンドで、クラスターの構成変更を実行します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak-admin cluster commit □
+Cluster changes committed
+</tt></pre></div></div>
+<div class="paragraph"><p>仮想ノードの分散状況を確認します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-admin member-status □</tt></pre></div></div>
+<div class="paragraph"><p>【質問】Ringの割合は各ノードで均等になっていますか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え： 1. なっている　　2. なっていない</p></div>
+</div></div>
+<div class="paragraph"><p><strong>TODO</strong>
+変更後のリングの状態を確認しましょう。&#8230; メモ帳に保存した変更前の</p></div>
+<div class="paragraph"><p>【質問】
+- Ring上の仮想ノードの数は変わりましたか？　などなど</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え： 1. 変わった（増えた）　　2. 変わった（減った）　　3. 変わらない</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-7. メンバーノードの削除</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>今度はriak4をクラスターから取り除きましょう。</p></div>
+<div class="paragraph"><p>riak4/bin/riak-adminの「cluster leave」コマンドを使い、クラスターから
+の離脱要求を出します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak-admin cluster leave □
+Success<span style="color: #990000">:</span> staged leave request <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #FF0000">'riak4@127.0.0.1'</span></tt></pre></div></div>
+<div class="paragraph"><p>メンバーノードの追加の時と同様に、構成変更の内容を確認し、実行します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak-admin cluster plan □
+
+ <span style="color: #990000">===============================</span> Staged Changes <span style="color: #990000">================================</span>
+ Action         Nodes<span style="color: #990000">(</span>s<span style="color: #990000">)</span>
+ -------------------------------------------------------------------------------
+ leave          <span style="color: #FF0000">'riak4@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+
+ <span style="color: #990000">...</span>（略）
+
+
+$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak-admin cluster commit □
+Cluster changes committed
+</tt></pre></div></div>
+<div class="paragraph"><p>仮想ノードの分散状況を確認します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-admin member-status □
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>riak4が停止していることを確認します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak ping □
+Node <span style="color: #FF0000">'riak4@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">4-8. Riakの停止</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>作業が終わったらRiakを停止します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-stop-ossforum<span style="color: #990000">.</span>sh □
+ok
+ok
+<span style="color: #990000">...</span>（略）
+riak2 stopped
+riak1 stopped
+
+$ riak-ping-ossforum<span style="color: #990000">.</span>sh □
+riak1 <span style="color: #990000">...</span> Node <span style="color: #FF0000">'riak1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+node riak1 ping failed
+riak2 <span style="color: #990000">...</span> Node <span style="color: #FF0000">'riak2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+node riak2 ping failed
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="title">リングのサイズについて</div>今回はリングについて理解しやすいよう、リングサイズを小さく設定していま
+す。しかし、この設定ではデータの偏りが起こりやすくなってしまいます。
+Riakを業務で使用する際は、この値を大きく（数十〜数百に）設定してくださ
+い。</td>
+</tr></table>
+</div>
+</div>
+<h2 id="_5_ap_nosql">5. 可用性重視（AP）のNOSQLの挙動</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
+ノードを１つ停止して、読み出しと書き込みの動作を調べます。</p></div>
+<div class="paragraph"><p><strong>TODO</strong> Quorum や Consistency Level
+<strong>TODO</strong> Hinted Hand-offとリードリペア</p></div>
+<div class="exampleblock">
+<div class="title">5-1. Riakの初期化</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Riakの環境を初期化しましょう。この操作により今までRiakに保存したデータ
+は全て削除されます。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>（Riakの停止。すでに停止しているのでエラーになります）
+$ riak-stop-ossforum<span style="color: #990000">.</span>sh □
+Node <span style="color: #FF0000">'riak1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+Node <span style="color: #FF0000">'riak2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+<span style="color: #990000">...</span>（略）
+node riak1 stop failed
+node riak2 stop failed
+<span style="color: #990000">...</span>（略<span style="color: #990000">)</span>
+
+（Riakのデータを全て削除します）
+$ riak-reset-ossforum<span style="color: #990000">.</span>sh □
+deleted data on riak1
+deleted data on riak2
+<span style="color: #990000">...</span>（略<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>Riakを起動します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-start-ossforum<span style="color: #990000">.</span>sh □
+riak1 started
+riak2 started
+<span style="color: #990000">...</span>（略）
+
+$ riak-ping-ossforum<span style="color: #990000">.</span>sh □
+riak1 <span style="color: #990000">...</span> pong
+riak2 <span style="color: #990000">...</span> pong
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>Riakクラスターを組み直します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-build-cluster<span style="color: #990000">.</span>sh □
+
+ Success<span style="color: #990000">:</span> staged join request <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #FF0000">'riak2@127.0.0.1'</span> to <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+ Success<span style="color: #990000">:</span> staged join request <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #FF0000">'riak3@127.0.0.1'</span> to <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+ <span style="color: #990000">===============================</span> Staged Changes <span style="color: #990000">================================</span>
+ Action         Nodes<span style="color: #990000">(</span>s<span style="color: #990000">)</span>
+ -------------------------------------------------------------------------------
+ join           <span style="color: #FF0000">'riak2@127.0.0.1'</span>
+ join           <span style="color: #FF0000">'riak3@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+
+
+ NOTE<span style="color: #990000">:</span> Applying these changes will result <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> <span style="color: #993399">1</span> cluster transition
+
+ <span style="font-style: italic"><span style="color: #9A1900">###############################################################################</span></span>
+                         After cluster transition <span style="color: #993399">1</span><span style="color: #990000">/</span><span style="color: #993399">1</span>
+ <span style="font-style: italic"><span style="color: #9A1900">###############################################################################</span></span>
+
+ <span style="color: #990000">=================================</span> Membership <span style="color: #990000">==================================</span>
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid     <span style="color: #993399">100.0</span><span style="color: #990000">%</span>     <span style="color: #993399">50.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+ valid       <span style="color: #993399">0.0</span><span style="color: #990000">%</span>     <span style="color: #993399">25.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak2@127.0.0.1'</span>
+ valid       <span style="color: #993399">0.0</span><span style="color: #990000">%</span>     <span style="color: #993399">25.0</span><span style="color: #990000">%</span>    <span style="color: #FF0000">'riak3@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+ Valid<span style="color: #990000">:</span><span style="color: #993399">3</span> <span style="color: #990000">/</span> Leaving<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Exiting<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Joining<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Down<span style="color: #990000">:</span><span style="color: #993399">0</span>
+
+ WARNING<span style="color: #990000">:</span> Not all replicas will be on distinct nodes
+
+ Transfers resulting from cluster changes<span style="color: #990000">:</span> <span style="color: #993399">4</span>
+   <span style="color: #993399">2</span> transfers from <span style="color: #FF0000">'riak1@127.0.0.1'</span> to <span style="color: #FF0000">'riak3@127.0.0.1'</span>
+   <span style="color: #993399">2</span> transfers from <span style="color: #FF0000">'riak1@127.0.0.1'</span> to <span style="color: #FF0000">'riak2@127.0.0.1'</span>
+
+ Cluster changes committed
+ <span style="color: #990000">=================================</span> Membership <span style="color: #990000">==================================</span>
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid      <span style="color: #993399">50.0</span><span style="color: #990000">%</span>      --      <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+ valid      <span style="color: #993399">25.0</span><span style="color: #990000">%</span>      --      <span style="color: #FF0000">'riak2@127.0.0.1'</span>
+ valid      <span style="color: #993399">25.0</span><span style="color: #990000">%</span>      --      <span style="color: #FF0000">'riak3@127.0.0.1'</span>
+ -------------------------------------------------------------------------------
+ Valid<span style="color: #990000">:</span><span style="color: #993399">3</span> <span style="color: #990000">/</span> Leaving<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Exiting<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Joining<span style="color: #990000">:</span><span style="color: #993399">0</span> <span style="color: #990000">/</span> Down<span style="color: #990000">:</span><span style="color: #993399">0</span></tt></pre></div></div>
+<div class="paragraph"><p>バケットを作成します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-create-buckets-ossforum<span style="color: #990000">.</span>escript □
+Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"b1"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
+Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
+Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"basho_bench_test"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">5-2. １ノードダウン時の読み出し操作</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>メンバーノードの１つが停止しているときの読み出しの挙動を確認しましょう。
+まず、全ノードが稼働している状態で書き込みを行い、次に、メンバーノード
+の１つを停止します。</p></div>
+<div class="paragraph"><p>sshターミナルのウィンドウを２つ開いてください。一方はErlangシェル、も
+う一方はLinuxシェル（bash）を動かしましょう。</p></div>
+<div class="paragraph"><p>２つのウィンドウを開いたら、以下のコマンドを実行します。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ erl<span style="font-weight: bold"><span style="color: #000080">-riak-ossforum</span></span><span style="color: #990000">.</span>sh □
+
+<span style="color: #990000">&gt;</span> {ok, Conn} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:start</span></span>(<span style="color: #FF0000">"127.0.0.1"</span>, <span style="color: #993399">8091</span>)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> Ann <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"disigner"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+
+<span style="font-style: italic"><span style="color: #9A1900">%% W = allで書き込みます</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, Ann, [{w, all}])<span style="color: #990000">.</span> □
+</tt></pre></div></div>
+<div class="paragraph"><p>オブジェクトを書き込んだらメンバーノードの１つを停止しましょう。まず
+キー・バリューがどのノードに書き込まれたか調べます。</p></div>
+<div class="listingblock">
+<div class="title">bash用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-preflist-ossforum<span style="color: #990000">.</span>escript employee ann □
+Targets<span style="color: #990000">:</span>
+<span style="color: #990000">[</span>{<span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">1278813932664540053428224228626747642198940975104</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
+ {<span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span>
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>該当するメンバーノードを停止します。ただしriak1を停止することは避けて
+ください（本環境ではriak1を使ってriak-adminコマンドを動かしているため、
+riak1を停止するとriak-adminコマンドが使えなくなります）</p></div>
+<div class="listingblock">
+<div class="title">bash用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>（例：riak3を止める場合）
+$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">3</span>/bin/riak stop □
+$ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">3</span>/bin/riak ping □
+Node <span style="color: #FF0000">'riak3@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+
+
+<span style="color: #990000">%%</span> Ringステータスを確認します。
+
+$ riak-admin ring-status □
+<span style="color: #990000">==================================</span> Claimant <span style="color: #990000">===================================</span>
+Claimant<span style="color: #990000">:</span>  <span style="color: #FF0000">'riak1@127.0.0.1'</span>
+Status<span style="color: #990000">:</span>     up
+Ring Ready<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span>
+
+<span style="color: #990000">==============================</span> Ownership Handoff <span style="color: #990000">==============================</span>
+No pending changes<span style="color: #990000">.</span>
+
+<span style="color: #990000">==============================</span> Unreachable Nodes <span style="color: #990000">==============================</span>
+The following nodes are unreachable<span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">'riak3@127.0.0.1'</span><span style="color: #990000">]</span>
+
+WARNING<span style="color: #990000">:</span> The cluster state will not converge <span style="font-weight: bold"><span style="color: #0000FF">until</span></span> all nodes
+<span style="color: #990000">...</span>（略）
+</tt></pre></div></div>
+<div class="paragraph"><p>「Unreachable Nodes」（音信不通のノード）に停止したノード（例：
+riak3）が表示されることを確認します。</p></div>
+<div class="paragraph"><p>R = allで読み出しを試みます。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann"</span><span style="color: #990000">&gt;&gt;</span>, [{r, all}])<span style="color: #990000">.</span>
+<span style="color: #990000">...</span>（略）
+</tt></pre></div></div>
+<div class="paragraph"><p>もう一度、R = allで読み出しを試みます。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann"</span><span style="color: #990000">&gt;&gt;</span>, [{r, all}])<span style="color: #990000">.</span>
+<span style="color: #990000">...</span>（略）
+</tt></pre></div></div>
+<div class="paragraph"><p>２回の読み出しは成功しましたか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：<br />
+１回目　　1. 成功　　　2. 失敗<br />
+２回目　　1. 成功　　　2. 失敗</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">5-3. １ノードダウン時の書き込み操作</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>メンバーノードの１つが停止したまま書き込みの挙動を確認しましょう。</p></div>
+<div class="paragraph"><p>W = allで書き込みを試みます。もし書き込みに失敗した場合は
+「●●●●」が返されます。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> Bob <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"bob"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"sales"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+
+<span style="font-style: italic"><span style="color: #9A1900">%% W = allで書き込みます</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, Bob, [{w, all}])<span style="color: #990000">.</span> □
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>書き込みは成功しましたか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え： W = all　　　　1. 成功　　　2. 失敗</p></div>
+</div></div>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="title">Cassandraでの書き込み</div>CassandraではW = allの時に書き込みが失敗します。</td>
+</tr></table>
+</div>
+<div class="exampleblock">
+<div class="title">5-4. Riakの停止</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>作業が終わったらRiakを停止します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-stop-ossforum<span style="color: #990000">.</span>sh □
+ok
+ok
+<span style="color: #990000">...</span>（略）
+riak2 stopped
+riak1 stopped
+
+$ riak-ping-ossforum<span style="color: #990000">.</span>sh □
+riak1 <span style="color: #990000">...</span> Node <span style="color: #FF0000">'riak1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+node riak1 ping failed
+riak2 <span style="color: #990000">...</span> Node <span style="color: #FF0000">'riak2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+node riak2 ping failed
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+</div></div>
+</div>
+<h2 id="_6_hibari">6. Hibariの基本操作</h2>
+<div class="sectionbody">
+<h3 id="_hibari">Hibariの特徴</h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+コンシステント・ハッシングによるデータ分散
+</p>
+</li>
+<li>
+<p>
+整合性を優先（CP）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+チェインレプリケーションによる高速性
+</p>
+</li>
+<li>
+<p>
+マイクロトランザクション、CAS操作
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+キー・バリュー型
+</p>
+</li>
+<li>
+<p>
+軽快な動作と高い安定性
+</p>
+</li>
+</ul></div>
+<h3 id="_hibari_2">Hibariのデータモデル</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<h3 id="_hibari_3">Hibariの起動とクラスター構成の確認</h3><div style="clear:left"></div>
+<div class="paragraph"><p>今回は学習のために、１台のLinux仮想サーバー上で複数のHibariメンバーノー
+ド（「ブリックサーバー」と呼びます）を動かします。（構成図）</p></div>
+<div class="exampleblock">
+<div class="title">6-1. Hibariの起動</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>今回用意したスクリプトを使ってHibariクラスターを起動します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-start-ossforum<span style="color: #990000">.</span>sh □
+hibari1 started
+hibari2 started
+<span style="color: #990000">...</span>（略）
+
+$ hibari-ping-ossforum<span style="color: #990000">.</span>sh □
+hibari1 <span style="color: #990000">...</span> pong
+hibari2 <span style="color: #990000">...</span> pong
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-2. テーブルの作成</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
+ok
+ok
+Table employee created
+ok
+Table basho_bench_test_simple created
+ok
+Table basho_bench_test_sequential created
+ok
+Table basho_bench_test_random created</tt></pre></div></div>
+<div class="paragraph"><p>このスクリプトにより４つのテーブルが作られました。</p></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-3. クラスター構成の確認</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>このHibariクラスターには、いくつの <strong>ブリックサーバー</strong> が使われていますか？　
+Web UIで調べてください。</p></div>
+<div class="paragraph"><p><a href="http://仮想サーバーのアドレス:23080/">http://仮想サーバーのアドレス:23080/</a></p></div>
+<div class="paragraph"><p>ページの下の方にある「Nodes」と書かれた表を見ます。</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　　　　　　　　個</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-4. チェインの確認</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>このHibariクラスターのテーブル「 <strong>basho_bench_test_simple</strong> 」には、何
+本の <strong>チェイン</strong> がありますか？　Web UIで調べてください。</p></div>
+<div class="paragraph"><p><a href="http://仮想サーバーのアドレス:23080/table?name=basho_bench_test_simple">http://仮想サーバーのアドレス:23080/table?name=basho_bench_test_simple</a></p></div>
+<div class="paragraph"><p>Chainsの表の「Name」の欄を見てください。「basho_bench_test_simple_ch1」
+の「&#8230;_ch1」を見ると、１からいくつまでありますか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　　　　　　　　本</p></div>
+</div></div>
+</div></div>
+<h3 id="_hibari_api">HibariのクライアントAPI</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Hibariでは３種類のクライアントAPIが用意されています。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Erlangネイティブクライアント</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+プログラミング言語「Erlang」専用のクライアント
+</p>
+</li>
+<li>
+<p>
+Hibari本体はErlangで書かれています
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>Thrift</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+様々なプログラミング言語からアクセスできる
+</p>
+</li>
+<li>
+<p>
+現状、一部の機能しか利用できない
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>JSON-RPC</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+様々なプログラミング言語からアクセスできる
+</p>
+</li>
+<li>
+<p>
+現状、一部の機能しか利用できない
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>今回はErlangネイティブクライアントを使用します。</p></div>
+<h3 id="_erlang">Erlangネイティブクライアントでアクセス</h3><div style="clear:left"></div>
+<div class="exampleblock">
+<div class="title">6-5. Hibariに接続</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ erl-hibari-ossforum<span style="color: #990000">.</span>sh □
+
+Erlang R15B02 <span style="color: #990000">(</span>erts-<span style="color: #993399">5.9</span><span style="color: #990000">.</span><span style="color: #993399">2</span><span style="color: #990000">)</span> <span style="color: #990000">[</span><span style="font-weight: bold"><span style="color: #0000FF">source</span></span><span style="color: #990000">]</span> <span style="color: #990000">[</span><span style="color: #993399">64</span>-bit<span style="color: #990000">]</span> <span style="color: #990000">[</span>smp<span style="color: #990000">:</span><span style="color: #993399">4</span><span style="color: #990000">:</span><span style="color: #993399">4</span><span style="color: #990000">]</span> <span style="color: #990000">[</span>async-threads<span style="color: #990000">:</span><span style="color: #993399">0</span><span style="color: #990000">]</span> <span style="color: #990000">[</span>hipe<span style="color: #990000">]</span> <span style="color: #990000">[</span>kernel-poll<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">]</span>
+
+Eshell V5<span style="color: #990000">.</span><span style="color: #993399">9.2</span>  <span style="color: #990000">(</span>abort with <span style="color: #990000">^</span>G<span style="color: #990000">)</span>
+<span style="color: #990000">(</span>hibari_client@<span style="color: #993399">127.0</span><span style="color: #990000">.</span><span style="color: #993399">0.1</span><span style="color: #990000">)</span><span style="color: #993399">1</span><span style="color: #990000">&gt;</span>
+</tt></pre></div></div>
+</div></div>
+<div class="paragraph"><p>以下、プロンプト「(<a href="mailto:hibari_client@127.0.0.1">hibari_client@127.0.0.1</a>)1&gt;」は「&gt;」で示します。</p></div>
+<div class="exampleblock">
+<div class="title">6-6. キーバリューの書き込み</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% Hibariに接続</span></span>
+
+<span style="color: #990000">&gt;</span> AdminNode <span style="color: #990000">=</span> <span style="color: #FF0000">'hibari1@127.0.0.1'</span><span style="color: #990000">.</span> □
+<span style="color: #FF0000">'hibari1@127.0.0.1'</span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:connect</span></span>(AdminNode)<span style="color: #990000">.</span> □
+<span style="color: #990000">...</span>（略）
+ok<span style="color: #990000">.</span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:wait_for_tables</span></span>(AdminNode, [employee])<span style="color: #990000">.</span> □
+ok<span style="color: #990000">.</span>
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/title、バリュー："engineer"</span></span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+ok
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/age、バリュー：23（符号なし８ビット整数）</span></span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/age"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">23</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+ok
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/age、バリュー："CA"</span></span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/state"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+ok</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-7. キー・バリューの読み出し</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/title"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348490264725016</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}
+
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"gary/title"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-8. メタデータ付きの、キーバリューを書き込み</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-9. 複数のキー・バリューをアトミックに書き込み</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>同一テーブルの同一チェイン上なら、複数のキー・バリューをアトミックに追
+加できます。この場合は、すべての操作が成功するか、あるいは、すべての操
+作が実行されないか、のどちらかになります。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> Ops <span style="color: #990000">=</span> [<span style="font-weight: bold"><span style="color: #000000">brick_server:make_txn</span></span>(),
+         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>),
+         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,   <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>),
+         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>)]<span style="color: #990000">.</span> □
+
+[txn,
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]}]
+
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:do</span></span>(employee, Ops)<span style="color: #990000">.</span> □
+[ok,ok,ok]
+
+<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> トランザクションが失敗する例を追加する
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-10. キーの区切り文字とレンジスキャン</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p><strong>TODO</strong> employee テーブルではキーの区切り文字として「/」が使われていることを解説する</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% binary_prefixを指定することで、キーがhelenaで始まるものだけを読み出します。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% キーは辞書順にソートされて格納されています。</span></span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #993399">10</span>, [{<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
+{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+       [{val<span style="color: #990000">_</span>len,<span style="color: #993399">1</span>}]},
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+       [{val<span style="color: #990000">_</span>len,<span style="color: #993399">2</span>}]},
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+       [{val<span style="color: #990000">_</span>len,<span style="color: #993399">9</span>}]}],
+     <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>}}
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーだけを取り出すこともできます。Hibariではキーとメタデータはメモ</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% リー上に常駐していますのでディスクアクセスなしで結果を得られます。</span></span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #993399">10</span>, [witness, {<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
+{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>},
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>},
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>}],
+     <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>}}
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-11. キー・バリューの削除</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-12. Erlangシェルの終了</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>q()コマンド（quitコマンド）でErlangシェルを終了します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> q()<span style="color: #990000">.</span>
+ok
+<span style="color: #990000">&gt;</span>
+$</tt></pre></div></div>
+</div></div>
+</div>
+<h2 id="_7_cp_nosql">7. 整合性重視（CP）のNOSQLの挙動</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
+クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。</p></div>
+<div class="exampleblock">
+<div class="title">7-1. Hibariの初期化</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Hibariの環境を初期化しましょう。この操作により今までHibariに保存したデー
+タは全て削除されます。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>（Hibariの停止。すでに停止しているのでエラーになります）
+$ hibari-stop-ossforum<span style="color: #990000">.</span>sh □
+Node <span style="color: #FF0000">'hibari1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+Node <span style="color: #FF0000">'hibari2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+<span style="color: #990000">...</span>（略）
+node hibari1 stop failed
+node hibari2 stop failed
+<span style="color: #990000">...</span>（略<span style="color: #990000">)</span>
+
+（Hibariのデータを全て削除します）
+$ riak-reset-ossforum<span style="color: #990000">.</span>sh □
+deleted data on hibari1
+deleted data on hibari2
+<span style="color: #990000">...</span>（略<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>Hibariを起動します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-start-ossforum<span style="color: #990000">.</span>sh □
+hibari1 started
+hibari2 started
+<span style="color: #990000">...</span>（略）
+
+$ hibari-ping-ossforum<span style="color: #990000">.</span>sh □
+hibari1 <span style="color: #990000">...</span> pong
+hibari2 <span style="color: #990000">...</span> pong
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>テーブルを再作成します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
+$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
+ok
+ok
+Table basho_bench_test_simple created
+ok
+Table basho_bench_test_sequential created
+ok
+Table basho_bench_test_random created</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">7-2. １ノードダウン時の読み出し操作</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
+う。まず、全ノードが稼働している状態で書き込みを行い、次に、ブリックサー
+バーの１つを停止します。</p></div>
+<div class="paragraph"><p>sshターミナルのウィンドウを２つ開いてください。一方はErlangシェル、も
+う一方はLinuxシェル（bash）を動かしましょう。</p></div>
+<div class="paragraph"><p>２つのウィンドウを開いたら、以下のコマンドを実行します。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ erl<span style="font-weight: bold"><span style="color: #000080">-hibari-ossforum</span></span><span style="color: #990000">.</span>sh □
+<span style="color: #990000">&gt;</span> AdminNode <span style="color: #990000">=</span> <span style="color: #FF0000">'hibari1@127.0.0.1'</span><span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:connect</span></span>(AdminNode)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:wait_for_tables</span></span>(AdminNode, [employee])<span style="color: #990000">.</span> □
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納</span></span>
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"designer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+</tt></pre></div></div>
+<div class="paragraph"><p>キー・バリューを書き込んだらブリックサーバーの１つを停止します。</p></div>
+<div class="listingblock">
+<div class="title">bash用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #009900">$HIBARI_HOME</span>/rel/hibari<span style="color: #993399">3</span>/bin/hibari stop □
+$ <span style="color: #009900">$HIBARI_HOME</span>/rel/hibari<span style="color: #993399">3</span>/bin/hibari ping □
+Node <span style="color: #FF0000">'hibari3@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span></tt></pre></div></div>
+<div class="paragraph"><p>Web UIでチェインの状態が「degrated」になっていることを確認してください。</p></div>
+<div class="paragraph"><p><a href="http://仮想サーバーのアドレス:23080/">http://仮想サーバーのアドレス:23080/</a></p></div>
+<div class="paragraph"><p>●●の欄を見ます。</p></div>
+<div class="paragraph"><p>読み出を試みます。もし読み出しに失敗した場合は「brick_not_available」
+が返されます。なおHibariでは読み出しはR＝1に固定されています。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann/title"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
+<div class="paragraph"><p>読み出しは成功しましたか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　　1. 成功　　　2. 失敗</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">7-3. １ノードダウン時の書き込み操作</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>ブリックサーバーの１つが停止したまま書き込みの挙動を確認しましょう。</p></div>
+<div class="paragraph"><p>書き込みを試みます。もし書き込みに失敗した場合は「brick_not_available」
+が返されます。</p></div>
+<div class="listingblock">
+<div class="title">Erlangシェル用ウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"bob/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"sales"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
+<div class="paragraph"><p>書き込みは成功しましたか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　　　　1. 成功　　　2. 失敗</p></div>
+</div></div>
+</div></div>
+</div>
+<h2 id="_8_cp_nosql">8. 整合性重視（CP）のNOSQLが得意とする操作</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">8-1. CAS操作</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p><strong>TODO</strong><br /></p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> □</tt></pre></div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">8-2. Hibariのマイクロトランザクション</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p><strong>TODO</strong><br /></p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ <span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> □</tt></pre></div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：</p></div>
+</div></div>
+</div></div>
+</div>
+<h2 id="_9_riak_cassandra_hibari">9. 講義：データ分散について、Riak、Cassandra、Hibariを比較</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>データ分散についてRiakと同様にコンシステント・ハッシングを採用した
+CassandraやHibariの設計を比較します。それぞれに長所と短所があります。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>Basho Riak</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+2009年に最初のリリース
+</p>
+</li>
+<li>
+<p>
+Amazon Dynamoの設計を参考にした
+</p>
+</li>
+<li>
+<p>
+リングを仮想ノードで分割し、メンバーノードにランダムに配置
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+メンバーノードの追加時のリバランスが自動的に行われる
+</p>
+</li>
+<li>
+<p>
+複製の配置が偏ることがある
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>Apache Cassandra</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+2008年に最初のリリース
+</p>
+</li>
+<li>
+<p>
+データ分散はAmazon Dynamoを参考にし、データモデルはGoogle Bigtable
+    を参考にした
+</p>
+</li>
+<li>
+<p>
+リングをメンバーノードで分割
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+メンバーノード追加時後のリバランスが面倒
+</p>
+</li>
+<li>
+<p>
+複製の配置が偏らない
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>Hibari</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+2004年ごろから開発開始。50ノード超の商用利用を経て2010年にオープン
+    ソース化
+</p>
+</li>
+<li>
+<p>
+チェインレプリケーション論文を参考に設計
+</p>
+</li>
+<li>
+<p>
+リングをチェインに分割して、メンバーノードにまたがって配置
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+メンバーノードの追加時に手動でチェインを設定する
+</p>
+</li>
+<li>
+<p>
+複製の配置が偏らない
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</div>
+<h2 id="_10">10. 性能測定ツールの使用</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Hibariと性能測定ツールのBasho Benchを用いて、データの分散状況を観察し
+ます。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+チェインの確認
+</p>
+</li>
+<li>
+<p>
+Basho Benchの使いかた
+</p>
+</li>
+<li>
+<p>
+キーの採番方法とデータ分散の関係
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>なお、RiakやCassandraもデータの分散に関しては近い特性を持ちます。</p></div>
+<div class="exampleblock">
+<div class="title">10-1. Basho Benchの実行</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Basho Benchを実行しましょう。以下のコマンドを入力します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ cd <span style="color: #990000">~</span>/hands-on □
+$ basho_bench conf-bb/hibari-simple<span style="color: #990000">.</span>config □
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>debug<span style="color: #990000">]</span> Lager installed handler lager_console_backend into lager_event
+<span style="color: #990000">...</span>（省略）
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Starting <span style="color: #993399">100.0</span> ms/req fixed rate worker<span style="color: #990000">:</span> <span style="color: #990000">&lt;</span> <span style="color: #990000">...</span> <span style="color: #990000">&gt;</span>
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Starting <span style="color: #993399">100.0</span> ms/req fixed rate worker<span style="color: #990000">:</span> <span style="color: #990000">&lt;</span> <span style="color: #990000">...</span> <span style="color: #990000">&gt;</span>
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Starting <span style="color: #993399">100.0</span> ms/req fixed rate worker<span style="color: #990000">:</span> <span style="color: #990000">&lt;</span> <span style="color: #990000">...</span> <span style="color: #990000">&gt;</span>
+<span style="color: #990000">...</span>（省略）
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Application basho_bench started on node <span style="color: #FF0000">'basho_bench@127.0.0.1'</span>
+<span style="color: #990000">...</span>（省略）
+
+<span style="color: #990000">...</span>（１分後）
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Total Errors<span style="color: #990000">:</span>
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span>   {{put<span style="color: #990000">,</span>put}<span style="color: #990000">,</span>{txn_fail<span style="color: #990000">,[</span>{<span style="color: #993399">0</span><span style="color: #990000">,</span>brick_not_available}<span style="color: #990000">]</span>}}<span style="color: #990000">:</span> <span style="color: #993399">1</span>
+（または）
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> No Errors<span style="color: #990000">.</span>
+
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Application basho_bench exited with reason<span style="color: #990000">:</span> stopped
+hh<span style="color: #990000">:</span>mm<span style="color: #990000">:</span>ss<span style="color: #990000">.</span>sss <span style="color: #990000">[</span>info<span style="color: #990000">]</span> Test completed after <span style="color: #993399">1</span> mins<span style="color: #990000">.</span></tt></pre></div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+実行が終わると「Test completed」が出力されます。
+</p>
+</li>
+<li>
+<p>
+実行を途中でキャンセルするなら、<tt>Control</tt> + <tt>c</tt> を押し、プロンプトに
+  対して <tt>a</tt> を答えます。
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>ワークロード（負荷）の設定ファイルの内容を確認しましょう。
+<tt>less</tt> コマンドで「hibari-simple.config」ファイルの内容を表示します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ less hibari-simple<span style="color: #990000">.</span>config □</tt></pre></div></div>
+<div class="paragraph"><p>hibari-simple.configの内容（抜粋）</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">*</span>TODO<span style="color: #990000">*</span>
+
+{mode, {rate, <span style="color: #993399">8</span>}}<span style="color: #990000">.</span>
+{duration, <span style="color: #993399">15</span>}<span style="color: #990000">.</span>
+{concurrent, <span style="color: #993399">100</span>}<span style="color: #990000">.</span>
+{key<span style="color: #990000">_</span>generator, {int<span style="color: #990000">_</span>to<span style="color: #990000">_</span>bin, {uniform<span style="color: #990000">_</span>int, <span style="color: #993399">99000</span>}}}<span style="color: #990000">.</span>
+{value<span style="color: #990000">_</span>generator, {fixed<span style="color: #990000">_</span>bin, <span style="color: #993399">1000</span>}}<span style="color: #990000">.</span>
+{operations, [{<span style="font-weight: bold"><span style="color: #0000FF">get</span></span>,<span style="color: #993399">4</span>}, {<span style="font-weight: bold"><span style="color: #0000FF">put</span></span>,<span style="color: #993399">4</span>}, {delete, <span style="color: #993399">1</span>}]}<span style="color: #990000">.</span></tt></pre></div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+リクエストレートとワーカー？数の設定から、Basho Benchが生成する負荷
+  の大きさを、リクエスト/秒で表してください。以下の式で求められます。
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+リクエスト/秒　＝　ワーカー毎のリクエスト/秒　×　ワーカー数
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+キーについて <strong>TODO</strong>
+</p>
+</li>
+<li>
+<p>
+オペレーションについて <strong>TODO</strong>
+</p>
+</li>
+</ul></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　</p></div>
+</div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">補足 Basho Benchのキー設定</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Basho Benchでは以下のようなキーの分散設定ができます。</p></div>
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>{sequential_int, MaxKey}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+generates integers from 0..MaxKey in order and then stops the
+    system. Note that each instance of this keygen is specific to a
+    worker.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{partitioned_sequential_int, MaxKey}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+    worker processes. This is useful for pre-loading a large dataset.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{partitioned_sequential_int, StartKey, NumKeys}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+same as partitioned_sequential_int, but starting at the defined
+    StartKey and going up to StartKey + NumKeys.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{uniform_int, MaxKey}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+selects an integer from uniform distribution of
+    0..MaxKey. I.e. all integers are equally probable.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{pareto_int, MaxKey}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+selects an integer from a Pareto distribution, such that 20% of
+    the available keys get selected 80% of the time. Note that the
+    current implementation of this generator MAY yield values larger
+    than MaxKey due to the mathematical properties of the Pareto
+    distribution.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{truncated_pareto_int, MaxKey}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{function, Module, Function, Args}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+specifies an external function that should return a key generator
+    function. The worker Id will be prepended to Args when the
+    function is called.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{int_to_bin, Generator}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+takes any of the above _int generators and converts the number to
+    a 32-bit binary. This is needed for some drivers that require a
+    binary key.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{int_to_str, Generator}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+takes any of the above _int generators and converts the number to
+    a string. This is needed for some drivers that require a string
+    key.
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">補足 Basho Benchのバリュー設定</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Basho Benchでは以下のようなバリューを生成できます。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<strong>{fixed_bin, Size}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+generates a random binary of Size bytes. Every binary is the same
+    size, but varies in content.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{exponential_bin, MinSize, Mean}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+generates a random binary which has an exponentially-distributed
+    size. Most values will be approximately MinSize + Mean bytes in
+    size, with a long-tail of larger values.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{uniform_bin, MinSize, MaxSize}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+generates a random binary which has an evenly-distributed size
+    between MinSize and MaxSize.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<strong>{function, Module, Function, Args}</strong>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+specifies an external function that should return a value
+    generator function. The worker Id will be prepended to Args when
+    the function is called.
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">10-2. グラフのプロット（R言語）と結果の確認</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>実行結果をグラフにプロットしてみましょう。Basho_Benchには統計解析プロ
+グラミング言語の <strong>R言語</strong> で書かれたスクリプトが付属していますので、そ
+れを利用してグラフを生成しましょう。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ bb-summary-ossforum<span style="color: #990000">.</span>sh □
+<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> まだスクリプトが準備できてません
+<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> 生成されたpingファイルを見る方法（Webブラウザーでアクセス）</tt></pre></div></div>
+<div class="paragraph"><p>このグラフを見て、Hibariは書き込み（set）と読み出し（get）のどちらが得
+意（高速）だと思いましたか？</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え：　
+1. 書き込み（set）　　2. 読み出し（get）</p></div>
+</div></div>
+</div></div>
+<div class="ulist NOTE"><div class="title">RiakやCassandraの特性</div><ul>
+<li>
+<p>
+Cassandraは書き込みのほうが読み出しより高速です。
+</p>
+</li>
+<li>
+<p>
+Riakは使用するストレージエンジンによって特性が異なります。
+</p>
+</li>
+</ul></div>
+<div class="exampleblock">
+<div class="title">10-3. Hibariの停止</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>作業が終わったらHibariを停止します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-stop-ossforum<span style="color: #990000">.</span>sh □
+ok
+ok
+<span style="color: #990000">...</span>（略）
+hibari2 stopped
+hibari1 stopped
+
+$ hibari-ping-ossforum<span style="color: #990000">.</span>sh □
+hibari1 <span style="color: #990000">...</span> Node <span style="color: #FF0000">'hibari1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+node hibari1 ping failed
+hibari2 <span style="color: #990000">...</span> Node <span style="color: #FF0000">'hibari2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+node hibari2 ping failed
+<span style="color: #990000">...</span>（略）
+
+$ hibari-reset-ossforum<span style="color: #990000">.</span>sh □
+<span style="color: #990000">...</span>（略）
+deleted data on hibari2
+deleted data on hibari1
+</tt></pre></div></div>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="title">時間が余ったら</div>もし時間が余ったら、Basho BenchでRiakの性能も測ってみてください。</td>
+</tr></table>
+</div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ basho_bench conf-bb/riak-simple<span style="color: #990000">.</span>config □
+$ basho_bench conf-bb/riak-sequential<span style="color: #990000">.</span>config □
+$ basho_bench conf-bb/riak-random<span style="color: #990000">.</span>conf □
+</tt></pre></div></div>
+</div>
+<h2 id="_11">11. 講義：コンシステントハッシングと自動シャーディングの優劣</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+データの分散（分布）の均一性
+</p>
+</li>
+<li>
+<p>
+レンジスキャンの可否
+</p>
+</li>
+</ul></div>
+</div>
+<h2 id="_12">12. 後片付け</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<h3 id="__6">仮想サーバーの停止、削除</h3><div style="clear:left"></div>
+</div>
+<h2 id="__7">付録. 参考資料</h2>
+<div class="sectionbody">
+<h3 id="_basho_riak">Basho Riak</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<h3 id="_hibari_4">Hibari</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version v1.0-draft-3<br />
+Last updated 2012-09-27 07:47:50 JST
+</div>
+</div>
+</body>
+</html>
