@@ -3,7 +3,7 @@
 :Author:      河野達也 Tatsuya_Kawano CloudianKK
 :Email:       tkawano@cloudian.com
 :Date:        2012年9月26日
-:Revision:    v1.0-draft-3
+:Revision:    v1.0-draft-4
 
 // この文書はAsciiDoc形式で記述されています。
 // HTML形式に変換するには以下のようにします。
@@ -19,7 +19,7 @@
 //
 
 
-= 第２回　NOSQL実機ハンズオン（Riak、Hibari、HBase）
+= 第２回　NOSQL実機ハンズオン（Riak、Hibari）
 
 *日本OSS推進フォーラム　若手技術者勉強会*
 
@@ -50,8 +50,8 @@
   * Riak、Hibari向け
 
 
-また、別冊としてHBaseのハンズオン手順も用意しますので、自習にお役立て
-ください。（ *後日公開予定* ）
+また、自習用に別冊としてHBaseのハンズオン手順も用意します。
+（ *後日公開予定* ）
 
 *NOSQL製品*
 
@@ -70,10 +70,9 @@
 
 ハンズオンを終えると以下のことができるようになります。
 
-- NOSQLの２つ（または３つ）の製品について、ごく基本的な操作ができる
+- NOSQLの２つの製品について、ごく基本的な操作ができる
 - 性能測定ツールの基本操作ができる
-- データの分散方法について、「コンシステント・ハッシング」と「自動シャー
-  ディング」の違いが説明できる
+- データの分散方法について、「コンシステント・ハッシング」が説明できる
 - CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP」のものにつ
   いて、違いが説明できる
 
@@ -85,9 +84,7 @@
 い。
 
 また自習のために、今回の環境を１から設定するための手順も用意します。
-詳細については以下の説明をご覧ください。（ *後日公開予定* ）
-
-https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md
+（ *後日公開予定* ）
 
 
 === 仮想サーバーにsshでログイン
@@ -120,18 +117,13 @@ Retype new password: （新しいパスワードを再入力） □
 - *NOSQL*
   * Basho Riak 1.2
   * Hibari 0.1.9
-  * Apache HBase 0.92.1-cdh4.0.1
-    ** Cloudera社のCDHディストリビューションを使用
 
 - *性能測定ツール*
   * Basho Bench X.XXX
-  * YCSB X.XXX
 
-- *Erlang、Java実行環境*
+- *Erlang実行環境*
   * Erlang/OTP -- R15B02
     ** Riak、Hibari、Basho Benchで使用
-  * Java -- Oracle JDK 1.6 update 31
-    ** HBaseとYCSBで使用
 
 - *基本ソフトウェア*
   * Linux -- CentOS 5.X　64ビット版
@@ -150,26 +142,17 @@ Retype new password: （新しいパスワードを再入力） □
             README.md
             bin/　　　          ← ハンズオンで使用するスクリプトが含まれている
             conf-bb/           ← Basho Benchのワークロード設定ファイル
-            conf-ycsb/         ← YCSBのワークロード設定ファイル
             docs/
                 hands-on.txt
                 hands-on.html  ← このドキュメント
-                setup.txt
-                setup.html     ← 環境を一からセットアップするときの手順
             lib/
-            logs-hbase/        ← HBaseのログディレクトリ（シンボリックリンク）
-            results-bb/        ← Basho Benchの結果（シンボリックリンク）
-            results-ycsb/      ← YCSBの結果（シンボリックリンク）
 
         hibari/
-
         Public/
             web/               ← Webサーバーで公開されます。Bascho Benchの結果が入ります
 
         riak/
         riak-client-erlang/
-        ycsb/
-/opt/ ... *TODO*
 ----
 
 
@@ -297,8 +280,8 @@ Riakには３種類のクライアントAPIが用意されています。
   * Riak本体はErlangで書かれています
 
 今回はプログラミング言語にはErlangを使用し、Protocol Buffersで接続しま
-す。他の言語でも基本的な操作方法は変わりませんので、後日、お気に入りの
-言語で試してみてもいいでしょう。
+す。他の言語でも基本的な操作方法は同じですので、後日、お気に入りの言語
+で試してみてもいいでしょう。
 
 
 === Riakのデータモデル
@@ -306,10 +289,11 @@ Riakには３種類のクライアントAPIが用意されています。
 *TODO*
 
 - バケット（バケツ）
-- キー
-- バリュー
-- メタデータ
-- 二次インデックス
+- オブジェクト
+  * キー
+  * バリュー
+  * メタデータ
+    ** 二次インデックス
 
 
 === Protocol Buffersでアクセス（Erlang）
@@ -324,14 +308,13 @@ Riakには３種類のクライアントAPIが用意されています。
 ----
 $ riak-create-buckets-ossforum.escript □
 
-Created {<<"b1">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 Created {<<"employee">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 Created {<<"basho_bench_test">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 ----
 
 ===========================================================
 
-３つのバケットが作られました。
+２つのバケットが作られました。
 
 - `n_val` はキー・バリューの複製（レプリカ）の数
 - `r`　は読み出し時に応答が必要なノード数
@@ -768,9 +751,9 @@ Riakではそれぞれの仮想ノードがメンバーノードにランダム�
 ****
 バケット　　キー　　　　　　　　ノード
 
-b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
+employee　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
 
-b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
+employee　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿
 ****
 ===========================================================
 
@@ -804,7 +787,6 @@ Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバ�
 まず現在のリングの状態を確認しましょう。... メモ帳に保存しておきます。
 
 
-
 新しいノード「riak4」を起動しましょう。riak4/bin/riakコマンドを使いま
 す。
 
@@ -816,9 +798,10 @@ $ $RIAK_HOME/rel/riak4/bin/riak ping □
 pong
 ----
 
-riak4/bin/riak-adminの「cluster join」コマンドを使い、riak1に向かって
-既存のクラスターへの参加要求を送ります。（参加要求を送る先はクラスター
-のメンバーノードならどれでも構いません。riak2やriak3でも大丈夫です）
+riak4/bin/riak-adminの「cluster join」コマンドを使い、既存のクラスター
+のメンバーノード（ここではriak1）へ参加要求を送ります。なお、参加要求
+を送る先はクラスターのメンバーノードならどれでも構いません。riak2や
+riak3でも同じ結果になります。
 
 [source,shell]
 ----
@@ -892,13 +875,21 @@ $ riak-admin member-status □
 ****
 
 *TODO*
-変更後のリングの状態を確認しましょう。... メモ帳に保存した変更前の
+変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
+比べてください。
 
 【質問】
-- Ring上の仮想ノードの数は変わりましたか？　などなど
+- Ring上の仮想ノードの数は変わりましたか？
 
 ****
 答え： 1. 変わった（増えた）　　2. 変わった（減った）　　3. 変わらない
+****
+
+【質問】
+- riak4へ移動した仮想ノードはどれですか？（複数あり）
+
+****
+答え： 1 ＿＿＿＿＿＿＿　2 ＿＿＿＿＿＿＿　3 ＿＿＿＿＿＿＿ 4 ＿＿＿＿＿＿＿
 ****
 
 ===========================================================
@@ -983,7 +974,7 @@ node riak2 ping failed
 ===========================================================
 
 
-.リングのサイズについて
+.補足：リングのサイズについて
 [NOTE]
 今回はリングについて理解しやすいよう、リングサイズを小さく設定していま
 す。しかし、この設定ではデータの偏りが起こりやすくなってしまいます。
@@ -1092,7 +1083,6 @@ $ riak-build-cluster.sh □
 [source,shell]
 ----
 $ riak-create-buckets-ossforum.escript □
-Created {<<"b1">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 Created {<<"employee">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 Created {<<"basho_bench_test">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 
@@ -1211,8 +1201,7 @@ R = allで読み出しを試みます。
 ===========================================================
 メンバーノードの１つが停止したまま書き込みの挙動を確認しましょう。
 
-W = allで書き込みを試みます。もし書き込みに失敗した場合は
-「●●●●」が返されます。
+W = allで書き込みを試みます。
 
 .Erlangシェル用ウィンドウ
 [source,erlang]
@@ -1227,7 +1216,7 @@ W = allで書き込みを試みます。もし書き込みに失敗した場合�
 書き込みは成功しましたか？
 
 ****
-答え： W = all　　　　1. 成功　　　2. 失敗
+答え： 1. 成功　　　2. 失敗
 ****
 ===========================================================
 
@@ -1277,11 +1266,26 @@ node riak2 ping failed
 
 *TODO*
 
+- テーブル
+- キー・バリュー
+  * キー
+  * バリュー
+  * フラグ（メタデータ）
+  * 有効期限
+
+- 一部の情報をメモリー上に常駐させることで高速化を実現
+  * キー、フラグ、有効期限はメモリー上に常駐します
+  * バリューは　`value_in_ram` を指定することでメモリー上に常駐させら
+    れます。
+
 
 === Hibariの起動とクラスター構成の確認
 
 今回は学習のために、１台のLinux仮想サーバー上で複数のHibariメンバーノー
-ド（「ブリックサーバー」と呼びます）を動かします。（構成図）
+ド（「ブリックサーバー」と呼びます）を動かします。
+
+チェイン・レプリケーションの解説
+http://hibari.github.com/hibari-doc/hibari-tutorial.en.html#_hibari_chain_replication
 
 
 [caption=""]
@@ -1403,38 +1407,38 @@ Eshell V5.9.2  (abort with ^G)
 .6-6. キーバリューの書き込み
 ===========================================================
 
+.Hibariに接続
 [source,erlang]
 ----
-%% Hibariに接続
-
 > AdminNode = 'hibari1@127.0.0.1'. □
 'hibari1@127.0.0.1'
 
 > hibari_client_utils:connect(AdminNode). □
-...（略）
+...（略：大量のログが出力されますが、最後にokと表示されれば大丈夫です）
 ok.
+
+%% employeeテーブルについて、コンシステント・ハッシング情報とノードの
+%% 稼働状況を取得します。
 
 > hibari_client_utils:wait_for_tables(AdminNode, [employee]). □
 ok.
 
+----
 
-%% キーバリューをHibariに格納。
+
+.キーバリューをHibariに格納
+[source,erlang]
+----
 %% テーブル：employee、キー：jeremy/title、バリュー："engineer"
-
-> brick_simple:set(employee, <<"jeremy/title">>, <<"engineer">>). □
+> brick_simple:set(employee, "jeremy/title", "engineer"). □
 ok
 
-%% キーバリューをHibariに格納。
 %% テーブル：employee、キー：jeremy/age、バリュー：23（符号なし８ビット整数）
-
-> brick_simple:set(employee, <<"jeremy/age">>, <<23:8/unsigned-little-integer>>). □
+> brick_simple:set(employee, "jeremy/age", <<23:8/unsigned-little-integer>>). □
 ok
 
-
-%% キーバリューをHibariに格納。
 %% テーブル：employee、キー：jeremy/age、バリュー："CA"
-
-> brick_simple:set(employee, <<"jeremy/state">>, <<"CA">>). □
+> brick_simple:set(employee, "jeremy/state", "CA"). □
 ok
 ----
 ===========================================================
@@ -1446,11 +1450,12 @@ ok
 
 [source,erlang]
 ----
-> brick_simple:get(employee, <<"jeremy/title">>). □
-{ok,1348490264725016,<<"engineer">>}
+> brick_simple:get(employee, "jeremy/title"). □
+{ok,1348744080833154,<<"engineer">>}
 
 
-> brick_simple:get(employee, <<"gary/title">>). □
+%% キー・バリューが存在しないときは、key_not_existが返されます
+> brick_simple:get(employee, "gary/title"). □
 key_not_exist
 
 ----
@@ -1458,37 +1463,51 @@ key_not_exist
 
 
 [caption=""]
-.6-8. メタデータ付きの、キーバリューを書き込み
+.6-8. フラグ付きのキー・バリューを書き込み
 ===========================================================
+キー・バリューにフラグ（メタデータ）をつけることができます。
 
-*TODO*
+[source,erlang]
+----
+%% value_in_ram でバリューをメモリー上に常駐させる
+> brick_simple:set(employee, "jeremy/login-counter", <<0:64/unsigned-integer>>, [value_in_ram]). □
+ok.
+
+%% ユーザー定義フラグも格納できます
+> brick_simple:set(employee, "ann/title", "disginer", [{activities, "yoga"}]). □
+ok.
+
+%% バリューと同時にユーザー定義フラグ読み出し
+> brick_simple:get(employee, "ann/title", [get_all_attribs]). □
+{ok,1348744156095280,<<"disginer">>,0,
+    [{val_len,8},{activities,"yoga"}]}
+
+%% ユーザー定義フラグのみを読み出し（ディスクアクセスを伴わないので高速）
+> brick_simple:get(employee, "ann/title", [witness, get_all_attribs]). □
+{ok,1348744156095280,[{val_len,8},{activities,"yoga"}]}
+
+----
 
 ===========================================================
 
 [caption=""]
-.6-9. 複数のキー・バリューをアトミックに書き込み
+.6-9. 複数のキー・バリューをまとめて書き込み
 ===========================================================
-同一テーブルの同一チェイン上なら、複数のキー・バリューをアトミックに追
-加できます。この場合は、すべての操作が成功するか、あるいは、すべての操
-作が実行されないか、のどちらかになります。
+doを使うと同一テーブルの同一チェインに対する操作を一度に実行でいます。
 
 [source,erlang]
 ----
-> Ops = [brick_server:make_txn(),
-         brick_server:make_set(<<"helena/title">>, <<"scientist">>),
-         brick_server:make_set(<<"helena/age">>,   <<29:8/unsigned-little-integer>>),
-         brick_server:make_set(<<"helena/state">>, <<"CA">>)]. □
+> Ops1 = [brick_server:make_set("helena/title", "scientist"),
+          brick_server:make_set("helena/age",   <<29:8/unsigned-little-integer>>),
+          brick_server:make_set("helena/state", "CA")]. □
 
-[txn,
- {set,<<"helena/title">>,1348514414223763,<<"scientist">>,0,[]},
- {set,<<"helena/age">>,1348514414223771,<<29>>,0,[]},
- {set,<<"helena/state">>,1348514414223778,<<"CA">>,0,[]}]
+[{set,<<"helena/title">>,1348744219017408,"scientist",0,[]},
+ {set,<<"helena/age">>,1348744219017422,<<29>>,0,[]},
+ {set,<<"helena/state">>,1348744219017425,"CA",0,[]}]
 
 
-> brick_simple:do(employee, Ops). □
+> brick_simple:do(employee, Ops1). □
 [ok,ok,ok]
-
-*TODO* トランザクションが失敗する例を追加する
 
 ----
 ===========================================================
@@ -1497,6 +1516,7 @@ key_not_exist
 [caption=""]
 .6-10. キーの区切り文字とレンジスキャン
 ===========================================================
+*TODO* 解説
 
 *TODO* employee テーブルではキーの区切り文字として「/」が使われていることを解説する
 
@@ -1505,23 +1525,23 @@ key_not_exist
 %% binary_prefixを指定することで、キーがhelenaで始まるものだけを読み出します。
 %% キーは辞書順にソートされて格納されています。
 
-> brick_simple:get_many(employee, <<"helena">>, 10, [{'binary_prefix', <<"helena">>}]). □
-{ok,{[{<<"helena/age">>,1348514414223771,<<29>>,0,
+> brick_simple:get_many(employee, "helena", 10, [{'binary_prefix', <<"helena">>}]). □
+{ok,{[{<<"helena/age">>,1348744219017422,<<29>>,0,
        [{val_len,1}]},
-      {<<"helena/state">>,1348514414223778,<<"CA">>,0,
+      {<<"helena/state">>,1348744219017425,<<"CA">>,0,
        [{val_len,2}]},
-      {<<"helena/title">>,1348514414223763,<<"scientist">>,0,
+      {<<"helena/title">>,1348744219017408,<<"scientist">>,0,
        [{val_len,9}]}],
      false}}
 
 
 %% キーだけを取り出すこともできます。Hibariではキーとメタデータはメモ
-%% リー上に常駐していますのでディスクアクセスなしで結果を得られます。
+%% リー上に常駐していますので、ディスクアクセスなしで結果を得られます。
 
-> brick_simple:get_many(employee, <<"helena">>, 10, [witness, {'binary_prefix', <<"helena">>}]). □
-{ok,{[{<<"helena/age">>,1348514414223771},
-      {<<"helena/state">>,1348514414223778},
-      {<<"helena/title">>,1348514414223763}],
+> brick_simple:get_many(employee, "helena", 10, [witness, {'binary_prefix', <<"helena">>}]). □
+{ok,{[{<<"helena/age">>,1348744219017422},
+      {<<"helena/state">>,1348744219017425},
+      {<<"helena/title">>,1348744219017408}],
      false}}
 
 ----
@@ -1532,8 +1552,15 @@ key_not_exist
 .6-11. キー・バリューの削除
 ===========================================================
 
-*TODO*
+[source,erlang]
+----
 
+> brick_simple:delete(employee, "jeremy/title"). □
+
+%% キーが存在しない時はエラーになります
+> brick_simple:delete(employee, "gary/titse"). □
+key_not_exist
+----
 ===========================================================
 
 
@@ -1558,10 +1585,269 @@ $
 Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
 クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。
 
+
 [caption=""]
-.7-1. Hibariの初期化
+.7-1. １ノードダウン時の読み出し操作
+===========================================================
+ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
+う。まず、全ノードが稼働している状態で書き込みを行い、次に、ブリックサー
+バーの１つを停止します。
+
+sshターミナルのウィンドウを２つ開いてください。一方はErlangシェル、も
+う一方はLinuxシェル（bash）を動かしましょう。
+
+２つのウィンドウを開いたら、以下のコマンドを実行します。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+$ erl-hibari-ossforum.sh □
+> AdminNode = 'hibari1@127.0.0.1'. □
+'hibari1@127.0.0.1'
+
+> hibari_client_utils:connect(AdminNode). □
+...
+ok
+
+> hibari_client_utils:wait_for_tables(AdminNode, [employee]). □
+ok
+
+%% キーバリューをHibariに格納
+
+> brick_simple:set(employee, "ann/title", "designer"). □
+ok
+
+----
+
+ブリックサーバーの１つを停止します。
+
+.bash用ウィンドウ
+[source,shell]
+----
+$ $HIBARI_HOME/rel/hibari3/bin/hibari stop □
+ok
+
+$ $HIBARI_HOME/rel/hibari3/bin/hibari ping □
+Node 'hibari3@127.0.0.1' not responding to pings.
+----
+
+Web UIでチェインの状態を確認します。
+
+http://仮想サーバーのアドレス:23080/
+
+「Bricks」の表の「employee_ch」（チェイン）の状態を見て、「degraded」
+（縮退運行中）であることを確認します。
+
+読み出を試みます。もし読み出しに失敗した場合は「brick_not_available」
+が返されます。なおHibariでは読み出しはR＝1に固定されています。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+> brick_simple:get(employee, "ann/title"). □
+----
+
+読み出しは成功しましたか？
+
+****
+答え：　　1. 成功　　　2. 失敗
+****
 ===========================================================
 
+
+[caption=""]
+.7-3. １ノードダウン時の書き込み操作
+===========================================================
+ブリックサーバーの１つが停止したまま書き込みの挙動を確認しましょう。
+
+書き込みを試みます。もし書き込みに失敗した場合は「brick_not_available」
+が返されます。
+
+.Erlangシェル用ウィンドウ
+[source,erlang]
+----
+> brick_simple:set(employee, "bob/title", "sales"). □
+----
+
+書き込みは成功しましたか？
+
+****
+答え：　　　　1. 成功　　　2. 失敗
+****
+===========================================================
+
+
+== 8. 整合性重視（CP）のNOSQLだけで実現可能な操作
+
+整合性重視（CP）のNOSQLだけで可能となる操作を紹介しましょう。
+
+これらの操作は、キー・バリューの全ての複製で整合性がとれていないと実現
+できません。可用性重視（AP）のNOSQLでは、ネットワーク分断時に複製間の
+不整合を許すため実現不可能です。
+
+
+[caption=""]
+.8-1. キー・バリューの存在チェック
+===========================================================
+キー・バリューの追加、更新、削除の際に、キー・バリューの存在チェックが
+できます。
+
+一見、できて当たり前と思える機能ですが、キー・バリューの全ての複製の整
+合性している必要があるため、整合性重視のNOSQLだけで実現できます。
+
+----
+%% caren/titleを新規に登録
+> brick_simple:add(employee, "caren/title", "engineer"). □
+ok
+
+%% 再び登録しようとすると失敗します。
+> brick_simple:add(employee, "caren/title", "designer"). □
+{key_exists,1348744725037912}
+
+%% 既存のキー・バリューを置き換え。
+> brick_simple:replace(employee, "caren/title", "designer"). □
+ok
+
+%% キー・バリューが存在しないときは失敗します。
+> brick_simple:replace(employee, "mike/title", "disigner"). □
+key_not_exist
+
+----
+
+6-11で確認したように、キー・バリューが存在しない時の削除（delete）操作
+もエラーになります。一方、Riakでは3-9で確認したように、エラーになりま
+せん（エラーにできません）
+
+===========================================================
+
+
+[caption=""]
+.8-2. CAS操作
+===========================================================
+CAS操作（Check And Swap）を使うと、複数クライアントの同時更新を制御で
+きます。キー・バリューの全ての複製が同期している必要があるため、整合性
+重視のNOSQLだけで実現できます。
+
+
+[source,shell]
+----
+%% クライアント１がログインカウンターを読み出し
+%% Ts1にはキー・バリューが最後に更新された時刻が入る
+> {ok, Ts1, <<Val1:64/unsigned-integer>>} = brick_simple:get(employee, "jeremy/login-counter"). □
+{ok,1348744147878810,<<0,0,0,0,0,0,0,0>>}
+
+
+%% その直後、クライアント２がログインカウンターを読み出したと想定しましょう。
+{ok, Ts2, <<Val2:64/unsigned-integer>>} = brick_simple:get(employee, "jeremy/login-counter"). □
+{ok,1348744147878810,<<0,0,0,0,0,0,0,0>>}
+
+
+%% クライアント２が先にカウンターを更新しました。
+%% testsetでタイムスタンプを確認し、以前と変わってなければ更新します。
+> brick_simple:set(employee, "jeremy/login-counter", <<(Val2 + 1):64/unsigned-integer>>,
+                   [value_in_ram, {testset, Ts2}]). □
+ok
+
+%% クライアント１がカウンターを更新しようとしても
+%% タイムスタンプが変わっているので失敗します。
+> brick_simple:set(employee, "jeremy/login-counter", <<(Val1 + 1):64/unsigned-integer>>,
+                   [value_in_ram, {testset, Ts1}]). □
+{ts_error,1348744830713999}
+
+----
+
+===========================================================
+
+
+[caption=""]
+.8-3. Hibariのマイクロトランザクション
+===========================================================
+Hibariでは同一テーブルの同一チェイン上なら、複数のキー・バリューをアト
+ミックに追加できます。この場合は、すべての操作が成功するか、あるいは、
+すべての操作が実行されないか、のどちらかになります。
+
+Hibariだけで実現されている機能です。
+
+[source,erlang]
+----
+%% helenaさんの情報はすでに登録済みです。
+> brick_simple:get(employee, "helena/title"). □
+{ok,1348744219017408,<<"scientist">>}
+
+%% 同じキーで別人を登録しようとするとどうなるでしょうか？
+%% 一連の操作をトランザクションとして実行します。
+> Ops2 = [brick_server:make_txn(),
+          brick_server:make_add("helena/title",    "sales"),
+          brick_server:make_set("helena/state",    "NY"),
+          brick_server:make_set("helena/lastname", "smith")]. □
+
+[txn,
+ {add,<<"helena/title">>,1348745055483211,"sales",0,[]},
+ {set,<<"helena/state">>,1348745055483221,"NY",0,[]},
+ {set,<<"helena/lastname">>,1348745055483226,"smith",0,[]}]
+
+
+%% トランザクションを実行しようとすると、最初のaddで失敗するので、
+%% トランザクション全体がロールバックします。
+> brick_simple:do(employee, Ops2). □
+{txn_fail,[{1,{key_exists,1348744219017408}}]}
+
+
+%% 以前の情報のままです。
+> brick_simple:get(employee, "helena/state"). □
+{ok,1348744219017425,<<"CA">>}
+
+> brick_simple:get(employee, "helena/lastname"). □
+key_not_exist
+
+----
+===========================================================
+
+
+== 9. 講義：データ分散について、Riak、Cassandra、Hibariを比較
+
+データ分散についてRiakと同様にコンシステント・ハッシングを採用した
+CassandraやHibariの設計を比較します。それぞれに長所と短所があります。
+
+- *Basho Riak*
+  * 2009年に最初のリリース
+  * Amazon Dynamoの設計を参考にした
+  * リングを仮想ノードで分割し、メンバーノードにランダムに配置
+    ** メンバーノードの追加時のリバランスが自動的に行われる
+    ** 複製の配置が偏ることがある
+
+- *Apache Cassandra*
+  * 2008年に最初のリリース
+  * データ分散はAmazon Dynamoを参考にし、データモデルはGoogle Bigtable
+    を参考にした
+  * リングをメンバーノードで分割
+    ** メンバーノード追加時後のリバランスが面倒
+    ** 複製の配置が偏らない
+
+- *Hibari*
+  * 2004年ごろから開発開始。50ノード超の商用利用を経て2010年にオープン
+    ソース化
+  * チェインレプリケーション論文を参考に設計
+  * リングをチェインに分割して、メンバーノードにまたがって配置
+    ** メンバーノードの追加時に手動でチェインを設定する
+    ** 複製の配置が偏らない
+
+
+== 10. 性能測定ツールの使用
+
+Hibariと性能測定ツールのBasho Benchを用いて、データの分散状況を観察し
+ます。
+
+- チェインの確認
+- Basho Benchの使いかた
+- キーの採番方法とデータ分散の関係
+
+なお、RiakやCassandraもデータの分散に関しては近い特性を持ちます。
+
+
+[caption=""]
+.10-1. Hibariの初期化
+===========================================================
 Hibariの環境を初期化しましょう。この操作により今までHibariに保存したデー
 タは全て削除されます。
 
@@ -1616,165 +1902,7 @@ Table basho_bench_test_random created
 
 
 [caption=""]
-.7-2. １ノードダウン時の読み出し操作
-===========================================================
-ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
-う。まず、全ノードが稼働している状態で書き込みを行い、次に、ブリックサー
-バーの１つを停止します。
-
-sshターミナルのウィンドウを２つ開いてください。一方はErlangシェル、も
-う一方はLinuxシェル（bash）を動かしましょう。
-
-２つのウィンドウを開いたら、以下のコマンドを実行します。
-
-.Erlangシェル用ウィンドウ
-[source,erlang]
-----
-$ erl-hibari-ossforum.sh □
-> AdminNode = 'hibari1@127.0.0.1'. □
-> hibari_client_utils:connect(AdminNode). □
-> hibari_client_utils:wait_for_tables(AdminNode, [employee]). □
-
-%% キーバリューをHibariに格納
-
-> brick_simple:set(employee, <<"ann/title">>, <<"designer">>). □
-
-----
-
-キー・バリューを書き込んだらブリックサーバーの１つを停止します。
-
-.bash用ウィンドウ
-[source,shell]
-----
-$ $HIBARI_HOME/rel/hibari3/bin/hibari stop □
-$ $HIBARI_HOME/rel/hibari3/bin/hibari ping □
-Node 'hibari3@127.0.0.1' not responding to pings.
-----
-
-Web UIでチェインの状態が「degrated」になっていることを確認してください。
-
-http://仮想サーバーのアドレス:23080/
-
-●●の欄を見ます。
-
-読み出を試みます。もし読み出しに失敗した場合は「brick_not_available」
-が返されます。なおHibariでは読み出しはR＝1に固定されています。
-
-.Erlangシェル用ウィンドウ
-[source,erlang]
-----
-> brick_simple:get(employee, <<"ann/title">>). □
-----
-
-読み出しは成功しましたか？
-
-****
-答え：　　1. 成功　　　2. 失敗
-****
-===========================================================
-
-
-[caption=""]
-.7-3. １ノードダウン時の書き込み操作
-===========================================================
-ブリックサーバーの１つが停止したまま書き込みの挙動を確認しましょう。
-
-書き込みを試みます。もし書き込みに失敗した場合は「brick_not_available」
-が返されます。
-
-.Erlangシェル用ウィンドウ
-[source,erlang]
-----
-> brick_simple:set(employee, <<"bob/title">>, <<"sales">>). □
-----
-
-書き込みは成功しましたか？
-
-****
-答え：　　　　1. 成功　　　2. 失敗
-****
-===========================================================
-
-
-== 8. 整合性重視（CP）のNOSQLが得意とする操作
-
-[caption=""]
-.8-1. CAS操作
-===========================================================
-
-*TODO* +
-
-[source,shell]
-----
-$ *TODO* □
-----
-
-****
-答え：
-****
-===========================================================
-
-
-[caption=""]
-.8-2. Hibariのマイクロトランザクション
-===========================================================
-
-*TODO* +
-
-[source,shell]
-----
-$ *TODO* □
-----
-
-****
-答え：
-****
-===========================================================
-
-
-== 9. 講義：データ分散について、Riak、Cassandra、Hibariを比較
-
-データ分散についてRiakと同様にコンシステント・ハッシングを採用した
-CassandraやHibariの設計を比較します。それぞれに長所と短所があります。
-
-- *Basho Riak*
-  * 2009年に最初のリリース
-  * Amazon Dynamoの設計を参考にした
-  * リングを仮想ノードで分割し、メンバーノードにランダムに配置
-    ** メンバーノードの追加時のリバランスが自動的に行われる
-    ** 複製の配置が偏ることがある
-
-- *Apache Cassandra*
-  * 2008年に最初のリリース
-  * データ分散はAmazon Dynamoを参考にし、データモデルはGoogle Bigtable
-    を参考にした
-  * リングをメンバーノードで分割
-    ** メンバーノード追加時後のリバランスが面倒
-    ** 複製の配置が偏らない
-
-- *Hibari*
-  * 2004年ごろから開発開始。50ノード超の商用利用を経て2010年にオープン
-    ソース化
-  * チェインレプリケーション論文を参考に設計
-  * リングをチェインに分割して、メンバーノードにまたがって配置
-    ** メンバーノードの追加時に手動でチェインを設定する
-    ** 複製の配置が偏らない
-
-
-== 10. 性能測定ツールの使用
-
-Hibariと性能測定ツールのBasho Benchを用いて、データの分散状況を観察し
-ます。
-
-- チェインの確認
-- Basho Benchの使いかた
-- キーの採番方法とデータ分散の関係
-
-なお、RiakやCassandraもデータの分散に関しては近い特性を持ちます。
-
-
-[caption=""]
-.10-1. Basho Benchの実行
+.10-2. Basho Benchの実行
 ===========================================================
 Basho Benchを実行しましょう。以下のコマンドを入力します。
 
@@ -1919,7 +2047,7 @@ Basho Benchでは以下のようなバリューを生成できます。
 
 
 [caption=""]
-.10-2. グラフのプロット（R言語）と結果の確認
+.10-3. グラフのプロット（R言語）と結果の確認
 ===========================================================
 実行結果をグラフにプロットしてみましょう。Basho_Benchには統計解析プロ
 グラミング言語の *R言語* で書かれたスクリプトが付属していますので、そ
@@ -1948,7 +2076,7 @@ $ bb-summary-ossforum.sh □
 
 
 [caption=""]
-.10-3. Hibariの停止
+.10-4. Hibariの停止
 ===========================================================
 作業が終わったらHibariを停止します。
 [source,shell]
@@ -1996,13 +2124,6 @@ $ basho_bench conf-bb/riak-random.conf □
 - データの分散（分布）の均一性
 - レンジスキャンの可否
 
-
-
-== 12. 後片付け
-
-*TODO*
-
-=== 仮想サーバーの停止、削除
 
 
 == 付録. 参考資料
