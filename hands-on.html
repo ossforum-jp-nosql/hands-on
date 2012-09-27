@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="generator" content="AsciiDoc 8.4.5" />
-<title>第２回　NOSQL実機ハンズオン（Riak、Hibari、HBase）</title>
+<title>第２回　NOSQL実機ハンズオン（Riak、Hibari）</title>
 <style type="text/css">
 /* Debug borders */
 p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
@@ -384,10 +384,10 @@ div#toc a:visited { color: blue; }
 </head>
 <body>
 <div id="header">
-<h1>第２回　NOSQL実機ハンズオン（Riak、Hibari、HBase）</h1>
+<h1>第２回　NOSQL実機ハンズオン（Riak、Hibari）</h1>
 <span id="author">河野達也 Tatsuya Kawano CloudianKK</span><br />
 <span id="email"><tt>&lt;<a href="mailto:tkawano@cloudian.com">tkawano@cloudian.com</a>&gt;</tt></span><br />
-<span id="revnumber">version v1.0-draft-3,</span>
+<span id="revnumber">version v1.0-draft-4,</span>
 <span id="revdate">2012年9月26日</span>
 </div>
 <div id="preamble">
@@ -447,8 +447,8 @@ Riak、Hibari向け
 </ul></div>
 </li>
 </ul></div>
-<div class="paragraph"><p>また、別冊としてHBaseのハンズオン手順も用意しますので、自習にお役立て
-ください。（ <strong>後日公開予定</strong> ）</p></div>
+<div class="paragraph"><p>また、自習用に別冊としてHBaseのハンズオン手順も用意します。
+（ <strong>後日公開予定</strong> ）</p></div>
 <div class="paragraph"><p><strong>NOSQL製品</strong></p></div>
 <div class="ulist"><ul>
 <li>
@@ -489,7 +489,7 @@ Cassandra、MongoDB、Redisにも対応
 <div class="ulist"><ul>
 <li>
 <p>
-NOSQLの２つ（または３つ）の製品について、ごく基本的な操作ができる
+NOSQLの２つの製品について、ごく基本的な操作ができる
 </p>
 </li>
 <li>
@@ -499,8 +499,7 @@ NOSQLの２つ（または３つ）の製品について、ごく基本的な操
 </li>
 <li>
 <p>
-データの分散方法について、「コンシステント・ハッシング」と「自動シャー
-  ディング」の違いが説明できる
+データの分散方法について、「コンシステント・ハッシング」が説明できる
 </p>
 </li>
 <li>
@@ -517,8 +516,7 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 れています。仮想サーバーの起動は勉強会運営メンバーの指示に従ってくださ
 い。</p></div>
 <div class="paragraph"><p>また自習のために、今回の環境を１から設定するための手順も用意します。
-詳細については以下の説明をご覧ください。（ <strong>後日公開予定</strong> ）</p></div>
-<div class="paragraph"><p><a href="https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md">https://github.com/ossforum-jp-nosql/hands-on/blob/master/README.md</a></p></div>
+（ <strong>後日公開予定</strong> ）</p></div>
 <h3 id="_ssh">仮想サーバーにsshでログイン</h3><div style="clear:left"></div>
 <div class="paragraph"><p>PuTTYを立ち上げ、sshで接続します。</p></div>
 <div class="ulist"><ul>
@@ -563,18 +561,6 @@ Basho Riak 1.2
 Hibari 0.1.9
 </p>
 </li>
-<li>
-<p>
-Apache HBase 0.92.1-cdh4.0.1
-</p>
-<div class="ulist"><ul>
-<li>
-<p>
-Cloudera社のCDHディストリビューションを使用
-</p>
-</li>
-</ul></div>
-</li>
 </ul></div>
 </li>
 <li>
@@ -587,16 +573,11 @@ Cloudera社のCDHディストリビューションを使用
 Basho Bench X.XXX
 </p>
 </li>
-<li>
-<p>
-YCSB X.XXX
-</p>
-</li>
 </ul></div>
 </li>
 <li>
 <p>
-<strong>Erlang、Java実行環境</strong>
+<strong>Erlang実行環境</strong>
 </p>
 <div class="ulist"><ul>
 <li>
@@ -607,18 +588,6 @@ Erlang/OTP&#8201;&#8212;&#8201;R15B02
 <li>
 <p>
 Riak、Hibari、Basho Benchで使用
-</p>
-</li>
-</ul></div>
-</li>
-<li>
-<p>
-Java&#8201;&#8212;&#8201;Oracle JDK 1.6 update 31
-</p>
-<div class="ulist"><ul>
-<li>
-<p>
-HBaseとYCSBで使用
 </p>
 </li>
 </ul></div>
@@ -651,26 +620,17 @@ Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
             README.md
             bin/　　　          ← ハンズオンで使用するスクリプトが含まれている
             conf-bb/           ← Basho Benchのワークロード設定ファイル
-            conf-ycsb/         ← YCSBのワークロード設定ファイル
             docs/
                 hands-on.txt
                 hands-on.html  ← このドキュメント
-                setup.txt
-                setup.html     ← 環境を一からセットアップするときの手順
             lib/
-            logs-hbase/        ← HBaseのログディレクトリ（シンボリックリンク）
-            results-bb/        ← Basho Benchの結果（シンボリックリンク）
-            results-ycsb/      ← YCSBの結果（シンボリックリンク）
 
         hibari/
-
         Public/
             web/               ← Webサーバーで公開されます。Bascho Benchの結果が入ります
 
         riak/
-        riak-client-erlang/
-        ycsb/
-/opt/ ... *TODO*</tt></pre>
+        riak-client-erlang/</tt></pre>
 </div></div>
 <h3 id="_linix">Linixシェルのごく基本的な操作。</h3><div style="clear:left"></div>
 <div class="admonitionblock">
@@ -926,8 +886,8 @@ Riak本体はErlangで書かれています
 </li>
 </ul></div>
 <div class="paragraph"><p>今回はプログラミング言語にはErlangを使用し、Protocol Buffersで接続しま
-す。他の言語でも基本的な操作方法は変わりませんので、後日、お気に入りの
-言語で試してみてもいいでしょう。</p></div>
+す。他の言語でも基本的な操作方法は同じですので、後日、お気に入りの言語
+で試してみてもいいでしょう。</p></div>
 <h3 id="_riak_3">Riakのデータモデル</h3><div style="clear:left"></div>
 <div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
@@ -936,6 +896,11 @@ Riak本体はErlangで書かれています
 バケット（バケツ）
 </p>
 </li>
+<li>
+<p>
+オブジェクト
+</p>
+<div class="ulist"><ul>
 <li>
 <p>
 キー
@@ -950,11 +915,15 @@ Riak本体はErlangで書かれています
 <p>
 メタデータ
 </p>
-</li>
+<div class="ulist"><ul>
 <li>
 <p>
 二次インデックス
 </p>
+</li>
+</ul></div>
+</li>
+</ul></div>
 </li>
 </ul></div>
 <h3 id="_protocol_buffers_erlang">Protocol Buffersでアクセス（Erlang）</h3><div style="clear:left"></div>
@@ -967,12 +936,11 @@ Riak本体はErlangで書かれています
 <div class="content">
 <pre><tt>$ riak-create-buckets-ossforum.escript □
 
-Created {&lt;&lt;"b1"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 Created {&lt;&lt;"employee"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
 Created {&lt;&lt;"basho_bench_test"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}</tt></pre>
 </div></div>
 </div></div>
-<div class="paragraph"><p>３つのバケットが作られました。</p></div>
+<div class="paragraph"><p>２つのバケットが作られました。</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1444,8 +1412,8 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>バケット　　キー　　　　　　　　ノード</p></div>
-<div class="paragraph"><p>b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
-<div class="paragraph"><p>b1　　　　　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
+<div class="paragraph"><p>employee　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
+<div class="paragraph"><p>employee　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
 </div></div>
 </div></div>
 <div class="exampleblock">
@@ -1500,9 +1468,10 @@ http://www.gnu.org/software/src-highlite -->
 
 $ <span style="color: #009900">$RIAK_HOME</span>/rel/riak<span style="color: #993399">4</span>/bin/riak ping □
 pong</tt></pre></div></div>
-<div class="paragraph"><p>riak4/bin/riak-adminの「cluster join」コマンドを使い、riak1に向かって
-既存のクラスターへの参加要求を送ります。（参加要求を送る先はクラスター
-のメンバーノードならどれでも構いません。riak2やriak3でも大丈夫です）</p></div>
+<div class="paragraph"><p>riak4/bin/riak-adminの「cluster join」コマンドを使い、既存のクラスター
+のメンバーノード（ここではriak1）へ参加要求を送ります。なお、参加要求
+を送る先はクラスターのメンバーノードならどれでも構いません。riak2や
+riak3でも同じ結果になります。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1574,12 +1543,19 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>答え： 1. なっている　　2. なっていない</p></div>
 </div></div>
 <div class="paragraph"><p><strong>TODO</strong>
-変更後のリングの状態を確認しましょう。&#8230; メモ帳に保存した変更前の</p></div>
+変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
+比べてください。</p></div>
 <div class="paragraph"><p>【質問】
-- Ring上の仮想ノードの数は変わりましたか？　などなど</p></div>
+- Ring上の仮想ノードの数は変わりましたか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1. 変わった（増えた）　　2. 変わった（減った）　　3. 変わらない</p></div>
+</div></div>
+<div class="paragraph"><p>【質問】
+- riak4へ移動した仮想ノードはどれですか？（複数あり）</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>答え： 1 ＿＿＿＿＿＿＿　2 ＿＿＿＿＿＿＿　3 ＿＿＿＿＿＿＿ 4 ＿＿＿＿＿＿＿</p></div>
 </div></div>
 </div></div>
 <div class="exampleblock">
@@ -1662,7 +1638,7 @@ node riak2 ping failed
 <div class="title">Note</div>
 </td>
 <td class="content">
-<div class="title">リングのサイズについて</div>今回はリングについて理解しやすいよう、リングサイズを小さく設定していま
+<div class="title">補足：リングのサイズについて</div>今回はリングについて理解しやすいよう、リングサイズを小さく設定していま
 す。しかし、この設定ではデータの偏りが起こりやすくなってしまいます。
 Riakを業務で使用する際は、この値を大きく（数十〜数百に）設定してくださ
 い。</td>
@@ -1769,7 +1745,6 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ riak-create-buckets-ossforum<span style="color: #990000">.</span>escript □
-Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"b1"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
 Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
 Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"basho_bench_test"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
 </tt></pre></div></div>
@@ -1877,8 +1852,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">5-3. １ノードダウン時の書き込み操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>メンバーノードの１つが停止したまま書き込みの挙動を確認しましょう。</p></div>
-<div class="paragraph"><p>W = allで書き込みを試みます。もし書き込みに失敗した場合は
-「●●●●」が返されます。</p></div>
+<div class="paragraph"><p>W = allで書き込みを試みます。</p></div>
 <div class="listingblock">
 <div class="title">Erlangシェル用ウィンドウ</div>
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -1893,7 +1867,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>書き込みは成功しましたか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
-<div class="paragraph"><p>答え： W = all　　　　1. 成功　　　2. 失敗</p></div>
+<div class="paragraph"><p>答え： 1. 成功　　　2. 失敗</p></div>
 </div></div>
 </div></div>
 <div class="admonitionblock">
@@ -1968,9 +1942,63 @@ node riak2 ping failed
 </ul></div>
 <h3 id="_hibari_2">Hibariのデータモデル</h3><div style="clear:left"></div>
 <div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+テーブル
+</p>
+</li>
+<li>
+<p>
+キー・バリュー
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+キー
+</p>
+</li>
+<li>
+<p>
+バリュー
+</p>
+</li>
+<li>
+<p>
+フラグ（メタデータ）
+</p>
+</li>
+<li>
+<p>
+有効期限
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+一部の情報をメモリー上に常駐させることで高速化を実現
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+キー、フラグ、有効期限はメモリー上に常駐します
+</p>
+</li>
+<li>
+<p>
+バリューは　<tt>value_in_ram</tt> を指定することでメモリー上に常駐させら
+    れます。
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
 <h3 id="_hibari_3">Hibariの起動とクラスター構成の確認</h3><div style="clear:left"></div>
 <div class="paragraph"><p>今回は学習のために、１台のLinux仮想サーバー上で複数のHibariメンバーノー
-ド（「ブリックサーバー」と呼びます）を動かします。（構成図）</p></div>
+ド（「ブリックサーバー」と呼びます）を動かします。</p></div>
+<div class="paragraph"><p>チェイン・レプリケーションの解説
+<a href="http://hibari.github.com/hibari-doc/hibari-tutorial.en.html#_hibari_chain_replication">http://hibari.github.com/hibari-doc/hibari-tutorial.en.html#_hibari_chain_replication</a></p></div>
 <div class="exampleblock">
 <div class="title">6-1. Hibariの起動</div>
 <div class="exampleblock-content">
@@ -2113,40 +2141,40 @@ Eshell V5<span style="color: #990000">.</span><span style="color: #993399">9.2</
 <div class="title">6-6. キーバリューの書き込み</div>
 <div class="exampleblock-content">
 <div class="listingblock">
+<div class="title">Hibariに接続</div>
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% Hibariに接続</span></span>
-
-<span style="color: #990000">&gt;</span> AdminNode <span style="color: #990000">=</span> <span style="color: #FF0000">'hibari1@127.0.0.1'</span><span style="color: #990000">.</span> □
+<pre><tt><span style="color: #990000">&gt;</span> AdminNode <span style="color: #990000">=</span> <span style="color: #FF0000">'hibari1@127.0.0.1'</span><span style="color: #990000">.</span> □
 <span style="color: #FF0000">'hibari1@127.0.0.1'</span>
 
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:connect</span></span>(AdminNode)<span style="color: #990000">.</span> □
-<span style="color: #990000">...</span>（略）
+<span style="color: #990000">...</span>（略：大量のログが出力されますが、最後にokと表示されれば大丈夫です）
 ok<span style="color: #990000">.</span>
+
+<span style="font-style: italic"><span style="color: #9A1900">%% employeeテーブルについて、コンシステント・ハッシング情報とノードの</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% 稼働状況を取得します。</span></span>
 
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:wait_for_tables</span></span>(AdminNode, [employee])<span style="color: #990000">.</span> □
 ok<span style="color: #990000">.</span>
-
-
-<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
-<span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/title、バリュー："engineer"</span></span>
-
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">キーバリューをHibariに格納</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/title、バリュー："engineer"</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/title"</span>, <span style="color: #FF0000">"engineer"</span>)<span style="color: #990000">.</span> □
 ok
 
-<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/age、バリュー：23（符号なし８ビット整数）</span></span>
-
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/age"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">23</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/age"</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">23</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
 ok
 
-
-<span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納。</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">%% テーブル：employee、キー：jeremy/age、バリュー："CA"</span></span>
-
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/state"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/state"</span>, <span style="color: #FF0000">"CA"</span>)<span style="color: #990000">.</span> □
 ok</tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
@@ -2157,50 +2185,68 @@ ok</tt></pre></div></div>
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy/title"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
-{ok,<span style="color: #993399">1348490264725016</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"jeremy/title"</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744080833154</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}
 
 
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"gary/title"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+<span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューが存在しないときは、key_not_existが返されます</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"gary/title"</span>)<span style="color: #990000">.</span> □
 key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist
 </tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
-<div class="title">6-8. メタデータ付きの、キーバリューを書き込み</div>
+<div class="title">6-8. フラグ付きのキー・バリューを書き込み</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
-</div></div>
-<div class="exampleblock">
-<div class="title">6-9. 複数のキー・バリューをアトミックに書き込み</div>
-<div class="exampleblock-content">
-<div class="paragraph"><p>同一テーブルの同一チェイン上なら、複数のキー・バリューをアトミックに追
-加できます。この場合は、すべての操作が成功するか、あるいは、すべての操
-作が実行されないか、のどちらかになります。</p></div>
+<div class="paragraph"><p>キー・バリューにフラグ（メタデータ）をつけることができます。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="color: #990000">&gt;</span> Ops <span style="color: #990000">=</span> [<span style="font-weight: bold"><span style="color: #000000">brick_server:make_txn</span></span>(),
-         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>),
-         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,   <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>),
-         <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>)]<span style="color: #990000">.</span> □
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% value_in_ram でバリューをメモリー上に常駐させる</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/login-counter"</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">0</span><span style="color: #990000">:</span><span style="color: #993399">64</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-integer</span></span><span style="color: #990000">&gt;&gt;</span>, [value<span style="color: #990000">_</span>in<span style="color: #990000">_</span>ram])<span style="color: #990000">.</span> □
+ok<span style="color: #990000">.</span>
 
-[txn,
- {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
- {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
- {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]}]
+<span style="font-style: italic"><span style="color: #9A1900">%% ユーザー定義フラグも格納できます</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, <span style="color: #FF0000">"disginer"</span>, [{activities, <span style="color: #FF0000">"yoga"</span>}])<span style="color: #990000">.</span> □
+ok<span style="color: #990000">.</span>
+
+<span style="font-style: italic"><span style="color: #9A1900">%% バリューと同時にユーザー定義フラグ読み出し</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, [get<span style="color: #990000">_</span>all<span style="color: #990000">_</span>attribs])<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744156095280</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"disginer"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+    [{val<span style="color: #990000">_</span>len,<span style="color: #993399">8</span>},{activities,<span style="color: #FF0000">"yoga"</span>}]}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% ユーザー定義フラグのみを読み出し（ディスクアクセスを伴わないので高速）</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, [witness, get<span style="color: #990000">_</span>all<span style="color: #990000">_</span>attribs])<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744156095280</span>,[{val<span style="color: #990000">_</span>len,<span style="color: #993399">8</span>},{activities,<span style="color: #FF0000">"yoga"</span>}]}
+</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">6-9. 複数のキー・バリューをまとめて書き込み</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>doを使うと同一テーブルの同一チェインに対する操作を一度に実行でいます。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> Ops1 <span style="color: #990000">=</span> [<span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #FF0000">"helena/title"</span>, <span style="color: #FF0000">"scientist"</span>),
+          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #FF0000">"helena/age"</span>,   <span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">:</span><span style="color: #993399">8</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-little-integer</span></span><span style="color: #990000">&gt;&gt;</span>),
+          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #FF0000">"helena/state"</span>, <span style="color: #FF0000">"CA"</span>)]<span style="color: #990000">.</span> □
+
+[{set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017408</span>,<span style="color: #FF0000">"scientist"</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017422</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017425</span>,<span style="color: #FF0000">"CA"</span>,<span style="color: #993399">0</span>,[]}]
 
 
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:do</span></span>(employee, Ops)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:do</span></span>(employee, Ops1)<span style="color: #990000">.</span> □
 [ok,ok,ok]
-
-<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> トランザクションが失敗する例を追加する
 </tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
 <div class="title">6-10. キーの区切り文字とレンジスキャン</div>
 <div class="exampleblock-content">
+<div class="paragraph"><p><strong>TODO</strong> 解説</p></div>
 <div class="paragraph"><p><strong>TODO</strong> employee テーブルではキーの区切り文字として「/」が使われていることを解説する</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -2210,30 +2256,40 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% binary_prefixを指定することで、キーがhelenaで始まるものだけを読み出します。</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">%% キーは辞書順にソートされて格納されています。</span></span>
 
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #993399">10</span>, [{<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
-{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #FF0000">"helena"</span>, <span style="color: #993399">10</span>, [{<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
+{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017422</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">29</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
        [{val<span style="color: #990000">_</span>len,<span style="color: #993399">1</span>}]},
-      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017425</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
        [{val<span style="color: #990000">_</span>len,<span style="color: #993399">2</span>}]},
-      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017408</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
        [{val<span style="color: #990000">_</span>len,<span style="color: #993399">9</span>}]}],
      <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>}}
 
 
 <span style="font-style: italic"><span style="color: #9A1900">%% キーだけを取り出すこともできます。Hibariではキーとメタデータはメモ</span></span>
-<span style="font-style: italic"><span style="color: #9A1900">%% リー上に常駐していますのでディスクアクセスなしで結果を得られます。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% リー上に常駐していますので、ディスクアクセスなしで結果を得られます。</span></span>
 
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #993399">10</span>, [witness, {<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
-{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223771</span>},
-      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223778</span>},
-      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348514414223763</span>}],
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get_many</span></span>(employee, <span style="color: #FF0000">"helena"</span>, <span style="color: #993399">10</span>, [witness, {<span style="color: #FF0000">'binary_prefix'</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>}])<span style="color: #990000">.</span> □
+{ok,{[{<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/age"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017422</span>},
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017425</span>},
+      {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348744219017408</span>}],
      <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>}}
 </tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
 <div class="title">6-11. キー・バリューの削除</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:delete</span></span>(employee, <span style="color: #FF0000">"jeremy/title"</span>)<span style="color: #990000">.</span> □
+
+<span style="font-style: italic"><span style="color: #9A1900">%% キーが存在しない時はエラーになります</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:delete</span></span>(employee, <span style="color: #FF0000">"gary/titse"</span>)<span style="color: #990000">.</span> □
+key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist</tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
 <div class="title">6-12. Erlangシェルの終了</div>
@@ -2255,62 +2311,7 @@ $</tt></pre></div></div>
 <div class="paragraph"><p>Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
 クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。</p></div>
 <div class="exampleblock">
-<div class="title">7-1. Hibariの初期化</div>
-<div class="exampleblock-content">
-<div class="paragraph"><p>Hibariの環境を初期化しましょう。この操作により今までHibariに保存したデー
-タは全て削除されます。</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt>（Hibariの停止。すでに停止しているのでエラーになります）
-$ hibari-stop-ossforum<span style="color: #990000">.</span>sh □
-Node <span style="color: #FF0000">'hibari1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
-Node <span style="color: #FF0000">'hibari2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
-<span style="color: #990000">...</span>（略）
-node hibari1 stop failed
-node hibari2 stop failed
-<span style="color: #990000">...</span>（略<span style="color: #990000">)</span>
-
-（Hibariのデータを全て削除します）
-$ riak-reset-ossforum<span style="color: #990000">.</span>sh □
-deleted data on hibari1
-deleted data on hibari2
-<span style="color: #990000">...</span>（略<span style="color: #990000">)</span></tt></pre></div></div>
-<div class="paragraph"><p>Hibariを起動します。</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ hibari-start-ossforum<span style="color: #990000">.</span>sh □
-hibari1 started
-hibari2 started
-<span style="color: #990000">...</span>（略）
-
-$ hibari-ping-ossforum<span style="color: #990000">.</span>sh □
-hibari1 <span style="color: #990000">...</span> pong
-hibari2 <span style="color: #990000">...</span> pong
-<span style="color: #990000">...</span>（略）</tt></pre></div></div>
-<div class="paragraph"><p>テーブルを再作成します。</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
-$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
-ok
-ok
-Table basho_bench_test_simple created
-ok
-Table basho_bench_test_sequential created
-ok
-Table basho_bench_test_random created</tt></pre></div></div>
-</div></div>
-<div class="exampleblock">
-<div class="title">7-2. １ノードダウン時の読み出し操作</div>
+<div class="title">7-1. １ノードダウン時の読み出し操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
 う。まず、全ノードが稼働している状態で書き込みを行い、次に、ブリックサー
@@ -2326,14 +2327,21 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ erl<span style="font-weight: bold"><span style="color: #000080">-hibari-ossforum</span></span><span style="color: #990000">.</span>sh □
 <span style="color: #990000">&gt;</span> AdminNode <span style="color: #990000">=</span> <span style="color: #FF0000">'hibari1@127.0.0.1'</span><span style="color: #990000">.</span> □
+<span style="color: #FF0000">'hibari1@127.0.0.1'</span>
+
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:connect</span></span>(AdminNode)<span style="color: #990000">.</span> □
+<span style="color: #990000">...</span>
+ok
+
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">hibari_client_utils:wait_for_tables</span></span>(AdminNode, [employee])<span style="color: #990000">.</span> □
+ok
 
 <span style="font-style: italic"><span style="color: #9A1900">%% キーバリューをHibariに格納</span></span>
 
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"designer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, <span style="color: #FF0000">"designer"</span>)<span style="color: #990000">.</span> □
+ok
 </tt></pre></div></div>
-<div class="paragraph"><p>キー・バリューを書き込んだらブリックサーバーの１つを停止します。</p></div>
+<div class="paragraph"><p>ブリックサーバーの１つを停止します。</p></div>
 <div class="listingblock">
 <div class="title">bash用ウィンドウ</div>
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -2341,11 +2349,14 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ <span style="color: #009900">$HIBARI_HOME</span>/rel/hibari<span style="color: #993399">3</span>/bin/hibari stop □
+ok
+
 $ <span style="color: #009900">$HIBARI_HOME</span>/rel/hibari<span style="color: #993399">3</span>/bin/hibari ping □
 Node <span style="color: #FF0000">'hibari3@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span></tt></pre></div></div>
-<div class="paragraph"><p>Web UIでチェインの状態が「degrated」になっていることを確認してください。</p></div>
+<div class="paragraph"><p>Web UIでチェインの状態を確認します。</p></div>
 <div class="paragraph"><p><a href="http://仮想サーバーのアドレス:23080/">http://仮想サーバーのアドレス:23080/</a></p></div>
-<div class="paragraph"><p>●●の欄を見ます。</p></div>
+<div class="paragraph"><p>「Bricks」の表の「employee_ch」（チェイン）の状態を見て、「degraded」
+（縮退運行中）であることを確認します。</p></div>
 <div class="paragraph"><p>読み出を試みます。もし読み出しに失敗した場合は「brick_not_available」
 が返されます。なおHibariでは読み出しはR＝1に固定されています。</p></div>
 <div class="listingblock">
@@ -2354,7 +2365,7 @@ Node <span style="color: #FF0000">'hibari3@127.0.0.1'</span> not responding to p
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"ann/title"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
 <div class="paragraph"><p>読み出しは成功しましたか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
@@ -2373,7 +2384,7 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"bob/title"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"sales"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"bob/title"</span>, <span style="color: #FF0000">"sales"</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
 <div class="paragraph"><p>書き込みは成功しましたか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
@@ -2381,37 +2392,118 @@ http://www.gnu.org/software/src-highlite -->
 </div></div>
 </div></div>
 </div>
-<h2 id="_8_cp_nosql">8. 整合性重視（CP）のNOSQLが得意とする操作</h2>
+<h2 id="_8_cp_nosql">8. 整合性重視（CP）のNOSQLだけで実現可能な操作</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>整合性重視（CP）のNOSQLだけで可能となる操作を紹介しましょう。</p></div>
+<div class="paragraph"><p>これらの操作は、キー・バリューの全ての複製で整合性がとれていないと実現
+できません。可用性重視（AP）のNOSQLでは、ネットワーク分断時に複製間の
+不整合を許すため実現不可能です。</p></div>
 <div class="exampleblock">
-<div class="title">8-1. CAS操作</div>
+<div class="title">8-1. キー・バリューの存在チェック</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p><strong>TODO</strong><br /></p></div>
+<div class="paragraph"><p>キー・バリューの追加、更新、削除の際に、キー・バリューの存在チェックが
+できます。</p></div>
+<div class="paragraph"><p>一見、できて当たり前と思える機能ですが、キー・バリューの全ての複製の整
+合性している必要があるため、整合性重視のNOSQLだけで実現できます。</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>%% caren/titleを新規に登録
+&gt; brick_simple:add(employee, "caren/title", "engineer"). □
+ok
+
+%% 再び登録しようとすると失敗します。
+&gt; brick_simple:add(employee, "caren/title", "designer"). □
+{key_exists,1348744725037912}
+
+%% 既存のキー・バリューを置き換え。
+&gt; brick_simple:replace(employee, "caren/title", "designer"). □
+ok
+
+%% キー・バリューが存在しないときは失敗します。
+&gt; brick_simple:replace(employee, "mike/title", "disigner"). □
+key_not_exist</tt></pre>
+</div></div>
+<div class="paragraph"><p>6-11で確認したように、キー・バリューが存在しない時の削除（delete）操作
+もエラーになります。一方、Riakでは3-9で確認したように、エラーになりま
+せん（エラーにできません）</p></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">8-2. CAS操作</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>CAS操作（Check And Swap）を使うと、複数クライアントの同時更新を制御で
+きます。キー・バリューの全ての複製が同期している必要があるため、整合性
+重視のNOSQLだけで実現できます。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ <span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> □</tt></pre></div></div>
-<div class="sidebarblock">
-<div class="sidebar-content">
-<div class="paragraph"><p>答え：</p></div>
-</div></div>
+<pre><tt><span style="color: #990000">%%</span> クライアント１がログインカウンターを読み出し
+<span style="color: #990000">%%</span> Ts1にはキー・バリューが最後に更新された時刻が入る
+<span style="color: #990000">&gt;</span> {ok<span style="color: #990000">,</span> Ts1<span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;</span>Val1<span style="color: #990000">:</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;</span>} <span style="color: #990000">=</span> brick_simple<span style="color: #990000">:</span>get<span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">).</span> □
+{ok<span style="color: #990000">,</span><span style="color: #993399">1348744147878810</span><span style="color: #990000">,&lt;&lt;</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">&gt;&gt;</span>}
+
+
+<span style="color: #990000">%%</span> その直後、クライアント２がログインカウンターを読み出したと想定しましょう。
+{ok<span style="color: #990000">,</span> Ts2<span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;</span>Val2<span style="color: #990000">:</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;</span>} <span style="color: #990000">=</span> brick_simple<span style="color: #990000">:</span>get<span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">).</span> □
+{ok<span style="color: #990000">,</span><span style="color: #993399">1348744147878810</span><span style="color: #990000">,&lt;&lt;</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">&gt;&gt;</span>}
+
+
+<span style="color: #990000">%%</span> クライアント２が先にカウンターを更新しました。
+<span style="color: #990000">%%</span> testsetでタイムスタンプを確認し、以前と変わってなければ更新します。
+<span style="color: #990000">&gt;</span> brick_simple<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">set</span></span><span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;(</span>Val2 <span style="color: #990000">+</span> <span style="color: #993399">1</span><span style="color: #990000">):</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;,</span>
+                   <span style="color: #990000">[</span>value_in_ram<span style="color: #990000">,</span> {testset<span style="color: #990000">,</span> Ts2}<span style="color: #990000">]).</span> □
+ok
+
+<span style="color: #990000">%%</span> クライアント１がカウンターを更新しようとしても
+<span style="color: #990000">%%</span> タイムスタンプが変わっているので失敗します。
+<span style="color: #990000">&gt;</span> brick_simple<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">set</span></span><span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;(</span>Val1 <span style="color: #990000">+</span> <span style="color: #993399">1</span><span style="color: #990000">):</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;,</span>
+                   <span style="color: #990000">[</span>value_in_ram<span style="color: #990000">,</span> {testset<span style="color: #990000">,</span> Ts1}<span style="color: #990000">]).</span> □
+{ts_error<span style="color: #990000">,</span><span style="color: #993399">1348744830713999</span>}
+</tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
-<div class="title">8-2. Hibariのマイクロトランザクション</div>
+<div class="title">8-3. Hibariのマイクロトランザクション</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p><strong>TODO</strong><br /></p></div>
+<div class="paragraph"><p>Hibariでは同一テーブルの同一チェイン上なら、複数のキー・バリューをアト
+ミックに追加できます。この場合は、すべての操作が成功するか、あるいは、
+すべての操作が実行されないか、のどちらかになります。</p></div>
+<div class="paragraph"><p>Hibariだけで実現されている機能です。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ <span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> □</tt></pre></div></div>
-<div class="sidebarblock">
-<div class="sidebar-content">
-<div class="paragraph"><p>答え：</p></div>
-</div></div>
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% helenaさんの情報はすでに登録済みです。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"helena/title"</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744219017408</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"scientist"</span><span style="color: #990000">&gt;&gt;</span>}
+
+<span style="font-style: italic"><span style="color: #9A1900">%% 同じキーで別人を登録しようとするとどうなるでしょうか？</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% 一連の操作をトランザクションとして実行します。</span></span>
+<span style="color: #990000">&gt;</span> Ops2 <span style="color: #990000">=</span> [<span style="font-weight: bold"><span style="color: #000000">brick_server:make_txn</span></span>(),
+          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_add</span></span>(<span style="color: #FF0000">"helena/title"</span>,    <span style="color: #FF0000">"sales"</span>),
+          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #FF0000">"helena/state"</span>,    <span style="color: #FF0000">"NY"</span>),
+          <span style="font-weight: bold"><span style="color: #000000">brick_server:make_set</span></span>(<span style="color: #FF0000">"helena/lastname"</span>, <span style="color: #FF0000">"smith"</span>)]<span style="color: #990000">.</span> □
+
+[txn,
+ {add,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/title"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348745055483211</span>,<span style="color: #FF0000">"sales"</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/state"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348745055483221</span>,<span style="color: #FF0000">"NY"</span>,<span style="color: #993399">0</span>,[]},
+ {set,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena/lastname"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">1348745055483226</span>,<span style="color: #FF0000">"smith"</span>,<span style="color: #993399">0</span>,[]}]
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% トランザクションを実行しようとすると、最初のaddで失敗するので、</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% トランザクション全体がロールバックします。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:do</span></span>(employee, Ops2)<span style="color: #990000">.</span> □
+{txn<span style="color: #990000">_</span>fail,[{<span style="color: #993399">1</span>,{key<span style="color: #990000">_</span>exists,<span style="color: #993399">1348744219017408</span>}}]}
+
+
+<span style="font-style: italic"><span style="color: #9A1900">%% 以前の情報のままです。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"helena/state"</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744219017425</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"CA"</span><span style="color: #990000">&gt;&gt;</span>}
+
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"helena/lastname"</span>)<span style="color: #990000">.</span> □
+key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist
+</tt></pre></div></div>
 </div></div>
 </div>
 <h2 id="_9_riak_cassandra_hibari">9. 講義：データ分散について、Riak、Cassandra、Hibariを比較</h2>
@@ -2548,7 +2640,62 @@ Basho Benchの使いかた
 </ul></div>
 <div class="paragraph"><p>なお、RiakやCassandraもデータの分散に関しては近い特性を持ちます。</p></div>
 <div class="exampleblock">
-<div class="title">10-1. Basho Benchの実行</div>
+<div class="title">10-1. Hibariの初期化</div>
+<div class="exampleblock-content">
+<div class="paragraph"><p>Hibariの環境を初期化しましょう。この操作により今までHibariに保存したデー
+タは全て削除されます。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>（Hibariの停止。すでに停止しているのでエラーになります）
+$ hibari-stop-ossforum<span style="color: #990000">.</span>sh □
+Node <span style="color: #FF0000">'hibari1@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+Node <span style="color: #FF0000">'hibari2@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
+<span style="color: #990000">...</span>（略）
+node hibari1 stop failed
+node hibari2 stop failed
+<span style="color: #990000">...</span>（略<span style="color: #990000">)</span>
+
+（Hibariのデータを全て削除します）
+$ riak-reset-ossforum<span style="color: #990000">.</span>sh □
+deleted data on hibari1
+deleted data on hibari2
+<span style="color: #990000">...</span>（略<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>Hibariを起動します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-start-ossforum<span style="color: #990000">.</span>sh □
+hibari1 started
+hibari2 started
+<span style="color: #990000">...</span>（略）
+
+$ hibari-ping-ossforum<span style="color: #990000">.</span>sh □
+hibari1 <span style="color: #990000">...</span> pong
+hibari2 <span style="color: #990000">...</span> pong
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>テーブルを再作成します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
+$ hibari-create-tables-ossforum<span style="color: #990000">.</span>sh □
+ok
+ok
+Table basho_bench_test_simple created
+ok
+Table basho_bench_test_sequential created
+ok
+Table basho_bench_test_random created</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">10-2. Basho Benchの実行</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Basho Benchを実行しましょう。以下のコマンドを入力します。</p></div>
 <div class="listingblock">
@@ -2831,7 +2978,7 @@ specifies an external function that should return a value
 </ul></div>
 </div></div>
 <div class="exampleblock">
-<div class="title">10-2. グラフのプロット（R言語）と結果の確認</div>
+<div class="title">10-3. グラフのプロット（R言語）と結果の確認</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>実行結果をグラフにプロットしてみましょう。Basho_Benchには統計解析プロ
 グラミング言語の <strong>R言語</strong> で書かれたスクリプトが付属していますので、そ
@@ -2865,7 +3012,7 @@ Riakは使用するストレージエンジンによって特性が異なりま�
 </li>
 </ul></div>
 <div class="exampleblock">
-<div class="title">10-3. Hibariの停止</div>
+<div class="title">10-4. Hibariの停止</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>作業が終わったらHibariを停止します。</p></div>
 <div class="listingblock">
@@ -2928,12 +3075,7 @@ $ basho_bench conf-bb/riak-random<span style="color: #990000">.</span>conf □
 </li>
 </ul></div>
 </div>
-<h2 id="_12">12. 後片付け</h2>
-<div class="sectionbody">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
-<h3 id="__6">仮想サーバーの停止、削除</h3><div style="clear:left"></div>
-</div>
-<h2 id="__7">付録. 参考資料</h2>
+<h2 id="__6">付録. 参考資料</h2>
 <div class="sectionbody">
 <h3 id="_basho_riak">Basho Riak</h3><div style="clear:left"></div>
 <div class="paragraph"><p><strong>TODO</strong></p></div>
@@ -2942,8 +3084,8 @@ $ basho_bench conf-bb/riak-random<span style="color: #990000">.</span>conf □
 </div>
 <div id="footer">
 <div id="footer-text">
-Version v1.0-draft-3<br />
-Last updated 2012-09-27 07:47:50 JST
+Version v1.0-draft-4<br />
+Last updated 2012-09-27 20:33:09 JST
 </div>
 </div>
 </body>
