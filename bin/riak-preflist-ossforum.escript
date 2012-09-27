@@ -19,12 +19,12 @@ main([BucketName, Key]) ->
                     io:format("error: ~p~n", [Error2]);
                 <<HashInt:160/integer>>=HashBin ->
                     Preflist = riak_core_ring:preflist(HashBin, Ring),
-                    {Targets, Fallbacks} = lists:split(N, Preflist),
+                    {Primaries, Fallbacks} = lists:split(N, Preflist),
                     {RingSize, _} = ring_info(Ring),
 
                     io:format("~s/~s: ~p~n~n",      [BucketName, Key, HashInt]),
-                    io:format("Targets:~n~p~n~n",   [add_ring_num(Targets, RingSize)]),
-                    io:format("Fallbacks:~n~p~n",   [add_ring_num(Fallbacks, RingSize)])
+                    io:format("Primaries:~n~p~n~n", [add_ring_num(RingSize, Primaries)]),
+                    io:format("Fallbacks:~n~p~n",   [add_ring_num(RingSize, Fallbacks)])
             end
     end;
 main(_) ->
@@ -34,12 +34,13 @@ main(_) ->
 ring_info({_,_,_,RingInfo,_,_,_,_,_,_,_}) ->
     RingInfo.
 
-ring_num(0, _) ->
+add_ring_num(RingSize, Ring) ->
+    [ {ring_num(RingSize, Hash), Hash, Node} || {Hash, Node} <- Ring ].
+
+ring_num(_, 0) ->
     1;
-ring_num(Hash, RingSize) ->
+ring_num(RingSize, Hash) ->
     MaxValue = 1461501637330902918203684832716283019655932542976,
     Step = MaxValue / RingSize,
     round(Hash / Step) + 1.
 
-add_ring_num(Ring, RingSize) ->
-    [ {ring_num(Hash, RingSize), Hash, Node} || {Hash, Node} <- Ring ].
