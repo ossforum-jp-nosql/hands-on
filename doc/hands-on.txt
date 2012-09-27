@@ -2113,12 +2113,18 @@ $ $BASHO_BENCH_HOME/priv/summary.r -i tests/current/
 グラフはPNG形式の画像ファイルになります。WindowsシンクライアントのPSCP
 を使って、画像ファイルをダウンロードしましょう。
 
-.WindowsシンクライアントのDOSウィンドウ
+.Windowsシンクライアントのコマンドプロンプト
 [source,shell]
 ----
 $ pscp ossforum@仮想サーバーのIP:/home/ossforum/hands-on/tests/current/summary.png .
 
 ----
+
+.Cygwin
+[NOTE]
+もし、会場のWindowsシンクライアントにpscpコマンドが入っていない場合は、
+Cygwinを使用してください。（方法は会場で説明します）
+
 
 summary.pngがダウンロードできたら、ダブルクリックして開きます。
 
