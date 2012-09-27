@@ -3,7 +3,7 @@
 %%! -smp enable -name riak_client@127.0.0.1 -pa /home/ossforum/riak/deps/riak_core/ebin -pa /home/ossforum/riak/deps/riak_kv/ebin
 
 main(_Args) ->
-    BucketNames = [<<"b1">>, <<"employee">>, <<"basho_bench_test">>],
+    BucketNames = [<<"employee">>, <<"basho_bench_test">>],
     RiakNodes = ['riak1@127.0.0.1','riak2@127.0.0.1','riak3@127.0.0.1'],
     BucketProps = [{n_val, 3}, %% Number of replicas.
 		   {r, quorum},
