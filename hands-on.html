@@ -387,7 +387,7 @@ div#toc a:visited { color: blue; }
 <h1>第２回　NOSQL実機ハンズオン（Riak、Hibari）</h1>
 <span id="author">河野達也 Tatsuya Kawano CloudianKK</span><br />
 <span id="email"><tt>&lt;<a href="mailto:tkawano@cloudian.com">tkawano@cloudian.com</a>&gt;</tt></span><br />
-<span id="revnumber">version v1.0-draft-5,</span>
+<span id="revnumber">version v1.0-draft-6,</span>
 <span id="revdate">2012年9月28日</span>
 </div>
 <div id="preamble">
@@ -517,7 +517,7 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 い。</p></div>
 <div class="paragraph"><p>また自習のために、今回の環境を１から設定するための手順も用意します。
 （ <strong>後日公開予定</strong> ）</p></div>
-<h3 id="_ssh">仮想サーバーにsshでログイン</h3><div style="clear:left"></div>
+<h3 id="_2_1_ssh">2-1. 仮想サーバーにsshでログイン</h3><div style="clear:left"></div>
 <div class="paragraph"><p>PuTTYを立ち上げ、sshで接続します。</p></div>
 <div class="ulist"><ul>
 <li>
@@ -531,6 +531,7 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 </p>
 </li>
 </ul></div>
+<h3 id="_2_2">2-2. パスワードの変更</h3><div style="clear:left"></div>
 <div class="paragraph"><p>ログインに成功したら、パスワードを変更してください。これにより、他の受
 講生があなたのサーバーに誤ってログインしてしまうことを防げます。</p></div>
 <div class="listingblock">
@@ -542,7 +543,56 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #990000">(</span>current<span style="color: #990000">)</span> UNIX password<span style="color: #990000">:</span> （現在のパスワード） □
 New password<span style="color: #990000">:</span> （新しいパスワード） □
 Retype new password<span style="color: #990000">:</span> （新しいパスワードを再入力） □</tt></pre></div></div>
-<h3 id="__3">製品のバージョン</h3><div style="clear:left"></div>
+<h3 id="2-3">2-3. ハンズオンコンテンツのアップデート</h3><div style="clear:left"></div>
+<div class="paragraph"><p>ハンズオンで使用するスクリプトなどのファイルは、仮想サーバーの
+「hands-on」ディレクトリに入っています。hands-onディレクトリの内容は、
+バージョン管理システムのGitで管理されています。以下のコマンドで最新版
+にアップデートしてください。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ cd <span style="color: #990000">~</span>/hands-on □
+$ git pull  □
+<span style="color: #990000">...</span>（略）</tt></pre></div></div>
+<div class="paragraph"><p>以下のコマンドで、最後のコミット（ファイルの更新）に対するSHA-1チェッ
+クサムを表示します。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ git branch -v  □</tt></pre></div></div>
+<div class="listingblock">
+<div class="title">出力の例</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">*</span> master 9e76bae Add how to draw the summary chart with R<span style="color: #990000">.</span></tt></pre></div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+「master」はブランチ名です。今回はmasterだけを使います。
+</p>
+</li>
+<li>
+<p>
+「9e76bae」が、masterブランチに加えられた最後のコミットに対するSHA-1
+  チェックサム（の先頭部分）です。チェックサムはコミットの毎にユニーク
+  な値になります。
+</p>
+</li>
+<li>
+<p>
+「Add how to draw&#8230;」は、コミットの内容を説明するコメントです。
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>重要</strong><br />
+チェックサムが会場の白板に書かれたものと一致することを確認してください。</p></div>
+<h3 id="_2_4">2-4. 製品のバージョン</h3><div style="clear:left"></div>
 <div class="paragraph"><p>仮想サーバーにはハンズオンで使用するNOSQLと性能測定ツールがすでに導入
 されています。各製品のバージョンは以下の通りです。</p></div>
 <div class="ulist"><ul>
@@ -601,13 +651,13 @@ Riak、Hibari、Basho Benchで使用
 <div class="ulist"><ul>
 <li>
 <p>
-Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
+Linux&#8201;&#8212;&#8201;CentOS 5.8　64ビット版
 </p>
 </li>
 </ul></div>
 </li>
 </ul></div>
-<h3 id="__4">ディレクトリ構成</h3><div style="clear:left"></div>
+<h3 id="_2_5">2-5. ディレクトリ構成</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>/home/
@@ -629,19 +679,17 @@ Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
         riak/
         riak-client-erlang/</tt></pre>
 </div></div>
-<h3 id="_linix">Linixシェルのごく基本的な操作。</h3><div style="clear:left"></div>
+<h3 id="_2_6_putty">2-6. PuTTYのごく基本的な操作</h3><div style="clear:left"></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <div class="title">Tip</div>
 </td>
 <td class="content">
-<div class="title">Linuxシェルでテキストファイルの内容を表示、編集する</div>スクリプトのようなテキストファイルの内容を表示するには、 <tt>less</tt> コマン
-ドを使用します。また、テキストファイルの内容を編集するには、 <tt>nano</tt> コ
-マンド（または vi、emacs）を使用します。ファイルの編集が終わったら、
-<tt>Control</tt> キーと <tt>x</tt> キーを同時に押して保存します。</td>
+<div class="title">コピー＆ペースト</div><strong>TODO</strong></td>
 </tr></table>
 </div>
+<h3 id="_2_7_linux">2-7. Linuxシェルのごく基本的な操作</h3><div style="clear:left"></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -652,6 +700,18 @@ Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
 <tt>Control</tt> キーと <tt>r</tt> キーを同時に押すとコマンドの入力履歴を検索できま
 す。さらに、コマンドの入力途中で <tt>Tab</tt> キーを押すと、残りの部分が補完
 されます。</td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="title">Linuxシェルでテキストファイルの内容を表示、編集する</div>スクリプトのようなテキストファイルの内容を表示するには、 <tt>less</tt> コマン
+ドを使用します。また、テキストファイルの内容を編集するには、 <tt>nano</tt> コ
+マンド（または vi、emacs）を使用します。ファイルの編集が終わったら、
+<tt>Control</tt> キーと <tt>x</tt> キーを同時に押して保存します。</td>
 </tr></table>
 </div>
 </div>
@@ -1276,16 +1336,30 @@ Ringの状態
 </ul></div>
 <h3 id="_riak_4">Riakのリング</h3><div style="clear:left"></div>
 <div class="paragraph"><p><a href="http://wiki.basho.com/What-is-Riak%3F.html">http://wiki.basho.com/What-is-Riak%3F.html</a></p></div>
-<div class="paragraph"><p><strong>TODO</strong>
-- リング
-- 仮想ノード（vnode）
-- 物理ノード（メンバーノード）</p></div>
-<h3 id="__5">やってみよう</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+リング
+</p>
+</li>
+<li>
+<p>
+仮想ノード（vnode）
+</p>
+</li>
+<li>
+<p>
+物理ノード（メンバーノード）
+</p>
+</li>
+</ul></div>
+<h3 id="__3">リング関連の操作</h3><div style="clear:left"></div>
 <div class="exampleblock">
 <div class="title">4-1. リングサイズの確認</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p>このRiakクラスターのリングを確認しましょう。今回、以下のスクリプトを用
-意しました。</p></div>
+<div class="paragraph"><p>このRiakクラスターのリングを確認しましょう。今回、Ringの情報をRiakクラ
+スターに問い合わせるスクリプトを用意しました。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1368,7 +1442,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>employee/key<span style="color: #993399">1</span><span style="color: #990000">:</span> <span style="color: #993399">571163913345190032512049582966850509153338820326</span>
 
-Targets<span style="color: #990000">:</span>
+Primaries<span style="color: #990000">:</span>
 <span style="color: #990000">[</span>{<span style="color: #993399">5</span><span style="color: #990000">,</span><span style="color: #993399">730750818665451459101842416358141509827966271488</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">6</span><span style="color: #990000">,</span><span style="color: #993399">913438523331814323877303020447676887284957839360</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">7</span><span style="color: #990000">,</span><span style="color: #993399">1096126227998177188652763624537212264741949407232</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">]</span>
@@ -1379,8 +1453,8 @@ Fallbacks<span style="color: #990000">:</span>
  {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
-<div class="paragraph"><p><strong>TODO</strong> TargetsとFallbacksの説明</p></div>
-<div class="paragraph"><p>Targetsはキー・バリューが格納される&#8230;
+<div class="paragraph"><p><strong>TODO</strong> PrimariesとFallbacksの説明</p></div>
+<div class="paragraph"><p>Primariesはキー・バリューが格納される&#8230;
 複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。</p></div>
 <div class="paragraph"><p>同様に「key2」の場合も調べて下さい。</p></div>
 <div class="listingblock">
@@ -2205,12 +2279,12 @@ http://www.gnu.org/software/src-highlite -->
 ok<span style="color: #990000">.</span>
 
 <span style="font-style: italic"><span style="color: #9A1900">%% ユーザー定義フラグも格納できます</span></span>
-<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, <span style="color: #FF0000">"disginer"</span>, [{activities, <span style="color: #FF0000">"yoga"</span>}])<span style="color: #990000">.</span> □
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, <span style="color: #FF0000">"designer"</span>, [{activities, <span style="color: #FF0000">"yoga"</span>}])<span style="color: #990000">.</span> □
 ok<span style="color: #990000">.</span>
 
 <span style="font-style: italic"><span style="color: #9A1900">%% バリューと同時にユーザー定義フラグ読み出し</span></span>
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"ann/title"</span>, [get<span style="color: #990000">_</span>all<span style="color: #990000">_</span>attribs])<span style="color: #990000">.</span> □
-{ok,<span style="color: #993399">1348744156095280</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"disginer"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
+{ok,<span style="color: #993399">1348744156095280</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"designer"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #993399">0</span>,
     [{val<span style="color: #990000">_</span>len,<span style="color: #993399">8</span>},{activities,<span style="color: #FF0000">"yoga"</span>}]}
 
 <span style="font-style: italic"><span style="color: #9A1900">%% ユーザー定義フラグのみを読み出し（ディスクアクセスを伴わないので高速）</span></span>
@@ -2995,13 +3069,23 @@ $ <span style="color: #009900">$BASHO_BENCH_HOME</span>/priv/summary<span style=
 <div class="paragraph"><p>グラフはPNG形式の画像ファイルになります。WindowsシンクライアントのPSCP
 を使って、画像ファイルをダウンロードしましょう。</p></div>
 <div class="listingblock">
-<div class="title">WindowsシンクライアントのDOSウィンドウ</div>
+<div class="title">Windowsシンクライアントのコマンドプロンプト</div>
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ pscp ossforum@仮想サーバーのIP<span style="color: #990000">:</span>/home/ossforum/hands-on/tests/current/summary<span style="color: #990000">.</span>png <span style="color: #990000">.</span>
 </tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="title">Cygwin</div>もし、会場のWindowsシンクライアントにpscpコマンドが入っていない場合は、
+Cygwinを使用してください。（方法は会場で説明します）</td>
+</tr></table>
+</div>
 <div class="paragraph"><p>summary.pngがダウンロードできたら、ダブルクリックして開きます。</p></div>
 <div class="paragraph"><p>このグラフを見て、Hibariは書き込み（set）と読み出し（get）のどちらが得
 意（高速）だと思いましたか？</p></div>
@@ -3085,7 +3169,7 @@ http://www.gnu.org/software/src-highlite -->
 </li>
 </ul></div>
 </div>
-<h2 id="__6">付録. 参考資料</h2>
+<h2 id="__4">付録. 参考資料</h2>
 <div class="sectionbody">
 <h3 id="_basho_riak">Basho Riak</h3><div style="clear:left"></div>
 <div class="paragraph"><p><strong>TODO</strong></p></div>
@@ -3094,8 +3178,8 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <div id="footer">
 <div id="footer-text">
-Version v1.0-draft-5<br />
-Last updated 2012-09-28 00:07:54 JST
+Version v1.0-draft-6<br />
+Last updated 2012-09-28 07:04:52 JST
 </div>
 </div>
 </body>
