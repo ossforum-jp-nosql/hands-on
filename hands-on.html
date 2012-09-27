@@ -387,8 +387,8 @@ div#toc a:visited { color: blue; }
 <h1>第２回　NOSQL実機ハンズオン（Riak、Hibari）</h1>
 <span id="author">河野達也 Tatsuya Kawano CloudianKK</span><br />
 <span id="email"><tt>&lt;<a href="mailto:tkawano@cloudian.com">tkawano@cloudian.com</a>&gt;</tt></span><br />
-<span id="revnumber">version v1.0-draft-4,</span>
-<span id="revdate">2012年9月26日</span>
+<span id="revnumber">version v1.0-draft-5,</span>
+<span id="revdate">2012年9月28日</span>
 </div>
 <div id="preamble">
 <div class="sectionbody">
@@ -570,7 +570,7 @@ Hibari 0.1.9
 <div class="ulist"><ul>
 <li>
 <p>
-Basho Bench X.XXX
+Basho Bench 開発版（2012年9月10日版）
 </p>
 </li>
 </ul></div>
@@ -626,9 +626,6 @@ Linux&#8201;&#8212;&#8201;CentOS 5.X　64ビット版
             lib/
 
         hibari/
-        Public/
-            web/               ← Webサーバーで公開されます。Bascho Benchの結果が入ります
-
         riak/
         riak-client-erlang/</tt></pre>
 </div></div>
@@ -2406,23 +2403,26 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>一見、できて当たり前と思える機能ですが、キー・バリューの全ての複製の整
 合性している必要があるため、整合性重視のNOSQLだけで実現できます。</p></div>
 <div class="listingblock">
-<div class="content">
-<pre><tt>%% caren/titleを新規に登録
-&gt; brick_simple:add(employee, "caren/title", "engineer"). □
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% caren/titleを新規に登録</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:add</span></span>(employee, <span style="color: #FF0000">"caren/title"</span>, <span style="color: #FF0000">"engineer"</span>)<span style="color: #990000">.</span> □
 ok
 
-%% 再び登録しようとすると失敗します。
-&gt; brick_simple:add(employee, "caren/title", "designer"). □
-{key_exists,1348744725037912}
+<span style="font-style: italic"><span style="color: #9A1900">%% 再び登録しようとすると失敗します。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:add</span></span>(employee, <span style="color: #FF0000">"caren/title"</span>, <span style="color: #FF0000">"designer"</span>)<span style="color: #990000">.</span> □
+{key<span style="color: #990000">_</span>exists,<span style="color: #993399">1348744725037912</span>}
 
-%% 既存のキー・バリューを置き換え。
-&gt; brick_simple:replace(employee, "caren/title", "designer"). □
+<span style="font-style: italic"><span style="color: #9A1900">%% 既存のキー・バリューを置き換え。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:replace</span></span>(employee, <span style="color: #FF0000">"caren/title"</span>, <span style="color: #FF0000">"designer"</span>)<span style="color: #990000">.</span> □
 ok
 
-%% キー・バリューが存在しないときは失敗します。
-&gt; brick_simple:replace(employee, "mike/title", "disigner"). □
-key_not_exist</tt></pre>
-</div></div>
+<span style="font-style: italic"><span style="color: #9A1900">%% キー・バリューが存在しないときは失敗します。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:replace</span></span>(employee, <span style="color: #FF0000">"mike/title"</span>, <span style="color: #FF0000">"disigner"</span>)<span style="color: #990000">.</span> □
+key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist
+</tt></pre></div></div>
 <div class="paragraph"><p>6-11で確認したように、キー・バリューが存在しない時の削除（delete）操作
 もエラーになります。一方、Riakでは3-9で確認したように、エラーになりま
 せん（エラーにできません）</p></div>
@@ -2438,28 +2438,28 @@ key_not_exist</tt></pre>
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="color: #990000">%%</span> クライアント１がログインカウンターを読み出し
-<span style="color: #990000">%%</span> Ts1にはキー・バリューが最後に更新された時刻が入る
-<span style="color: #990000">&gt;</span> {ok<span style="color: #990000">,</span> Ts1<span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;</span>Val1<span style="color: #990000">:</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;</span>} <span style="color: #990000">=</span> brick_simple<span style="color: #990000">:</span>get<span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">).</span> □
-{ok<span style="color: #990000">,</span><span style="color: #993399">1348744147878810</span><span style="color: #990000">,&lt;&lt;</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">&gt;&gt;</span>}
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% クライアント１がログインカウンターを読み出し</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% Ts1にはキー・バリューが最後に更新された時刻が入る</span></span>
+<span style="color: #990000">&gt;</span> {ok, Ts1, <span style="color: #990000">&lt;&lt;</span>Val1<span style="color: #990000">:</span><span style="color: #993399">64</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-integer</span></span><span style="color: #990000">&gt;&gt;</span>} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"jeremy/login-counter"</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744147878810</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span><span style="color: #990000">&gt;&gt;</span>}
 
 
-<span style="color: #990000">%%</span> その直後、クライアント２がログインカウンターを読み出したと想定しましょう。
-{ok<span style="color: #990000">,</span> Ts2<span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;</span>Val2<span style="color: #990000">:</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;</span>} <span style="color: #990000">=</span> brick_simple<span style="color: #990000">:</span>get<span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">).</span> □
-{ok<span style="color: #990000">,</span><span style="color: #993399">1348744147878810</span><span style="color: #990000">,&lt;&lt;</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">,</span><span style="color: #993399">0</span><span style="color: #990000">&gt;&gt;</span>}
+<span style="font-style: italic"><span style="color: #9A1900">%% その直後、クライアント２がログインカウンターを読み出したと想定しましょう。</span></span>
+{ok, Ts2, <span style="color: #990000">&lt;&lt;</span>Val2<span style="color: #990000">:</span><span style="color: #993399">64</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-integer</span></span><span style="color: #990000">&gt;&gt;</span>} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:get</span></span>(employee, <span style="color: #FF0000">"jeremy/login-counter"</span>)<span style="color: #990000">.</span> □
+{ok,<span style="color: #993399">1348744147878810</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span>,<span style="color: #993399">0</span><span style="color: #990000">&gt;&gt;</span>}
 
 
-<span style="color: #990000">%%</span> クライアント２が先にカウンターを更新しました。
-<span style="color: #990000">%%</span> testsetでタイムスタンプを確認し、以前と変わってなければ更新します。
-<span style="color: #990000">&gt;</span> brick_simple<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">set</span></span><span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;(</span>Val2 <span style="color: #990000">+</span> <span style="color: #993399">1</span><span style="color: #990000">):</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;,</span>
-                   <span style="color: #990000">[</span>value_in_ram<span style="color: #990000">,</span> {testset<span style="color: #990000">,</span> Ts2}<span style="color: #990000">]).</span> □
+<span style="font-style: italic"><span style="color: #9A1900">%% クライアント２が先にカウンターを更新しました。</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% testsetでタイムスタンプを確認し、以前と変わってなければ更新します。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/login-counter"</span>, <span style="color: #990000">&lt;&lt;</span>(Val2 <span style="color: #990000">+</span> <span style="color: #993399">1</span>)<span style="color: #990000">:</span><span style="color: #993399">64</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-integer</span></span><span style="color: #990000">&gt;&gt;</span>,
+                   [value<span style="color: #990000">_</span>in<span style="color: #990000">_</span>ram, {testset, Ts2}])<span style="color: #990000">.</span> □
 ok
 
-<span style="color: #990000">%%</span> クライアント１がカウンターを更新しようとしても
-<span style="color: #990000">%%</span> タイムスタンプが変わっているので失敗します。
-<span style="color: #990000">&gt;</span> brick_simple<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">set</span></span><span style="color: #990000">(</span>employee<span style="color: #990000">,</span> <span style="color: #FF0000">"jeremy/login-counter"</span><span style="color: #990000">,</span> <span style="color: #990000">&lt;&lt;(</span>Val1 <span style="color: #990000">+</span> <span style="color: #993399">1</span><span style="color: #990000">):</span><span style="color: #993399">64</span>/unsigned-integer<span style="color: #990000">&gt;&gt;,</span>
-                   <span style="color: #990000">[</span>value_in_ram<span style="color: #990000">,</span> {testset<span style="color: #990000">,</span> Ts1}<span style="color: #990000">]).</span> □
-{ts_error<span style="color: #990000">,</span><span style="color: #993399">1348744830713999</span>}
+<span style="font-style: italic"><span style="color: #9A1900">%% クライアント１がカウンターを更新しようとしても</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">%% タイムスタンプが変わっているので失敗します。</span></span>
+<span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/login-counter"</span>, <span style="color: #990000">&lt;&lt;</span>(Val1 <span style="color: #990000">+</span> <span style="color: #993399">1</span>)<span style="color: #990000">:</span><span style="color: #993399">64</span><span style="color: #990000">/</span>unsigned<span style="font-weight: bold"><span style="color: #000080">-integer</span></span><span style="color: #990000">&gt;&gt;</span>,
+                   [value<span style="color: #990000">_</span>in<span style="color: #990000">_</span>ram, {testset, Ts1}])<span style="color: #990000">.</span> □
+{ts<span style="color: #990000">_</span>error,<span style="color: #993399">1348744830713999</span>}
 </tt></pre></div></div>
 </div></div>
 <div class="exampleblock">
@@ -2538,7 +2538,8 @@ Amazon Dynamoの設計を参考にした
 </li>
 <li>
 <p>
-複製の配置が偏ることがある
+複製の配置が偏ることがある（１つのメンバーノードに２つの複製が
+       置かれることがある）
 </p>
 </li>
 </ul></div>
@@ -2568,7 +2569,7 @@ Amazon Dynamoの設計を参考にした
 <div class="ulist"><ul>
 <li>
 <p>
-メンバーノード追加時後のリバランスが面倒
+メンバーノード追加時後のリバランスが面倒（仮想ノードの概念がないため）
 </p>
 </li>
 <li>
@@ -2608,6 +2609,12 @@ Amazon Dynamoの設計を参考にした
 </li>
 <li>
 <p>
+複数のハッシュ区画を１つのチェインに割り当てられるため、リバラ
+       ンスが容易にできる
+</p>
+</li>
+<li>
+<p>
 複製の配置が偏らない
 </p>
 </li>
@@ -2632,13 +2639,7 @@ Amazon Dynamoの設計を参考にした
 Basho Benchの使いかた
 </p>
 </li>
-<li>
-<p>
-キーの採番方法とデータ分散の関係
-</p>
-</li>
 </ul></div>
-<div class="paragraph"><p>なお、RiakやCassandraもデータの分散に関しては近い特性を持ちます。</p></div>
 <div class="exampleblock">
 <div class="title">10-1. Hibariの初期化</div>
 <div class="exampleblock-content">
@@ -2988,9 +2989,20 @@ specifies an external function that should return a value
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt>$ bb-summary-ossforum<span style="color: #990000">.</span>sh □
-<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> まだスクリプトが準備できてません
-<span style="color: #990000">*</span>TODO<span style="color: #990000">*</span> 生成されたpingファイルを見る方法（Webブラウザーでアクセス）</tt></pre></div></div>
+<pre><tt>$ cd <span style="color: #990000">~</span>/hands-on
+$ <span style="color: #009900">$BASHO_BENCH_HOME</span>/priv/summary<span style="color: #990000">.</span>r -i tests/current<span style="color: #990000">/</span>
+</tt></pre></div></div>
+<div class="paragraph"><p>グラフはPNG形式の画像ファイルになります。WindowsシンクライアントのPSCP
+を使って、画像ファイルをダウンロードしましょう。</p></div>
+<div class="listingblock">
+<div class="title">WindowsシンクライアントのDOSウィンドウ</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ pscp ossforum@仮想サーバーのIP<span style="color: #990000">:</span>/home/ossforum/hands-on/tests/current/summary<span style="color: #990000">.</span>png <span style="color: #990000">.</span>
+</tt></pre></div></div>
+<div class="paragraph"><p>summary.pngがダウンロードできたら、ダブルクリックして開きます。</p></div>
 <div class="paragraph"><p>このグラフを見て、Hibariは書き込み（set）と読み出し（get）のどちらが得
 意（高速）だと思いましたか？</p></div>
 <div class="sidebarblock">
@@ -3055,8 +3067,6 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ basho_bench conf-bb/riak-simple<span style="color: #990000">.</span>config □
-$ basho_bench conf-bb/riak-sequential<span style="color: #990000">.</span>config □
-$ basho_bench conf-bb/riak-random<span style="color: #990000">.</span>conf □
 </tt></pre></div></div>
 </div>
 <h2 id="_11">11. 講義：コンシステントハッシングと自動シャーディングの優劣</h2>
@@ -3084,8 +3094,8 @@ $ basho_bench conf-bb/riak-random<span style="color: #990000">.</span>conf □
 </div>
 <div id="footer">
 <div id="footer-text">
-Version v1.0-draft-4<br />
-Last updated 2012-09-27 20:33:09 JST
+Version v1.0-draft-5<br />
+Last updated 2012-09-28 00:07:54 JST
 </div>
 </div>
 </body>
