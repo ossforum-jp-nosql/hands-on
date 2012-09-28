@@ -387,7 +387,7 @@ div#toc a:visited { color: blue; }
 <h1>第２回　NOSQL実機ハンズオン（Riak、Hibari）</h1>
 <span id="author">河野達也 Tatsuya Kawano CloudianKK</span><br />
 <span id="email"><tt>&lt;<a href="mailto:tkawano@cloudian.com">tkawano@cloudian.com</a>&gt;</tt></span><br />
-<span id="revnumber">version v1.0-draft-6,</span>
+<span id="revnumber">version v1.0,</span>
 <span id="revdate">2012年9月28日</span>
 </div>
 <div id="preamble">
@@ -397,9 +397,450 @@ div#toc a:visited { color: blue; }
 </div>
 <h2 id="_">目次</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#1">1. ハンズオンの概要</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#1-1">1-1. ハンズオンの目的</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#2">2. 環境のセットアップ</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#2-1">2-1. 仮想サーバーにsshでログイン</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-2">2-2. パスワードの変更</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-3">2-3. ハンズオンコンテンツのアップデート</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-4">2-4. 製品のバージョン</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-5">2-5. ディレクトリ構成</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-6">2-6. PuTTYのごく基本的な操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-7">2-7. Linuxシェルのごく基本的な操作</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#3">3. Basho Riakの基本操作</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#3a">Riakの特徴</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3b">Riakの起動とクラスター構成の確認</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#3-1">3-1. Riakの起動</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-2">3-2. クラスター構成の確認</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#3c">RiakのクライアントAPI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3d">Riakのデータモデル</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3e">Protocol Buffersでアクセス（Erlang）</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#3-3">3-3. バケットの作成</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-4">3-4. Riakに接続</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3f">Erlangシェルの便利な使い方</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3g">Erlangでエラーが出て動かない時の対応</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-5">3-5. キー・バリューを格納</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-6">3-6. キーを指定してキー・バリューを取り出し</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-7">3-7. インデックス付きの、キー・バリューを格納</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-8">3-8. インデックスを用いた検索</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-9">3-9. キー・バリューの削除</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-10">3-10. Erlangシェルの終了</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#4">4. データ分散について：コンシステント・ハッシング</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#4a">Riakのリング</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4b">リング関連の操作</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#4-1">4-1. リングサイズの確認</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-2">4-2. バケット名とキーからハッシュ値を算出</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-3">4-3. キーを格納するノードを算出</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-4">4-4. ２つ以上の複製が１つのメンバーノードに格納されるケース</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-5">4-5. ２つ以上の複製を１つのメンバーノードに置かない方法</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-6">4-6. メンバーノードの追加とデータのリバランス（再配置）</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-7">4-7. メンバーノードの削除</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-8">4-8. Riakの停止</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#5">5. 可用性重視（AP）のNOSQLの挙動</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#5-1">5-1. Riakの初期化</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#5-2">5-2. １ノードダウン時の読み出し操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#5-3">5-3. １ノードダウン時の書き込み操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#5-4">5-4. Riakの停止</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#6">6. Hibariの基本操作</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#6a">Hibari（雲雀）の特徴</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6b">Hibariのデータモデル</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6c">Hibariの起動とクラスター構成の確認</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#6-1">6-1. Hibariの起動</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-2">6-2. テーブルの作成</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-3">6-3. クラスター構成の確認</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-4">6-4. チェインの確認</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#6d"> HibariのクライアントAPI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6e"> Erlangネイティブクライアントでアクセス</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#6-5">6-5. Hibariに接続</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-6">6-6. キーバリューの書き込み</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-7">6-7. キー・バリューの読み出し</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-8">6-8. フラグ付きのキー・バリューを書き込み</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-9">6-9. 複数のキー・バリューをまとめて書き込み</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-10">6-10. キーの区切り文字とレンジスキャン</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-11">6-11. キー・バリューの削除</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-12">6-12. Erlangシェルの終了</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#7"> 7. 整合性重視（CP）のNOSQLの挙動</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#7-1">7-1. １ノードダウン時の読み出し操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#7-2">7-2. １ノードダウン時の書き込み操作</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#8">8. 整合性重視（CP）のNOSQLだけで実現可能な操作</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#8-1">8-1. キー・バリューの存在チェック</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#8-2">8-2. CAS操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#8-3">8-3. Hibariのマイクロトランザクション</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#9">9. 講義：データ分散について、Riak、Cassandra、Hibariを比較</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10">10. 性能測定ツールの使用</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#10-1">10-1. Hibariの初期化</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10-2">10-2. Basho Benchの実行</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10a">Basho Benchのキー設定</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10b">Basho Benchのバリュー設定</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10-3">10-3. グラフのプロット（R言語）と結果の確認</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10-4">10-4. Hibariの停止</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10c">.時間が余ったら</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#11">11. 講義：コンシステントハッシングと自動シャーディングの優劣</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#ap">付録. 参考資料</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#ap1"> Basho Riak</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#ap2"> Hibari</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
 </div>
-<h2 id="_1">1. ハンズオンの概要</h2>
+<h2 id="1">1. ハンズオンの概要</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>このハンズオンは <strong>日本OSS推進フォーラム　第２回 若手技術者勉強会</strong>
 （2012年9月28日実施）のために作成されました。</p></div>
@@ -484,7 +925,7 @@ Cassandra、MongoDB、Redisにも対応
 </ul></div>
 </li>
 </ul></div>
-<h3 id="__2">ハンズオンの目的</h3><div style="clear:left"></div>
+<h3 id="1-1">1-1. ハンズオンの目的</h3><div style="clear:left"></div>
 <div class="paragraph"><p>ハンズオンを終えると以下のことができるようになります。</p></div>
 <div class="ulist"><ul>
 <li>
@@ -510,14 +951,52 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 </li>
 </ul></div>
 </div>
-<h2 id="_2">2. 環境のセットアップ</h2>
+<h2 id="2">2. 環境のセットアップ</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>9月28日のハンズオン環境は、仮想サーバーのディスクイメージとして用意さ
 れています。仮想サーバーの起動は勉強会運営メンバーの指示に従ってくださ
 い。</p></div>
 <div class="paragraph"><p>また自習のために、今回の環境を１から設定するための手順も用意します。
 （ <strong>後日公開予定</strong> ）</p></div>
-<h3 id="_2_1_ssh">2-1. 仮想サーバーにsshでログイン</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#2-1">2-1. 仮想サーバーにsshでログイン</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-2">2-2. パスワードの変更</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-3">2-3. ハンズオンコンテンツのアップデート</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-4">2-4. 製品のバージョン</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-5">2-5. ディレクトリ構成</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-6">2-6. PuTTYのごく基本的な操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#2-7">2-7. Linuxシェルのごく基本的な操作</a>
+</p>
+</li>
+</ul></div>
+<h3 id="2-1">2-1. 仮想サーバーにsshでログイン</h3><div style="clear:left"></div>
 <div class="paragraph"><p>PuTTYを立ち上げ、sshで接続します。</p></div>
 <div class="ulist"><ul>
 <li>
@@ -531,7 +1010,7 @@ CAP定理の中で、可用性重視「AP」のものと、一貫性重視「CP�
 </p>
 </li>
 </ul></div>
-<h3 id="_2_2">2-2. パスワードの変更</h3><div style="clear:left"></div>
+<h3 id="2-2">2-2. パスワードの変更</h3><div style="clear:left"></div>
 <div class="paragraph"><p>ログインに成功したら、パスワードを変更してください。これにより、他の受
 講生があなたのサーバーに誤ってログインしてしまうことを防げます。</p></div>
 <div class="listingblock">
@@ -592,7 +1071,7 @@ http://www.gnu.org/software/src-highlite -->
 </ul></div>
 <div class="paragraph"><p><strong>重要</strong><br />
 チェックサムが会場の白板に書かれたものと一致することを確認してください。</p></div>
-<h3 id="_2_4">2-4. 製品のバージョン</h3><div style="clear:left"></div>
+<h3 id="2-4">2-4. 製品のバージョン</h3><div style="clear:left"></div>
 <div class="paragraph"><p>仮想サーバーにはハンズオンで使用するNOSQLと性能測定ツールがすでに導入
 されています。各製品のバージョンは以下の通りです。</p></div>
 <div class="ulist"><ul>
@@ -657,7 +1136,7 @@ Linux&#8201;&#8212;&#8201;CentOS 5.8　64ビット版
 </ul></div>
 </li>
 </ul></div>
-<h3 id="_2_5">2-5. ディレクトリ構成</h3><div style="clear:left"></div>
+<h3 id="2-5">2-5. ディレクトリ構成</h3><div style="clear:left"></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>/home/
@@ -679,45 +1158,115 @@ Linux&#8201;&#8212;&#8201;CentOS 5.8　64ビット版
         riak/
         riak-client-erlang/</tt></pre>
 </div></div>
-<h3 id="_2_6_putty">2-6. PuTTYのごく基本的な操作</h3><div style="clear:left"></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Tip</div>
-</td>
-<td class="content">
-<div class="title">コピー＆ペースト</div><strong>TODO</strong></td>
-</tr></table>
-</div>
-<h3 id="_2_7_linux">2-7. Linuxシェルのごく基本的な操作</h3><div style="clear:left"></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Tip</div>
-</td>
-<td class="content">
-<div class="title">Linuxシェルの履歴検索やコマンド補完</div>上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。また
+<h3 id="2-6">2-6. PuTTYのごく基本的な操作</h3><div style="clear:left"></div>
+<h4 id="__2">コピー＆ペースト</h4>
+<div class="paragraph"><p>他のアプリでコピーしたテキストをPuTTYにペーストする（貼り付ける）には、
+マウスの右ボタンをクリックします。</p></div>
+<div class="paragraph"><p>PuTTYのウィンドウに表示されたテキストをコピーするには、コピーしたい
+範囲をマウスで選択します。（選択するだけでクリップボードにコピーされ
+ます。</p></div>
+<h3 id="2-7">2-7. Linuxシェルのごく基本的な操作</h3><div style="clear:left"></div>
+<h4 id="_linux">Linuxシェルの履歴検索やコマンド補完</h4>
+<div class="paragraph"><p>上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。また
 <tt>Control</tt> キーと <tt>r</tt> キーを同時に押すとコマンドの入力履歴を検索できま
 す。さらに、コマンドの入力途中で <tt>Tab</tt> キーを押すと、残りの部分が補完
-されます。</td>
-</tr></table>
-</div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Tip</div>
-</td>
-<td class="content">
-<div class="title">Linuxシェルでテキストファイルの内容を表示、編集する</div>スクリプトのようなテキストファイルの内容を表示するには、 <tt>less</tt> コマン
+されます。</p></div>
+<h4 id="_linux_2">Linuxシェルでテキストファイルの内容を表示、編集する</h4>
+<div class="paragraph"><p>スクリプトのようなテキストファイルの内容を表示するには、 <tt>less</tt> コマン
 ドを使用します。また、テキストファイルの内容を編集するには、 <tt>nano</tt> コ
 マンド（または vi、emacs）を使用します。ファイルの編集が終わったら、
-<tt>Control</tt> キーと <tt>x</tt> キーを同時に押して保存します。</td>
-</tr></table>
+<tt>Control</tt> キーと <tt>x</tt> キーを同時に押して保存します。</p></div>
 </div>
-</div>
-<h2 id="_3_basho_riak">3. Basho Riakの基本操作</h2>
+<h2 id="3">3. Basho Riakの基本操作</h2>
 <div class="sectionbody">
-<h3 id="_riak">Riakの特徴</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#3b">Riakの起動とクラスター構成の確認</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#3-1">3-1. Riakの起動</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-2">3-2. クラスター構成の確認</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#3c">RiakのクライアントAPI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3d">Riakのデータモデル</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3e">Protocol Buffersでアクセス（Erlang）</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#3-3">3-3. バケットの作成</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-4">3-4. Riakに接続</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3f">Erlangシェルの便利な使い方</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3g">Erlangでエラーが出て動かない時の対応</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-5">3-5. キー・バリューを格納</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-6">3-6. キーを指定してキー・バリューを取り出し</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-7">3-7. インデックス付きの、キー・バリューを格納</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-8">3-8. インデックスを用いた検索</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-9">3-9. キー・バリューの削除</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3-10">3-10. Erlangシェルの終了</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<h3 id="3a">Riakの特徴</h3><div style="clear:left"></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -775,17 +1324,10 @@ Map Reduce（JavaScript、Erlang）
 </p>
 </li>
 </ul></div>
-<h3 id="_riak_2">Riakの起動とクラスター構成の確認</h3><div style="clear:left"></div>
+<h3 id="3b">Riakの起動とクラスター構成の確認</h3><div style="clear:left"></div>
 <div class="paragraph"><p>今回は学習のために、１台のLinux仮想サーバー上で複数のRiakメンバーノー
 ドを動かします。</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-<strong>TODO</strong> 構成図
-</p>
-</li>
-</ul></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-1">
 <div class="title">3-1. Riakの起動</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>今回用意したスクリプトを使ってRiakクラスターを起動します。</p></div>
@@ -811,7 +1353,7 @@ riak1 <span style="color: #990000">...</span> pong
 riak2 <span style="color: #990000">...</span> pong
 <span style="color: #990000">...</span>（略）</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-2">
 <div class="title">3-2. クラスター構成の確認</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>このRiakクラスターには、いくつの <strong>メンバーノード</strong> がありますか？　以下
@@ -839,7 +1381,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>「Node」の欄を見ると、この例では「riak1」と「riak2」の２個のメンバーノー
 ドがあることがわかります。（ハンズオン用の構成はこの例とは異なります）</p></div>
 </div></div>
-<h3 id="_riak_api">RiakのクライアントAPI</h3><div style="clear:left"></div>
+<h3 id="3c">RiakのクライアントAPI</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Riakには３種類のクライアントAPIが用意されています。</p></div>
 <div class="ulist"><ul>
 <li>
@@ -849,7 +1391,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="ulist"><ul>
 <li>
 <p>
-Protocol BuffersはGoogle社が開発した異言語間の&#8230; <strong>TODO</strong>
+Protocol BuffersはGoogle社が開発した異言語間のデータ・シリアライズフォーマット
 </p>
 </li>
 <li>
@@ -945,8 +1487,7 @@ Riak本体はErlangで書かれています
 <div class="paragraph"><p>今回はプログラミング言語にはErlangを使用し、Protocol Buffersで接続しま
 す。他の言語でも基本的な操作方法は同じですので、後日、お気に入りの言語
 で試してみてもいいでしょう。</p></div>
-<h3 id="_riak_3">Riakのデータモデル</h3><div style="clear:left"></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<h3 id="3d">Riakのデータモデル</h3><div style="clear:left"></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -983,8 +1524,8 @@ Riak本体はErlangで書かれています
 </ul></div>
 </li>
 </ul></div>
-<h3 id="_protocol_buffers_erlang">Protocol Buffersでアクセス（Erlang）</h3><div style="clear:left"></div>
-<div class="exampleblock">
+<h3 id="3e">Protocol Buffersでアクセス（Erlang）</h3><div style="clear:left"></div>
+<div class="exampleblock" id="3-3">
 <div class="title">3-3. バケットの作成</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>最初にバケットを作りましょう。バケットは一般的なデータベースのテーブル
@@ -1020,7 +1561,7 @@ Created {&lt;&lt;"basho_bench_test"&gt;&gt;,{n_val,3},{r,quorum},{w,quorum},{dw,
 </p>
 </li>
 </ul></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-4">
 <div class="title">3-4. Riakに接続</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>RiakへProtocol Buffersで接続しましょう。</p></div>
@@ -1073,26 +1614,91 @@ riak3: 8093
 </li>
 </ul></div>
 </div></div>
+<h4 id="3f">Erlangシェルの便利な使い方</h4>
 <div class="ulist"><ul>
 <li>
 <p>
-<strong>TODO</strong> Erlangのエラーについて説明
-</p>
-<div class="ulist"><ul>
-<li>
-<p>
-exception
+上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。
 </p>
 </li>
 <li>
 <p>
-変数のリセット
+<tt>Control</tt> キーと <tt>r</tt> キーを同時に押すとコマンドの入力履歴を検索できます。
+</p>
+</li>
+<li>
+<p>
+コマンドの入力途中で <tt>Tab</tt> キーを押すと、残りの部分が補完されます。
 </p>
 </li>
 </ul></div>
-</li>
-</ul></div>
+<h4 id="3g">Erlangでエラーが出て動かない時の対応</h4>
 <div class="exampleblock">
+<div class="title">exception exit &#8230; gen_sever,call</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, Je)<span style="color: #990000">.</span>
+<span style="color: #990000">**</span> exception <span style="font-weight: bold"><span style="color: #0000FF">exit</span></span><span style="color: #990000">:</span> {noproc,
+                       {gen<span style="color: #990000">_</span>server,<span style="font-weight: bold"><span style="color: #0000FF">call</span></span>,
+                           [<span style="color: #990000">&lt;</span><span style="color: #993399">0.34</span><span style="color: #990000">.</span><span style="color: #993399">0</span><span style="color: #990000">&gt;</span>,
+                            {req,
+                                {rpbputreq,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,undefined,
+                                    {rpbcontent,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>,undefined,undefined,
+                                        undefined,undefined,[],undefined,undefined,[],[],
+                                        undefined},
+                                    undefined,undefined,undefined,undefined,undefined,
+                                    undefined,undefined},
+                                <span style="color: #993399">60000</span>},
+                            infinity]}}
+     <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span>  gen<span style="color: #990000">_</span>server<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">call</span></span><span style="color: #990000">/</span><span style="color: #993399">3</span> (gen<span style="color: #990000">_</span>server<span style="color: #990000">.</span>erl, line <span style="color: #993399">188</span>)</tt></pre></div></div>
+<div class="paragraph"><p>*原因*</p></div>
+<div class="paragraph"><p>何らかの理由でRiakクライアントが停止した時に起こります。</p></div>
+<div class="paragraph"><p><strong>対処法</strong></p></div>
+<div class="paragraph"><p>Riakに接続しなおします。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% Conn変数をリセットします</span></span>
+<span style="color: #990000">&gt;</span> f(Conn)<span style="color: #990000">.</span>
+
+<span style="font-style: italic"><span style="color: #9A1900">%% Riakに再接続します</span></span>
+<span style="color: #990000">&gt;</span> {ok, Conn} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:start</span></span>(<span style="color: #FF0000">"127.0.0.1"</span>, <span style="color: #993399">8091</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">exception error: no match of right hand side value</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> Je <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span>
+<span style="color: #990000">**</span> exception error<span style="color: #990000">:</span> no match <span style="font-weight: bold"><span style="color: #0000FF">of</span></span> right hand side value
+                    {riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,undefined,[],
+                               undefined,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}</tt></pre></div></div>
+<div class="paragraph"><p>*原因*</p></div>
+<div class="paragraph"><p>値を設定済みの変数に、違う値を再度設定しようとしたため。
+（Erlangでは変数への値の設定は１回だけに制限されています）</p></div>
+<div class="paragraph"><p><strong>対処法</strong></p></div>
+<div class="paragraph"><p>まず、「＝」記号の左側にある変数名（例「Je」）が間違っていないことを
+確認してください。</p></div>
+<div class="paragraph"><p>間違っていなら、f() コマンドを使って変数をリセットします。
+（f は forget の略です）</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% 例：変数「Je」をリセットします</span></span>
+<span style="color: #990000">&gt;</span> f(Je)<span style="color: #990000">.</span></tt></pre></div></div>
+</div></div>
+<div class="exampleblock" id="3-5">
 <div class="title">3-5. キー・バリューを格納</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>「employee（社員）」というバケットに、１つ目のキー・バリューを格納しま
@@ -1125,7 +1731,7 @@ http://www.gnu.org/software/src-highlite -->
 ok
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-6">
 <div class="title">3-6. キーを指定してキー・バリューを取り出し</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>キーを指定してキー・バリューを取り出します。</p></div>
@@ -1149,12 +1755,11 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:get</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"gary"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span> □
 {error,notfound}</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-7">
 <div class="title">3-7. インデックス付きの、キー・バリューを格納</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>後で検索できるよう、インデックス（索引）に「age_int（年齢、整数型）」
 と「state_bin（居住している州、バイナリー型）」を登録します。</p></div>
-<div class="paragraph"><p><strong>TODO</strong> メタデータの説明。カラムにインデックスを定義するのではなく、などなど</p></div>
 <div class="paragraph"><p>先ほど作成したキー・バリューに索引情報を追加しましょう。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -1245,7 +1850,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, He2)<span style="color: #990000">.</span> □
 ok</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-8">
 <div class="title">3-8. インデックスを用いた検索</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>インデックス情報を用いてキー・バリューを検索しましょう。 <tt>get_index</tt>
@@ -1274,7 +1879,7 @@ http://www.gnu.org/software/src-highlite -->
 {ok,[<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"helena"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>]}
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-9">
 <div class="title">3-9. キー・バリューの削除</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>キー・バリューを削除しましょう。</p></div>
@@ -1299,7 +1904,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:delete</span></span>(Conn, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"gary"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span>
 ok</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="3-10">
 <div class="title">3-10. Erlangシェルの終了</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>q()コマンド（quitコマンド）でErlangシェルを終了します。</p></div>
@@ -1314,7 +1919,7 @@ ok
 $</tt></pre></div></div>
 </div></div>
 </div>
-<h2 id="_4">4. データ分散について：コンシステント・ハッシング</h2>
+<h2 id="4">4. データ分散について：コンシステント・ハッシング</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Riakを用いてコンシステント・ハッシングの基本を確認します。</p></div>
 <div class="ulist"><ul>
@@ -1334,9 +1939,63 @@ Ringの状態
 </p>
 </li>
 </ul></div>
-<h3 id="_riak_4">Riakのリング</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#4a">Riakのリング</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4b">リング関連の操作</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#4-1">4-1. リングサイズの確認</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-2">4-2. バケット名とキーからハッシュ値を算出</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-3">4-3. キーを格納するノードを算出</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-4">4-4. ２つ以上の複製が１つのメンバーノードに格納されるケース</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-5">4-5. ２つ以上の複製を１つのメンバーノードに置かない方法</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-6">4-6. メンバーノードの追加とデータのリバランス（再配置）</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-7">4-7. メンバーノードの削除</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#4-8">4-8. Riakの停止</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<h3 id="4a">Riakのリング</h3><div style="clear:left"></div>
 <div class="paragraph"><p><a href="http://wiki.basho.com/What-is-Riak%3F.html">http://wiki.basho.com/What-is-Riak%3F.html</a></p></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1354,8 +2013,8 @@ Ringの状態
 </p>
 </li>
 </ul></div>
-<h3 id="__3">リング関連の操作</h3><div style="clear:left"></div>
-<div class="exampleblock">
+<h3 id="4b">リング関連の操作</h3><div style="clear:left"></div>
+<div class="exampleblock" id="4-1">
 <div class="title">4-1. リングサイズの確認</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>このRiakクラスターのリングを確認しましょう。今回、Ringの情報をRiakクラ
@@ -1392,7 +2051,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>答え：　　　　　　　　個</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-2">
 <div class="title">4-2. バケット名とキーからハッシュ値を算出</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Riakではバケット名とキーからハッシュ値を算出します。今回、そのハッシュ
@@ -1423,7 +2082,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>答え： 1. 似ている　　2. 全く異なる</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-3">
 <div class="title">4-3. キーを格納するノードを算出</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>データがどのノードに格納されるか調べましょう。今回、以下のスクリプトを
@@ -1453,10 +2112,23 @@ Fallbacks<span style="color: #990000">:</span>
  {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
-<div class="paragraph"><p><strong>TODO</strong> PrimariesとFallbacksの説明</p></div>
-<div class="paragraph"><p>Primariesはキー・バリューが格納される&#8230;
-複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。</p></div>
-<div class="paragraph"><p>同様に「key2」の場合も調べて下さい。</p></div>
+<div class="paragraph"><p>クラスターが健全な時は、キー・バリューはPrimariesの３つの仮想ノードに
+格納されます。Primariesのどの仮想ノードが使われるかは、キーのハッシュ値で
+決まります。この例では、キーのハッシュ値と各仮想ノードのハッシュ値が以下の
+関係にあります。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+仮想ノード４のハッシュ値　＜　キーのハッシュ値　≦　仮想ノード５のハッシュ値
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>この場合、キー・バリューの１つ目の複製は、仮想ノード５に格納されます。
+このバケットでは複製数が３に設定されていますので、キー・バリューの他の
+２つの複製が、仮想ノード６と７に格納されます。</p></div>
+<div class="paragraph"><p>Primariesの仮想ノードに何か問題がある時は、Fallbacksにある仮想ノードが、
+上から順番に使われます。</p></div>
+<div class="paragraph"><p>では「key1」と同様に、「key2」が格納されるノードも調べて下さい。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1472,7 +2144,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>employee key2　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-4">
 <div class="title">4-4. ２つ以上の複製が１つのメンバーノードに格納されるケース</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Riakではそれぞれの仮想ノードがメンバーノードにランダムに割り当てられま
@@ -1487,7 +2159,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>employee　＿＿＿＿＿＿＿＿　　(1) ＿＿＿＿＿＿＿　(2) ＿＿＿＿＿＿＿　(3) ＿＿＿＿＿＿＿</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-5">
 <div class="title">4-5. ２つ以上の複製を１つのメンバーノードに置かない方法</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>仮にあなたがRiakクラスターを自由に設計できる立場にいたとしたら、やってみよう
@@ -1520,14 +2192,22 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>答え：</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-6">
 <div class="title">4-6. メンバーノードの追加とデータのリバランス（再配置）</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバーノードを追加
 したり、取り除いたりできます。現在のクラスターにメンバーノードを追加し
 ましょう。</p></div>
-<div class="paragraph"><p><strong>TODO</strong>
-まず現在のリングの状態を確認しましょう。&#8230; メモ帳に保存しておきます。</p></div>
+<div class="paragraph"><p>まず現在のリングの状態を確認しましょう。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-ring-ossforum<span style="color: #990000">.</span>escript □</tt></pre></div></div>
+<div class="paragraph"><p><strong>重要</strong><br />
+この情報はリングの変更後に参照しますので、Windowsのメモ帳に保存して
+おいてください。</p></div>
 <div class="paragraph"><p>新しいノード「riak4」を起動しましょう。riak4/bin/riakコマンドを使いま
 す。</p></div>
 <div class="listingblock">
@@ -1613,23 +2293,26 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1. なっている　　2. なっていない</p></div>
 </div></div>
-<div class="paragraph"><p><strong>TODO</strong>
-変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
+<div class="paragraph"><p>変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
 比べてください。</p></div>
-<div class="paragraph"><p>【質問】
-- Ring上の仮想ノードの数は変わりましたか？</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-ring-ossforum<span style="color: #990000">.</span>escript □</tt></pre></div></div>
+<div class="paragraph"><p>【質問】Ring上の仮想ノードの数は変わりましたか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1. 変わった（増えた）　　2. 変わった（減った）　　3. 変わらない</p></div>
 </div></div>
-<div class="paragraph"><p>【質問】
-- riak4へ移動した仮想ノードはどれですか？（複数あり）</p></div>
+<div class="paragraph"><p>【質問】riak4へ移動した仮想ノードはどれですか？（複数あり）</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1 ＿＿＿＿＿＿＿　2 ＿＿＿＿＿＿＿　3 ＿＿＿＿＿＿＿ 4 ＿＿＿＿＿＿＿</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-7">
 <div class="title">4-7. メンバーノードの削除</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>今度はriak4をクラスターから取り除きましょう。</p></div>
@@ -1680,7 +2363,7 @@ http://www.gnu.org/software/src-highlite -->
 Node <span style="color: #FF0000">'riak4@127.0.0.1'</span> not responding to pings<span style="color: #990000">.</span>
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="4-8">
 <div class="title">4-8. Riakの停止</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>作業が終わったらRiakを停止します。</p></div>
@@ -1716,13 +2399,46 @@ Riakを業務で使用する際は、この値を大きく（数十〜数百に�
 </tr></table>
 </div>
 </div>
-<h2 id="_5_ap_nosql">5. 可用性重視（AP）のNOSQLの挙動</h2>
+<h2 id="5">5. 可用性重視（AP）のNOSQLの挙動</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
 ノードを１つ停止して、読み出しと書き込みの動作を調べます。</p></div>
-<div class="paragraph"><p><strong>TODO</strong> Quorum や Consistency Level
-<strong>TODO</strong> Hinted Hand-offとリードリペア</p></div>
-<div class="exampleblock">
+<div class="ulist"><ul>
+<li>
+<p>
+Quorum や Consistency Level
+</p>
+</li>
+<li>
+<p>
+Hinted Hand-off と Read Repair
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#5-1">5-1. Riakの初期化</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#5-2">5-2. １ノードダウン時の読み出し操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#5-3">5-3. １ノードダウン時の書き込み操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#5-4">5-4. Riakの停止</a>
+</p>
+</li>
+</ul></div>
+<div class="exampleblock" id="5-1">
 <div class="title">5-1. Riakの初期化</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Riakの環境を初期化しましょう。この操作により今までRiakに保存したデータ
@@ -1820,7 +2536,7 @@ Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000
 Created {<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"basho_bench_test"</span><span style="color: #990000">&gt;&gt;,</span>{n_val<span style="color: #990000">,</span><span style="color: #993399">3</span>}<span style="color: #990000">,</span>{r<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{w<span style="color: #990000">,</span>quorum}<span style="color: #990000">,</span>{dw<span style="color: #990000">,</span>quorum}}
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="5-2">
 <div class="title">5-2. １ノードダウン時の読み出し操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>メンバーノードの１つが停止しているときの読み出しの挙動を確認しましょう。
@@ -1919,7 +2635,7 @@ http://www.gnu.org/software/src-highlite -->
 ２回目　　1. 成功　　　2. 失敗</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="5-3">
 <div class="title">5-3. １ノードダウン時の書き込み操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>メンバーノードの１つが停止したまま書き込みの挙動を確認しましょう。</p></div>
@@ -1950,7 +2666,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Cassandraでの書き込み</div>CassandraではW = allの時に書き込みが失敗します。</td>
 </tr></table>
 </div>
-<div class="exampleblock">
+<div class="exampleblock" id="5-4">
 <div class="title">5-4. Riakの停止</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>作業が終わったらRiakを停止します。</p></div>
@@ -1974,9 +2690,101 @@ node riak2 ping failed
 <span style="color: #990000">...</span>（略）</tt></pre></div></div>
 </div></div>
 </div>
-<h2 id="_6_hibari">6. Hibariの基本操作</h2>
+<h2 id="6">6. Hibariの基本操作</h2>
 <div class="sectionbody">
-<h3 id="_hibari">Hibariの特徴</h3><div style="clear:left"></div>
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#6a">Hibari（雲雀）の特徴</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6b">Hibariのデータモデル</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6c">Hibariの起動とクラスター構成の確認</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#6-1">6-1. Hibariの起動</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-2">6-2. テーブルの作成</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-3">6-3. クラスター構成の確認</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-4">6-4. チェインの確認</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+<a href="#6d"> HibariのクライアントAPI</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6e"> Erlangネイティブクライアントでアクセス</a>
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#6-5">6-5. Hibariに接続</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-6">6-6. キーバリューの書き込み</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-7">6-7. キー・バリューの読み出し</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-8">6-8. フラグ付きのキー・バリューを書き込み</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-9">6-9. 複数のキー・バリューをまとめて書き込み</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-10">6-10. キーの区切り文字とレンジスキャン</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-11">6-11. キー・バリューの削除</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#6-12">6-12. Erlangシェルの終了</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<h3 id="6a">Hibari（雲雀）の特徴</h3><div style="clear:left"></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -2011,8 +2819,7 @@ node riak2 ping failed
 </p>
 </li>
 </ul></div>
-<h3 id="_hibari_2">Hibariのデータモデル</h3><div style="clear:left"></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<h3 id="6b">Hibariのデータモデル</h3><div style="clear:left"></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -2065,12 +2872,12 @@ node riak2 ping failed
 </ul></div>
 </li>
 </ul></div>
-<h3 id="_hibari_3">Hibariの起動とクラスター構成の確認</h3><div style="clear:left"></div>
+<h3 id="6c">Hibariの起動とクラスター構成の確認</h3><div style="clear:left"></div>
 <div class="paragraph"><p>今回は学習のために、１台のLinux仮想サーバー上で複数のHibariメンバーノー
 ド（「ブリックサーバー」と呼びます）を動かします。</p></div>
 <div class="paragraph"><p>チェイン・レプリケーションの解説
 <a href="http://hibari.github.com/hibari-doc/hibari-tutorial.en.html#_hibari_chain_replication">http://hibari.github.com/hibari-doc/hibari-tutorial.en.html#_hibari_chain_replication</a></p></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-1">
 <div class="title">6-1. Hibariの起動</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>今回用意したスクリプトを使ってHibariクラスターを起動します。</p></div>
@@ -2089,7 +2896,7 @@ hibari1 <span style="color: #990000">...</span> pong
 hibari2 <span style="color: #990000">...</span> pong
 <span style="color: #990000">...</span>（略）</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-2">
 <div class="title">6-2. テーブルの作成</div>
 <div class="exampleblock-content">
 <div class="listingblock">
@@ -2109,7 +2916,7 @@ ok
 Table basho_bench_test_random created</tt></pre></div></div>
 <div class="paragraph"><p>このスクリプトにより４つのテーブルが作られました。</p></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-3">
 <div class="title">6-3. クラスター構成の確認</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>このHibariクラスターには、いくつの <strong>ブリックサーバー</strong> が使われていますか？　
@@ -2121,7 +2928,7 @@ Web UIで調べてください。</p></div>
 <div class="paragraph"><p>答え：　　　　　　　　個</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-4">
 <div class="title">6-4. チェインの確認</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>このHibariクラスターのテーブル「 <strong>basho_bench_test_simple</strong> 」には、何
@@ -2134,7 +2941,7 @@ Web UIで調べてください。</p></div>
 <div class="paragraph"><p>答え：　　　　　　　　本</p></div>
 </div></div>
 </div></div>
-<h3 id="_hibari_api">HibariのクライアントAPI</h3><div style="clear:left"></div>
+<h3 id="6d">HibariのクライアントAPI</h3><div style="clear:left"></div>
 <div class="paragraph"><p>Hibariでは３種類のクライアントAPIが用意されています。</p></div>
 <div class="ulist"><ul>
 <li>
@@ -2190,8 +2997,8 @@ Hibari本体はErlangで書かれています
 </li>
 </ul></div>
 <div class="paragraph"><p>今回はErlangネイティブクライアントを使用します。</p></div>
-<h3 id="_erlang">Erlangネイティブクライアントでアクセス</h3><div style="clear:left"></div>
-<div class="exampleblock">
+<h3 id="6e">Erlangネイティブクライアントでアクセス</h3><div style="clear:left"></div>
+<div class="exampleblock" id="6-5">
 <div class="title">6-5. Hibariに接続</div>
 <div class="exampleblock-content">
 <div class="listingblock">
@@ -2208,7 +3015,7 @@ Eshell V5<span style="color: #990000">.</span><span style="color: #993399">9.2</
 </tt></pre></div></div>
 </div></div>
 <div class="paragraph"><p>以下、プロンプト「(<a href="mailto:hibari_client@127.0.0.1">hibari_client@127.0.0.1</a>)1&gt;」は「&gt;」で示します。</p></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-6">
 <div class="title">6-6. キーバリューの書き込み</div>
 <div class="exampleblock-content">
 <div class="listingblock">
@@ -2248,7 +3055,7 @@ ok
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:set</span></span>(employee, <span style="color: #FF0000">"jeremy/state"</span>, <span style="color: #FF0000">"CA"</span>)<span style="color: #990000">.</span> □
 ok</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-7">
 <div class="title">6-7. キー・バリューの読み出し</div>
 <div class="exampleblock-content">
 <div class="listingblock">
@@ -2265,7 +3072,7 @@ http://www.gnu.org/software/src-highlite -->
 key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-8">
 <div class="title">6-8. フラグ付きのキー・バリューを書き込み</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>キー・バリューにフラグ（メタデータ）をつけることができます。</p></div>
@@ -2292,7 +3099,7 @@ ok<span style="color: #990000">.</span>
 {ok,<span style="color: #993399">1348744156095280</span>,[{val<span style="color: #990000">_</span>len,<span style="color: #993399">8</span>},{activities,<span style="color: #FF0000">"yoga"</span>}]}
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-9">
 <div class="title">6-9. 複数のキー・バリューをまとめて書き込み</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>doを使うと同一テーブルの同一チェインに対する操作を一度に実行でいます。</p></div>
@@ -2314,11 +3121,10 @@ http://www.gnu.org/software/src-highlite -->
 [ok,ok,ok]
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-10">
 <div class="title">6-10. キーの区切り文字とレンジスキャン</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p><strong>TODO</strong> 解説</p></div>
-<div class="paragraph"><p><strong>TODO</strong> employee テーブルではキーの区切り文字として「/」が使われていることを解説する</p></div>
+<div class="paragraph"><p>employee テーブルではキーの区切り文字として「/」が使われています。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2347,7 +3153,7 @@ http://www.gnu.org/software/src-highlite -->
      <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>}}
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-11">
 <div class="title">6-11. キー・バリューの削除</div>
 <div class="exampleblock-content">
 <div class="listingblock">
@@ -2362,7 +3168,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">brick_simple:delete</span></span>(employee, <span style="color: #FF0000">"gary/titse"</span>)<span style="color: #990000">.</span> □
 key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>exist</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="6-12">
 <div class="title">6-12. Erlangシェルの終了</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>q()コマンド（quitコマンド）でErlangシェルを終了します。</p></div>
@@ -2377,11 +3183,24 @@ ok
 $</tt></pre></div></div>
 </div></div>
 </div>
-<h2 id="_7_cp_nosql">7. 整合性重視（CP）のNOSQLの挙動</h2>
+<h2 id="7">7. 整合性重視（CP）のNOSQLの挙動</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Hibariを使用して整合性重視（CP型）のNOSQLの挙動を確認しましょう。ブリッ
 クサーバーを１つ停止して、読み出しと書き込みの動作を調べます。</p></div>
-<div class="exampleblock">
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#7-1">7-1. １ノードダウン時の読み出し操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#7-2">7-2. １ノードダウン時の書き込み操作</a>
+</p>
+</li>
+</ul></div>
+<div class="exampleblock" id="7-1">
 <div class="title">7-1. １ノードダウン時の読み出し操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>ブリックサーバーの１つが停止しているときの読み出しの挙動を確認しましょ
@@ -2443,8 +3262,8 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>答え：　　1. 成功　　　2. 失敗</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
-<div class="title">7-3. １ノードダウン時の書き込み操作</div>
+<div class="exampleblock" id="7-2">
+<div class="title">7-2. １ノードダウン時の書き込み操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>ブリックサーバーの１つが停止したまま書き込みの挙動を確認しましょう。</p></div>
 <div class="paragraph"><p>書き込みを試みます。もし書き込みに失敗した場合は「brick_not_available」
@@ -2463,13 +3282,31 @@ http://www.gnu.org/software/src-highlite -->
 </div></div>
 </div></div>
 </div>
-<h2 id="_8_cp_nosql">8. 整合性重視（CP）のNOSQLだけで実現可能な操作</h2>
+<h2 id="8">8. 整合性重視（CP）のNOSQLだけで実現可能な操作</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>整合性重視（CP）のNOSQLだけで可能となる操作を紹介しましょう。</p></div>
 <div class="paragraph"><p>これらの操作は、キー・バリューの全ての複製で整合性がとれていないと実現
 できません。可用性重視（AP）のNOSQLでは、ネットワーク分断時に複製間の
 不整合を許すため実現不可能です。</p></div>
-<div class="exampleblock">
+<div class="paragraph"><p><strong>目次</strong></p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="#8-1">8-1. キー・バリューの存在チェック</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#8-2">8-2. CAS操作</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#8-3">8-3. Hibariのマイクロトランザクション</a>
+</p>
+</li>
+</ul></div>
+<div class="exampleblock" id="8-1">
 <div class="title">8-1. キー・バリューの存在チェック</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>キー・バリューの追加、更新、削除の際に、キー・バリューの存在チェックが
@@ -2499,9 +3336,9 @@ key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>
 </tt></pre></div></div>
 <div class="paragraph"><p>6-11で確認したように、キー・バリューが存在しない時の削除（delete）操作
 もエラーになります。一方、Riakでは3-9で確認したように、エラーになりま
-せん（エラーにできません）</p></div>
+せん。</p></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="8-2">
 <div class="title">8-2. CAS操作</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>CAS操作（Check And Swap）を使うと、複数クライアントの同時更新を制御で
@@ -2536,7 +3373,7 @@ ok
 {ts<span style="color: #990000">_</span>error,<span style="color: #993399">1348744830713999</span>}
 </tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="8-3">
 <div class="title">8-3. Hibariのマイクロトランザクション</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Hibariでは同一テーブルの同一チェイン上なら、複数のキー・バリューをアト
@@ -2580,7 +3417,7 @@ key<span style="color: #990000">_</span>not<span style="color: #990000">_</span>
 </tt></pre></div></div>
 </div></div>
 </div>
-<h2 id="_9_riak_cassandra_hibari">9. 講義：データ分散について、Riak、Cassandra、Hibariを比較</h2>
+<h2 id="9">9. 講義：データ分散について、Riak、Cassandra、Hibariを比較</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>データ分散についてRiakと同様にコンシステント・ハッシングを採用した
 CassandraやHibariの設計を比較します。それぞれに長所と短所があります。</p></div>
@@ -2698,23 +3535,49 @@ Amazon Dynamoの設計を参考にした
 </li>
 </ul></div>
 </div>
-<h2 id="_10">10. 性能測定ツールの使用</h2>
+<h2 id="10">10. 性能測定ツールの使用</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Hibariと性能測定ツールのBasho Benchを用いて、データの分散状況を観察し
 ます。</p></div>
+<div class="paragraph"><p><strong>目次</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-チェインの確認
+<a href="#10-1">10-1. Hibariの初期化</a>
 </p>
 </li>
 <li>
 <p>
-Basho Benchの使いかた
+<a href="#10-2">10-2. Basho Benchの実行</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10a">Basho Benchのキー設定</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10b">Basho Benchのバリュー設定</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10-3">10-3. グラフのプロット（R言語）と結果の確認</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10-4">10-4. Hibariの停止</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#10c">.時間が余ったら</a>
 </p>
 </li>
 </ul></div>
-<div class="exampleblock">
+<div class="exampleblock" id="10-1">
 <div class="title">10-1. Hibariの初期化</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Hibariの環境を初期化しましょう。この操作により今までHibariに保存したデー
@@ -2769,7 +3632,7 @@ Table basho_bench_test_sequential created
 ok
 Table basho_bench_test_random created</tt></pre></div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="10-2">
 <div class="title">10-2. Basho Benchの実行</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Basho Benchを実行しましょう。以下のコマンドを入力します。</p></div>
@@ -2846,27 +3709,16 @@ http://www.gnu.org/software/src-highlite -->
 </li>
 </ul></div>
 </li>
-<li>
-<p>
-キーについて <strong>TODO</strong>
-</p>
-</li>
-<li>
-<p>
-オペレーションについて <strong>TODO</strong>
-</p>
-</li>
 </ul></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え：　</p></div>
 </div></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="10a">
 <div class="title">補足 Basho Benchのキー設定</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Basho Benchでは以下のようなキーの分散設定ができます。</p></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -2991,7 +3843,7 @@ takes any of the above _int generators and converts the number to
 </li>
 </ul></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="10b">
 <div class="title">補足 Basho Benchのバリュー設定</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Basho Benchでは以下のようなバリューを生成できます。</p></div>
@@ -3052,7 +3904,7 @@ specifies an external function that should return a value
 </li>
 </ul></div>
 </div></div>
-<div class="exampleblock">
+<div class="exampleblock" id="10-3">
 <div class="title">10-3. グラフのプロット（R言語）と結果の確認</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>実行結果をグラフにプロットしてみましょう。Basho_Benchには統計解析プロ
@@ -3107,7 +3959,7 @@ Riakは使用するストレージエンジンによって特性が異なりま�
 </p>
 </li>
 </ul></div>
-<div class="exampleblock">
+<div class="exampleblock" id="10-4">
 <div class="title">10-4. Hibariの停止</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>作業が終わったらHibariを停止します。</p></div>
@@ -3136,7 +3988,7 @@ deleted data on hibari2
 deleted data on hibari1
 </tt></pre></div></div>
 </div></div>
-<div class="admonitionblock">
+<div class="admonitionblock" id="10c">
 <table><tr>
 <td class="icon">
 <div class="title">Note</div>
@@ -3153,9 +4005,8 @@ http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ basho_bench conf-bb/riak-simple<span style="color: #990000">.</span>config □
 </tt></pre></div></div>
 </div>
-<h2 id="_11">11. 講義：コンシステントハッシングと自動シャーディングの優劣</h2>
+<h2 id="11">11. 講義：コンシステントハッシングと自動シャーディングの優劣</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -3169,17 +4020,122 @@ http://www.gnu.org/software/src-highlite -->
 </li>
 </ul></div>
 </div>
-<h2 id="__4">付録. 参考資料</h2>
+<h2 id="ap">付録. 参考資料</h2>
 <div class="sectionbody">
-<h3 id="_basho_riak">Basho Riak</h3><div style="clear:left"></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
-<h3 id="_hibari_4">Hibari</h3><div style="clear:left"></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<h3 id="ap1">Basho Riak</h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Riak製品情報（日本語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://basho.co.jp/products/riak-overview/">http://basho.co.jp/products/riak-overview/</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Riakドキュメント（英語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://wiki.basho.com/Riak.html">http://wiki.basho.com/Riak.html</a>
+</p>
+</li>
+<li>
+<p>
+Riak Fast Track（英語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://wiki.basho.com/The-Riak-Fast-Track.html">http://wiki.basho.com/The-Riak-Fast-Track.html</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<h3 id="ap2">Hibari</h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Hibari製品情報（日本語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://cloudian.jp/technologies/hibari-nosql-database.html">http://cloudian.jp/technologies/hibari-nosql-database.html</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Hibari紹介スライド（日本語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://www.slideshare.net/tatsuya6502/hibari-nosql-at-diststudy-20110708">http://www.slideshare.net/tatsuya6502/hibari-nosql-at-diststudy-20110708</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Hibariドキュメント
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+アプリケーション開発者ガイド（日本語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://hibari.github.com/hibari-doc/hibari-app-developer-guide.ja.html">http://hibari.github.com/hibari-doc/hibari-app-developer-guide.ja.html</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+チュートリアル（日本語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://hibari.github.com/hibari-doc/hibari-tutorial.ja.html">http://hibari.github.com/hibari-doc/hibari-tutorial.ja.html</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+管理者ガイド（英語）
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://hibari.github.com/hibari-doc/hibari-sysadmin-guide.en.html">http://hibari.github.com/hibari-doc/hibari-sysadmin-guide.en.html</a>
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+</ul></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version v1.0-draft-6<br />
-Last updated 2012-09-28 07:04:52 JST
+Version v1.0<br />
+Last updated 2012-09-28 11:10:22 JST
 </div>
 </div>
 </body>
