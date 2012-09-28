@@ -397,7 +397,6 @@ div#toc a:visited { color: blue; }
 </div>
 <h2 id="_">目次</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -503,6 +502,16 @@ div#toc a:visited { color: blue; }
 <li>
 <p>
 <a href="#3-4">3-4. Riakに接続</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3f">Erlangシェルの便利な使い方</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3g">Erlangでエラーが出て動かない時の対応</a>
 </p>
 </li>
 <li>
@@ -1151,7 +1160,11 @@ Linux&#8201;&#8212;&#8201;CentOS 5.8　64ビット版
 </div></div>
 <h3 id="2-6">2-6. PuTTYのごく基本的な操作</h3><div style="clear:left"></div>
 <h4 id="__2">コピー＆ペースト</h4>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
+<div class="paragraph"><p>他のアプリでコピーしたテキストをPuTTYにペーストする（貼り付ける）には、
+マウスの右ボタンをクリックします。</p></div>
+<div class="paragraph"><p>PuTTYのウィンドウに表示されたテキストをコピーするには、コピーしたい
+範囲をマウスで選択します。（選択するだけでクリップボードにコピーされ
+ます。</p></div>
 <h3 id="2-7">2-7. Linuxシェルのごく基本的な操作</h3><div style="clear:left"></div>
 <h4 id="_linux">Linuxシェルの履歴検索やコマンド補完</h4>
 <div class="paragraph"><p>上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。また
@@ -1208,6 +1221,16 @@ Linux&#8201;&#8212;&#8201;CentOS 5.8　64ビット版
 <li>
 <p>
 <a href="#3-4">3-4. Riakに接続</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3f">Erlangシェルの便利な使い方</a>
+</p>
+</li>
+<li>
+<p>
+<a href="#3g">Erlangでエラーが出て動かない時の対応</a>
 </p>
 </li>
 <li>
@@ -1368,7 +1391,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="ulist"><ul>
 <li>
 <p>
-Protocol BuffersはGoogle社が開発した異言語間の&#8230; <strong>TODO</strong>
+Protocol BuffersはGoogle社が開発した異言語間のデータ・シリアライズフォーマット
 </p>
 </li>
 <li>
@@ -1465,7 +1488,6 @@ Riak本体はErlangで書かれています
 す。他の言語でも基本的な操作方法は同じですので、後日、お気に入りの言語
 で試してみてもいいでしょう。</p></div>
 <h3 id="3d">Riakのデータモデル</h3><div style="clear:left"></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -1592,25 +1614,90 @@ riak3: 8093
 </li>
 </ul></div>
 </div></div>
+<h4 id="3f">Erlangシェルの便利な使い方</h4>
 <div class="ulist"><ul>
 <li>
 <p>
-<strong>TODO</strong> Erlangのエラーについて説明
-</p>
-<div class="ulist"><ul>
-<li>
-<p>
-exception
+上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。
 </p>
 </li>
 <li>
 <p>
-変数のリセット
+<tt>Control</tt> キーと <tt>r</tt> キーを同時に押すとコマンドの入力履歴を検索できます。
+</p>
+</li>
+<li>
+<p>
+コマンドの入力途中で <tt>Tab</tt> キーを押すと、残りの部分が補完されます。
 </p>
 </li>
 </ul></div>
-</li>
-</ul></div>
+<h4 id="3g">Erlangでエラーが出て動かない時の対応</h4>
+<div class="exampleblock">
+<div class="title">exception exit &#8230; gen_sever,call</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:put</span></span>(Conn, Je)<span style="color: #990000">.</span>
+<span style="color: #990000">**</span> exception <span style="font-weight: bold"><span style="color: #0000FF">exit</span></span><span style="color: #990000">:</span> {noproc,
+                       {gen<span style="color: #990000">_</span>server,<span style="font-weight: bold"><span style="color: #0000FF">call</span></span>,
+                           [<span style="color: #990000">&lt;</span><span style="color: #993399">0.34</span><span style="color: #990000">.</span><span style="color: #993399">0</span><span style="color: #990000">&gt;</span>,
+                            {req,
+                                {rpbputreq,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,undefined,
+                                    {rpbcontent,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>,undefined,undefined,
+                                        undefined,undefined,[],undefined,undefined,[],[],
+                                        undefined},
+                                    undefined,undefined,undefined,undefined,undefined,
+                                    undefined,undefined},
+                                <span style="color: #993399">60000</span>},
+                            infinity]}}
+     <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span>  gen<span style="color: #990000">_</span>server<span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #0000FF">call</span></span><span style="color: #990000">/</span><span style="color: #993399">3</span> (gen<span style="color: #990000">_</span>server<span style="color: #990000">.</span>erl, line <span style="color: #993399">188</span>)</tt></pre></div></div>
+<div class="paragraph"><p>*原因*</p></div>
+<div class="paragraph"><p>何らかの理由でRiakクライアントが停止した時に起こります。</p></div>
+<div class="paragraph"><p><strong>対処法</strong></p></div>
+<div class="paragraph"><p>Riakに接続しなおします。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% Conn変数をリセットします</span></span>
+<span style="color: #990000">&gt;</span> f(Conn)<span style="color: #990000">.</span>
+
+<span style="font-style: italic"><span style="color: #9A1900">%% Riakに再接続します</span></span>
+<span style="color: #990000">&gt;</span> {ok, Conn} <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_pb_socket:start</span></span>(<span style="color: #FF0000">"127.0.0.1"</span>, <span style="color: #993399">8091</span>)<span style="color: #990000">.</span> □</tt></pre></div></div>
+</div></div>
+<div class="exampleblock">
+<div class="title">exception error: no match of right hand side value</div>
+<div class="exampleblock-content">
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&gt;</span> Je <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">riakc_obj:new</span></span>(<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>, <span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>)<span style="color: #990000">.</span>
+<span style="color: #990000">**</span> exception error<span style="color: #990000">:</span> no match <span style="font-weight: bold"><span style="color: #0000FF">of</span></span> right hand side value
+                    {riakc<span style="color: #990000">_</span>obj,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"employee"</span><span style="color: #990000">&gt;&gt;</span>,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"jeremy"</span><span style="color: #990000">&gt;&gt;</span>,undefined,[],
+                               undefined,<span style="color: #990000">&lt;&lt;</span><span style="color: #FF0000">"engineer"</span><span style="color: #990000">&gt;&gt;</span>}</tt></pre></div></div>
+<div class="paragraph"><p>*原因*</p></div>
+<div class="paragraph"><p>値を設定済みの変数に、違う値を再度設定しようとしたため。
+（Erlangでは変数への値の設定は１回だけに制限されています）</p></div>
+<div class="paragraph"><p><strong>対処法</strong></p></div>
+<div class="paragraph"><p>まず、「＝」記号の左側にある変数名（例「Je」）が間違っていないことを
+確認してください。</p></div>
+<div class="paragraph"><p>間違っていなら、f() コマンドを使って変数をリセットします。
+（f は forget の略です）</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">%% 例：変数「Je」をリセットします</span></span>
+<span style="color: #990000">&gt;</span> f(Je)<span style="color: #990000">.</span></tt></pre></div></div>
+</div></div>
 <div class="exampleblock" id="3-5">
 <div class="title">3-5. キー・バリューを格納</div>
 <div class="exampleblock-content">
@@ -1673,7 +1760,6 @@ http://www.gnu.org/software/src-highlite -->
 <div class="exampleblock-content">
 <div class="paragraph"><p>後で検索できるよう、インデックス（索引）に「age_int（年齢、整数型）」
 と「state_bin（居住している州、バイナリー型）」を登録します。</p></div>
-<div class="paragraph"><p><strong>TODO</strong> メタデータの説明。カラムにインデックスを定義するのではなく、などなど</p></div>
 <div class="paragraph"><p>先ほど作成したキー・バリューに索引情報を追加しましょう。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -1910,7 +1996,6 @@ Ringの状態
 </ul></div>
 <h3 id="4a">Riakのリング</h3><div style="clear:left"></div>
 <div class="paragraph"><p><a href="http://wiki.basho.com/What-is-Riak%3F.html">http://wiki.basho.com/What-is-Riak%3F.html</a></p></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -2027,10 +2112,23 @@ Fallbacks<span style="color: #990000">:</span>
  {<span style="color: #993399">2</span><span style="color: #990000">,</span><span style="color: #993399">182687704666362864775460604089535377456991567872</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak2@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">3</span><span style="color: #990000">,</span><span style="color: #993399">365375409332725729550921208179070754913983135744</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak3@127.0.0.1'</span>}<span style="color: #990000">,</span>
  {<span style="color: #993399">4</span><span style="color: #990000">,</span><span style="color: #993399">548063113999088594326381812268606132370974703616</span><span style="color: #990000">,</span><span style="color: #FF0000">'riak1@127.0.0.1'</span>}<span style="color: #990000">]</span></tt></pre></div></div>
-<div class="paragraph"><p><strong>TODO</strong> PrimariesとFallbacksの説明</p></div>
-<div class="paragraph"><p>Primariesはキー・バリューが格納される&#8230;
-複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。</p></div>
-<div class="paragraph"><p>同様に「key2」の場合も調べて下さい。</p></div>
+<div class="paragraph"><p>クラスターが健全な時は、キー・バリューはPrimariesの３つの仮想ノードに
+格納されます。Primariesのどの仮想ノードが使われるかは、キーのハッシュ値で
+決まります。この例では、キーのハッシュ値と各仮想ノードのハッシュ値が以下の
+関係にあります。</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+仮想ノード４のハッシュ値　＜　キーのハッシュ値　≦　仮想ノード５のハッシュ値
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>この場合、キー・バリューの１つ目の複製は、仮想ノード５に格納されます。
+このバケットでは複製数が３に設定されていますので、キー・バリューの他の
+２つの複製が、仮想ノード６と７に格納されます。</p></div>
+<div class="paragraph"><p>Primariesの仮想ノードに何か問題がある時は、Fallbacksにある仮想ノードが、
+上から順番に使われます。</p></div>
+<div class="paragraph"><p>では「key1」と同様に、「key2」が格納されるノードも調べて下さい。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2100,8 +2198,16 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバーノードを追加
 したり、取り除いたりできます。現在のクラスターにメンバーノードを追加し
 ましょう。</p></div>
-<div class="paragraph"><p><strong>TODO</strong>
-まず現在のリングの状態を確認しましょう。&#8230; メモ帳に保存しておきます。</p></div>
+<div class="paragraph"><p>まず現在のリングの状態を確認しましょう。</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-ring-ossforum<span style="color: #990000">.</span>escript □</tt></pre></div></div>
+<div class="paragraph"><p><strong>重要</strong><br />
+この情報はリングの変更後に参照しますので、Windowsのメモ帳に保存して
+おいてください。</p></div>
 <div class="paragraph"><p>新しいノード「riak4」を起動しましょう。riak4/bin/riakコマンドを使いま
 す。</p></div>
 <div class="listingblock">
@@ -2187,17 +2293,20 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1. なっている　　2. なっていない</p></div>
 </div></div>
-<div class="paragraph"><p><strong>TODO</strong>
-変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
+<div class="paragraph"><p>変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
 比べてください。</p></div>
-<div class="paragraph"><p>【質問】
-- Ring上の仮想ノードの数は変わりましたか？</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ riak-ring-ossforum<span style="color: #990000">.</span>escript □</tt></pre></div></div>
+<div class="paragraph"><p>【質問】Ring上の仮想ノードの数は変わりましたか？</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1. 変わった（増えた）　　2. 変わった（減った）　　3. 変わらない</p></div>
 </div></div>
-<div class="paragraph"><p>【質問】
-- riak4へ移動した仮想ノードはどれですか？（複数あり）</p></div>
+<div class="paragraph"><p>【質問】riak4へ移動した仮想ノードはどれですか？（複数あり）</p></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
 <div class="paragraph"><p>答え： 1 ＿＿＿＿＿＿＿　2 ＿＿＿＿＿＿＿　3 ＿＿＿＿＿＿＿ 4 ＿＿＿＿＿＿＿</p></div>
@@ -2294,8 +2403,18 @@ Riakを業務で使用する際は、この値を大きく（数十〜数百に�
 <div class="sectionbody">
 <div class="paragraph"><p>Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
 ノードを１つ停止して、読み出しと書き込みの動作を調べます。</p></div>
-<div class="paragraph"><p><strong>TODO</strong> Quorum や Consistency Level
-<strong>TODO</strong> Hinted Hand-offとリードリペア</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Quorum や Consistency Level
+</p>
+</li>
+<li>
+<p>
+Hinted Hand-off と Read Repair
+</p>
+</li>
+</ul></div>
 <div class="paragraph"><p><strong>目次</strong></p></div>
 <div class="ulist"><ul>
 <li>
@@ -2701,7 +2820,6 @@ node riak2 ping failed
 </li>
 </ul></div>
 <h3 id="6b">Hibariのデータモデル</h3><div style="clear:left"></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -3006,8 +3124,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="exampleblock" id="6-10">
 <div class="title">6-10. キーの区切り文字とレンジスキャン</div>
 <div class="exampleblock-content">
-<div class="paragraph"><p><strong>TODO</strong> 解説</p></div>
-<div class="paragraph"><p><strong>TODO</strong> employee テーブルではキーの区切り文字として「/」が使われていることを解説する</p></div>
+<div class="paragraph"><p>employee テーブルではキーの区切り文字として「/」が使われています。</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -3592,16 +3709,6 @@ http://www.gnu.org/software/src-highlite -->
 </li>
 </ul></div>
 </li>
-<li>
-<p>
-キーについて <strong>TODO</strong>
-</p>
-</li>
-<li>
-<p>
-オペレーションについて <strong>TODO</strong>
-</p>
-</li>
 </ul></div>
 <div class="sidebarblock">
 <div class="sidebar-content">
@@ -3612,7 +3719,6 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">補足 Basho Benchのキー設定</div>
 <div class="exampleblock-content">
 <div class="paragraph"><p>Basho Benchでは以下のようなキーの分散設定ができます。</p></div>
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -3901,7 +4007,6 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <h2 id="11">11. 講義：コンシステントハッシングと自動シャーディングの優劣</h2>
 <div class="sectionbody">
-<div class="paragraph"><p><strong>TODO</strong></p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -4030,7 +4135,7 @@ Hibariドキュメント
 <div id="footer">
 <div id="footer-text">
 Version v1.0<br />
-Last updated 2012-09-28 09:28:59 JST
+Last updated 2012-09-28 11:10:22 JST
 </div>
 </div>
 </body>

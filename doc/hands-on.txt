@@ -3,7 +3,7 @@
 :Author:      河野達也 Tatsuya_Kawano CloudianKK
 :Email:       tkawano@cloudian.com
 :Date:        2012年9月28日
-:Revision:    v1.0-draft7
+:Revision:    v1.0
 
 // この文書はAsciiDoc形式で記述されています。
 // HTML形式に変換するには以下のようにします。
@@ -566,7 +566,7 @@ Erlangシェルのプロンプト「1>」は、以下、「>」で示します�
 
 [source,erlang]
 ----
-> riakc_pb_socket:put(Conn, Je). 
+> riakc_pb_socket:put(Conn, Je).
 ** exception exit: {noproc,
                        {gen_server,call,
                            [<0.34.0>,
@@ -607,8 +607,8 @@ Riakに接続しなおします。
 
 [source,erlang]
 ----
-> Je = riakc_obj:new(<<"employee">>, <<"jeremy">>, <<"engineer">>). 
-** exception error: no match of right hand side value 
+> Je = riakc_obj:new(<<"employee">>, <<"jeremy">>, <<"engineer">>).
+** exception error: no match of right hand side value
                     {riakc_obj,<<"employee">>,<<"jeremy">>,undefined,[],
                                undefined,<<"engineer">>}
 ----
