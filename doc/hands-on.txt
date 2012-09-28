@@ -3,7 +3,7 @@
 :Author:      河野達也 Tatsuya_Kawano CloudianKK
 :Email:       tkawano@cloudian.com
 :Date:        2012年9月28日
-:Revision:    v1.0
+:Revision:    v1.0-draft7
 
 // この文書はAsciiDoc形式で記述されています。
 // HTML形式に変換するには以下のようにします。
@@ -25,8 +25,6 @@
 
 
 == 目次
-
-*TODO*
 
 - link:#1[1. ハンズオンの概要]
   * link:#1-1[1-1. ハンズオンの目的]
@@ -50,6 +48,8 @@
   * link:#3e[Protocol Buffersでアクセス（Erlang）]
     ** link:#3-3[3-3. バケットの作成]
     ** link:#3-4[3-4. Riakに接続]
+    ** link:#3f[Erlangシェルの便利な使い方]
+    ** link:#3g[Erlangでエラーが出て動かない時の対応]
     ** link:#3-5[3-5. キー・バリューを格納]
     ** link:#3-6[3-6. キーを指定してキー・バリューを取り出し]
     ** link:#3-7[3-7. インデックス付きの、キー・バリューを格納]
@@ -310,7 +310,12 @@ $ git branch -v  □
 
 ==== コピー＆ペースト
 
-*TODO*
+他のアプリでコピーしたテキストをPuTTYにペーストする（貼り付ける）には、
+マウスの右ボタンをクリックします。
+
+PuTTYのウィンドウに表示されたテキストをコピーするには、コピーしたい
+範囲をマウスで選択します。（選択するだけでクリップボードにコピーされ
+ます。
 
 
 [[2-7]]
@@ -344,6 +349,8 @@ $ git branch -v  □
 - link:#3e[Protocol Buffersでアクセス（Erlang）]
   * link:#3-3[3-3. バケットの作成]
   * link:#3-4[3-4. Riakに接続]
+  * link:#3f[Erlangシェルの便利な使い方]
+  * link:#3g[Erlangでエラーが出て動かない時の対応]
   * link:#3-5[3-5. キー・バリューを格納]
   * link:#3-6[3-6. キーを指定してキー・バリューを取り出し]
   * link:#3-7[3-7. インデックス付きの、キー・バリューを格納]
@@ -439,7 +446,7 @@ $ riak-admin member-status □
 Riakには３種類のクライアントAPIが用意されています。
 
 - *Protocol Buffers*
-  * Protocol BuffersはGoogle社が開発した異言語間の... *TODO*
+  * Protocol BuffersはGoogle社が開発した異言語間のデータ・シリアライズフォーマット
   * 様々なプログラミング言語からアクセスできます
   * Bashoによるオフィシャルなクライアント
     ** Erlang、Java、Python、Ruby
@@ -466,8 +473,6 @@ Riakには３種類のクライアントAPIが用意されています。
 [[3d]]
 === Riakのデータモデル
 
-*TODO*
-
 - バケット（バケツ）
 - オブジェクト
   * キー
@@ -478,7 +483,6 @@ Riakには３種類のクライアントAPIが用意されています。
 
 [[3e]]
 === Protocol Buffersでアクセス（Erlang）
-
 
 [[3-3]]
 [caption=""]
@@ -544,10 +548,91 @@ Erlangシェルのプロンプト「1>」は、以下、「>」で示します�
 
 ===========================================================
 
-- *TODO* Erlangのエラーについて説明
-  ** exception
-  ** 変数のリセット
 
+[[3f]]
+==== Erlangシェルの便利な使い方
+
+- 上矢印（↑）キーを押すと以前入力したコマンドを呼び出せます。
+- `Control` キーと `r` キーを同時に押すとコマンドの入力履歴を検索できます。
+- コマンドの入力途中で `Tab` キーを押すと、残りの部分が補完されます。
+
+
+[[3g]]
+==== Erlangでエラーが出て動かない時の対応
+
+[caption=""]
+.exception exit ... gen_sever,call
+===========================================================
+
+[source,erlang]
+----
+> riakc_pb_socket:put(Conn, Je). 
+** exception exit: {noproc,
+                       {gen_server,call,
+                           [<0.34.0>,
+                            {req,
+                                {rpbputreq,<<"employee">>,<<"jeremy">>,undefined,
+                                    {rpbcontent,<<"engineer">>,undefined,undefined,
+                                        undefined,undefined,[],undefined,undefined,[],[],
+                                        undefined},
+                                    undefined,undefined,undefined,undefined,undefined,
+                                    undefined,undefined},
+                                60000},
+                            infinity]}}
+     in function  gen_server:call/3 (gen_server.erl, line 188)
+----
+
+*原因*
+
+何らかの理由でRiakクライアントが停止した時に起こります。
+
+*対処法*
+
+Riakに接続しなおします。
+
+[source,erlang]
+----
+%% Conn変数をリセットします
+> f(Conn).
+
+%% Riakに再接続します
+> {ok, Conn} = riakc_pb_socket:start("127.0.0.1", 8091). □
+----
+
+===========================================================
+
+[caption=""]
+.exception error: no match of right hand side value
+===========================================================
+
+[source,erlang]
+----
+> Je = riakc_obj:new(<<"employee">>, <<"jeremy">>, <<"engineer">>). 
+** exception error: no match of right hand side value 
+                    {riakc_obj,<<"employee">>,<<"jeremy">>,undefined,[],
+                               undefined,<<"engineer">>}
+----
+
+*原因*
+
+値を設定済みの変数に、違う値を再度設定しようとしたため。
+（Erlangでは変数への値の設定は１回だけに制限されています）
+
+*対処法*
+
+まず、「＝」記号の左側にある変数名（例「Je」）が間違っていないことを
+確認してください。
+
+間違っていなら、f() コマンドを使って変数をリセットします。
+（f は forget の略です）
+
+[source,erlang]
+----
+%% 例：変数「Je」をリセットします
+> f(Je).
+----
+
+===========================================================
 
 [[3-5]]
 [caption=""]
@@ -607,9 +692,6 @@ ok
 ===========================================================
 後で検索できるよう、インデックス（索引）に「age_int（年齢、整数型）」
 と「state_bin（居住している州、バイナリー型）」を登録します。
-
-*TODO* メタデータの説明。カラムにインデックスを定義するのではなく、などなど
-
 
 先ほど作成したキー・バリューに索引情報を追加しましょう。
 
@@ -806,8 +888,6 @@ Riakを用いてコンシステント・ハッシングの基本を確認しま�
 
 http://wiki.basho.com/What-is-Riak%3F.html
 
-*TODO*
-
 - リング
 - 仮想ノード（vnode）
 - 物理ノード（メンバーノード）
@@ -923,13 +1003,22 @@ Fallbacks:
  {4,548063113999088594326381812268606132370974703616,'riak1@127.0.0.1'}]
 ----
 
-*TODO* PrimariesとFallbacksの説明
+クラスターが健全な時は、キー・バリューはPrimariesの３つの仮想ノードに
+格納されます。Primariesのどの仮想ノードが使われるかは、キーのハッシュ値で
+決まります。この例では、キーのハッシュ値と各仮想ノードのハッシュ値が以下の
+関係にあります。
 
-Primariesはキー・バリューが格納される...
-複製数が３の場合は、上から数えて３つ目までの仮想ノードに格納されます。
+- 仮想ノード４のハッシュ値　＜　キーのハッシュ値　≦　仮想ノード５のハッシュ値
+
+この場合、キー・バリューの１つ目の複製は、仮想ノード５に格納されます。
+このバケットでは複製数が３に設定されていますので、キー・バリューの他の
+２つの複製が、仮想ノード６と７に格納されます。
+
+Primariesの仮想ノードに何か問題がある時は、Fallbacksにある仮想ノードが、
+上から順番に使われます。
 
 
-同様に「key2」の場合も調べて下さい。
+では「key1」と同様に、「key2」が格納されるノードも調べて下さい。
 
 [source,shell]
 ----
@@ -998,8 +1087,16 @@ Riakは他の多くのNOSQLと同様に、サービスの稼働中にメンバ�
 したり、取り除いたりできます。現在のクラスターにメンバーノードを追加し
 ましょう。
 
-*TODO*
-まず現在のリングの状態を確認しましょう。... メモ帳に保存しておきます。
+まず現在のリングの状態を確認しましょう。
+
+[source,shell]
+----
+$ riak-ring-ossforum.escript □
+----
+
+*重要* +
+この情報はリングの変更後に参照しますので、Windowsのメモ帳に保存して
+おいてください。
 
 
 新しいノード「riak4」を起動しましょう。riak4/bin/riakコマンドを使いま
@@ -1089,19 +1186,21 @@ $ riak-admin member-status □
 答え： 1. なっている　　2. なっていない
 ****
 
-*TODO*
 変更後のリングの状態を確認しましょう。メモ帳に保存した変更前の状態と見
 比べてください。
 
-【質問】
-- Ring上の仮想ノードの数は変わりましたか？
+[source,shell]
+----
+$ riak-ring-ossforum.escript □
+----
+
+【質問】Ring上の仮想ノードの数は変わりましたか？
 
 ****
 答え： 1. 変わった（増えた）　　2. 変わった（減った）　　3. 変わらない
 ****
 
-【質問】
-- riak4へ移動した仮想ノードはどれですか？（複数あり）
+【質問】riak4へ移動した仮想ノードはどれですか？（複数あり）
 
 ****
 答え： 1 ＿＿＿＿＿＿＿　2 ＿＿＿＿＿＿＿　3 ＿＿＿＿＿＿＿ 4 ＿＿＿＿＿＿＿
@@ -1206,8 +1305,8 @@ Riakを業務で使用する際は、この値を大きく（数十〜数百に�
 Riakを使用して可用性重視（AP型）のNOSQLの挙動を確認しましょう。メンバー
 ノードを１つ停止して、読み出しと書き込みの動作を調べます。
 
-*TODO* Quorum や Consistency Level
-*TODO* Hinted Hand-offとリードリペア
+- Quorum や Consistency Level
+- Hinted Hand-off と Read Repair
 
 *目次*
 
@@ -1516,8 +1615,6 @@ node riak2 ping failed
 [[6b]]
 === Hibariのデータモデル
 
-*TODO*
-
 - テーブル
 - キー・バリュー
   * キー
@@ -1783,9 +1880,7 @@ doを使うと同一テーブルの同一チェインに対する操作を一度
 [caption=""]
 .6-10. キーの区切り文字とレンジスキャン
 ===========================================================
-*TODO* 解説
-
-*TODO* employee テーブルではキーの区切り文字として「/」が使われていることを解説する
+employee テーブルではキーの区切り文字として「/」が使われています。
 
 [source,erlang]
 ----
@@ -2258,9 +2353,6 @@ hibari-simple.configの内容（抜粋）
 
   * リクエスト/秒　＝　ワーカー毎のリクエスト/秒　×　ワーカー数
 
-- キーについて *TODO*
-
-- オペレーションについて *TODO*
 
 ****
 答え：　
@@ -2273,8 +2365,6 @@ hibari-simple.configの内容（抜粋）
 .Basho Benchのキー設定
 ===========================================================
 Basho Benchでは以下のようなキーの分散設定ができます。
-
-*TODO*
 
 - *{sequential_int, MaxKey}*
   * generates integers from 0..MaxKey in order and then stops the
@@ -2439,11 +2529,8 @@ $ basho_bench conf-bb/riak-simple.config □
 [[11]]
 == 11. 講義：コンシステントハッシングと自動シャーディングの優劣
 
-*TODO*
-
 - データの分散（分布）の均一性
 - レンジスキャンの可否
-
 
 
 [[ap]]
