@@ -2452,11 +2452,28 @@ $ basho_bench conf-bb/riak-simple.config □
 [[ap1]]
 === Basho Riak
 
-*TODO*
+- Riak製品情報（日本語）
+  * http://basho.co.jp/products/riak-overview/
 
+- Riakドキュメント（英語）
+  * http://wiki.basho.com/Riak.html
+  * Riak Fast Track（英語）
+    ** http://wiki.basho.com/The-Riak-Fast-Track.html
 
 [[ap2]]
 === Hibari
 
-*TODO*
+- Hibari製品情報（日本語）
+  * http://cloudian.jp/technologies/hibari-nosql-database.html
+
+- Hibari紹介スライド（日本語）
+  * http://www.slideshare.net/tatsuya6502/hibari-nosql-at-diststudy-20110708
+
+- Hibariドキュメント
+  * アプリケーション開発者ガイド（日本語）
+    ** http://hibari.github.com/hibari-doc/hibari-app-developer-guide.ja.html
+  * チュートリアル（日本語）
+    ** http://hibari.github.com/hibari-doc/hibari-tutorial.ja.html
+  * 管理者ガイド（英語）
+    ** http://hibari.github.com/hibari-doc/hibari-sysadmin-guide.en.html
 
