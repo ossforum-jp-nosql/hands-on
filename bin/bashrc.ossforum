@@ -7,7 +7,7 @@ export YCSB_HOME=$HOME/ycsb
 export MVN_HOME=$HOME/apache-maven-3.0.4
 
 PATH=$PATH:$HOME/bin:$HOME/hands-on/bin
-PATH=$PATH:$RIAK_HOME/rel/riak1/bin:$HIBARI_HOME/rel/hibari/bin
+PATH=$PATH:$RIAK_HOME/rel/riak1/bin:$HIBARI_HOME/rel/hibari1/bin
 PATH=$PATH:$BASHO_BENCH_HOME:$YCSB_HOME/bin
 PATH=$PATH:$MVN_HOME/bin
 
