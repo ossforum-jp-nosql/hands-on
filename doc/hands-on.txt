@@ -2,19 +2,18 @@
 
 :Author:      河野達也 Tatsuya_Kawano CloudianKK
 :Email:       tkawano@cloudian.com
-:Date:        2012年9月28日
-:Revision:    v1.0
+:Date:        2013年1月N日
+:Revision:    v1.1
 
 // この文書はAsciiDoc形式で記述されています。
 // HTML形式に変換するには以下のようにします。
 //
 // # Fedora、CentOSの場合
 // $ sudo yum install asciidoc source-highlight
+// $ asciidoc hands-on.txt
 //
 // # Ubuntuの場合
 // $ sudo apt-get install asciidoc source-highlight
-//
-// # HTML形式に変換
 // $ asciidoc hands-on.txt
 //
 
@@ -25,6 +24,8 @@
 
 
 == 目次
+
+- link:#0[0. 使用許諾条件]
 
 - link:#1[1. ハンズオンの概要]
   * link:#1-1[1-1. ハンズオンの目的]
@@ -112,20 +113,28 @@
   * link:#10b[Basho Benchのバリュー設定]
   * link:#10-3[10-3. グラフのプロット（R言語）と結果の確認]
   * link:#10-4[10-4. Hibariの停止]
-  * link:#10c[.時間が余ったら]
+  * link:#10c[時間が余ったら]
 
 - link:#11[11. 講義：コンシステントハッシングと自動シャーディングの優劣]
 
 - link:#ap[付録. 参考資料]
-  * link:#ap1[ Basho Riak]
-  * link:#ap2[ Hibari]
+  * link:#ap1[Basho Riak]
+  * link:#ap2[Hibari]
+
+
+[[0]]
+== 0. 使用許諾条件
+
+この文書は *クリエイティブ・コモンズ 表示 2.1 日本 (CC BY 2.1 JP) ライセンス*
+の下に提供されています。使用許諾条件を見るには、
+http://creativecommons.org/licenses/by/2.1/jp/ をチェックしてください。
 
 
 [[1]]
 == 1. ハンズオンの概要
 
 このハンズオンは *日本OSS推進フォーラム　第２回 若手技術者勉強会*
-（2012年9月28日実施）のために作成されました。
+（2012年9月28日実施）のために企画・制作されました。
 
 ここでは、Linuxサーバーを１人１台使用して、異なる特性を持つ２つの分散
 型NOSQL製品と性能測定ツールを試します。
@@ -212,6 +221,8 @@ PuTTYを立ち上げ、sshで接続します。
 
 [source,shell]
 ----
+# □で改行キーを押します
+
 $ passwd □
 (current) UNIX password: （現在のパスワード） □
 New password: （新しいパスワード） □
@@ -389,8 +400,6 @@ PuTTYのウィンドウに表示されたテキストをコピーするには、
 
 [source,shell]
 ----
-# □で改行キーを押します
-
 $ riak-start-ossforum.sh □
 
 riak1 started
