@@ -77,8 +77,6 @@ http://creativecommons.org/licenses/by/2.1/jp/ をチェックしてください
 [[N]]
 == N. 検証用マシンのセットアップ
 
-*TODO*
-
 RHEL（Red Hat Enterprise Linux）、CentOS、Fedora
 64ビット版
 
@@ -113,77 +111,156 @@ CentOS 5.3
 Oracle VM VirtualBoxによる仮想マシンの作成方法を説明します。
 
 システム要件
+
 - オペレーシングシステム： Windows XX、Mac OS X、Linux ...
 - に対応したCPU
-- Fedora 17でRiak、Hibari、Basho Benchを動作させるなら、RAM N GB以上を推奨
+- Fedora 17でRiak、Hibari、Basho Benchを動作させるなら、RAM N GB以上を
+  推奨
+
 
 VirtualBoxの *ホストオンリーアダプター* の設定:
 
 - VirtualBox メニューから *環境設定* を選びます。
-- *ネットワーク* アイコンをクリックし、ウィンドウ右側の「＋印」のついたアイコンをクリックします。
-- ホストオンリーネットワークとして *vboxnet0* が追加されたら *OK* ボタンを押します。
+- *ネットワーク* アイコンをクリックし、ウィンドウ右側の「＋印」のつい
+  たアイコンをクリックします。
+- ホストオンリーネットワークとして *vboxnet0* が追加されたら *OK* ボタ
+  ンを押します。
+
 
 仮想マシンの作成:
 
-- *Oracle VM VirtualBoxマネージャー* ウィンドウの *新規* ボタンをクリックします。
-- *名前とオペレーティングシステム* ウィンドウが開いたら以下の情報を入力します。
+- *Oracle VM VirtualBoxマネージャー* ウィンドウの *新規* ボタンをクリッ
+   クします。
+
+- *名前とオペレーティングシステム* ウィンドウが開いたら以下の情報を入
+   力します。
   * *名前* ：任意の仮想マシン名（例 Fedora 17 NOSQL）
   * *タイプ* ：Linux
   * *バージョン* ：Fedora (64 bit)
+
 - *続ける* をクリックします。
-- *メモリサイズ* ウィンドウでは仮想マシンに割り当てるRAMサイズを設定します。 ホストマシンのRAMに載りきる範囲内で、できるだけ大きなサイズを設定します。（例 2048MB）
-- *ハードドライブ* ウィンドウでは *仮想ハードドライブを作成する* を選択し *作成* ボタンを押します。
-- *ハードドライブのタイプ* ウィンドウでは、設定はそのまま（例 VDI）で *続ける* ボタンを押します。
+
+- *メモリサイズ* ウィンドウでは仮想マシンに割り当てるRAMサイズを設定し
+   ます。 ホストマシンのRAMに載りきる範囲内で、できるだけ大きなサイズ
+   を設定します。（例 2048MB）
+
+- *ハードドライブ* ウィンドウでは *仮想ハードドライブを作成する* を選
+   択し *作成* ボタンを押します。
+
+- *ハードドライブのタイプ* ウィンドウでは、設定はそのまま（例 VDI）で
+   *続ける* ボタンを押します。
+
 - *物理ハードドライブにあるストレージ* を選択します。
-  * ホストマシンのハードドライブ容量を少なく抑えたい場合は *可変サイズ* を選択
+  * ホストマシンのハードドライブ容量を少なく抑えたい場合は *可変サイズ*
+    を選択
   * 性能をできるだけ高くしたい場合は *固定サイズ* を選択
-- *ファイルの場所とサイズ* ウィンドウでは、仮想ハードドライブのサイズを *20GB* 程度に設定します。仮想ハードドライブファイルの名前はそのままでいいでしょう。サイズを設定したら *作成* ボタンをクリックします。
-- *Oracle VM VirtualBoxマネージャー* ウィンドウに戻ったら、いま作成した仮想マシンが選択されていることを確認し *設定* ボタンを押します。
-- 設定用のウィンドウが開いたら *システム* をクリックし、さらに *プロセッサー* タブに切り替えます。ホストマシンに搭載されたCPUが対応できる範囲で、できるだけ大きなプロセッサー数を設定します。（例 ２）
+
+- *ファイルの場所とサイズ* ウィンドウでは、仮想ハードドライブのサイズ
+   を *20GB* 程度に設定します。仮想ハードドライブファイルの名前はその
+   ままでいいでしょう。サイズを設定したら *作成* ボタンをクリックしま
+   す。
+
+- *Oracle VM VirtualBoxマネージャー* ウィンドウに戻ったら、いま作成し
+   た仮想マシンが選択されていることを確認し *設定* ボタンを押します。
+
+- 設定用のウィンドウが開いたら *システム* をクリックし、さらに *プロセッ
+  サー* タブに切り替えます。ホストマシンに搭載されたCPUが対応できる範
+  囲で、できるだけ大きなプロセッサー数を設定します。
+
 - *ネットワーク* をクリックします。
   * *アダプター１* は *NAT* のままにしておきます
-  * ホストマシンから ssh で接続するために *アダプター２* を有効化し、 *割り当て* に *ホストオンリーアダプター* を選択し、 *名前* に *vboxnet0* を選択します。
+  * ホストマシンから ssh で接続するために *アダプター２* を有効化し、
+    *割り当て* に *ホストオンリーアダプター* を選択し、 *名前* に
+    *vboxnet0* を選択します。
+
 - *OK* をクリックします。
 
 
 Fedora 17のインストール:
 
 - *起動* ボタンをクリックします。
-- *Select start-up disk* ウィンドウではフォルダーアイコンをクリックし、Fedora 17 Live CD の ISO イメージファイル（例 Fedora-17-x86_64-Live-Desktop.iso）を選択します。
+
+- *Select start-up disk* ウィンドウではフォルダーアイコンをクリックし、
+  *Fedora 17 Live CD の ISO イメージファイル
+   （例 *Fedora-17-x86_64-Live-Desktop.iso）を選択します。
+
 - *Start* ボタンを押すと仮想マシンが起動します。
-- *Welcome to Fedora* 画面が開いたら *Install to Hard Drive* をクリックします。
+
+- *Welcome to Fedora* 画面が開いたら *Install to Hard Drive* をクリッ
+   クします。
+
 - 最初の画面でキーボード配列を選択します。（例 Japanese）
+
 - 次の画面では *Basic Storage Devices* を選択します。
-- The storage device below may contain dataと表示されたら *Yes, discard any data*（全データを削除する）をクリックします。
-- 次の画面では任意の *Hostname* を設定します。 （例 fedora17-nosql.localdomain）
+
+- The storage device below may contain dataと表示されたら *Yes,
+  discard any data*（全データを削除する）をクリックします。
+
+- 次の画面では任意の *Hostname* を設定します。
+  （例 fedora17-nosql.localdomain）
+
 - 次の画面ではタイムゾーンを設定します。（例 Asia/Tokyo）
-- 次の画面では root アカウントのパスワードを６文字以上で設定します。（例 nosql2root）　もし weak password（脆弱なパスワード）と表示されたら、*Cancel* を押して再設定するか、 *Use anyway* を押してそのまま使用するか選びます。
-- 次の画面では *Use All Space* を選択します。 *Next* ボタンを押すと *Confirm* ウィンドウが表示されるので、 *Write changes to disk* をクリックします。
+
+- 次の画面では root アカウントのパスワードを６文字以上で設定します。
+  （例 nosql2root）　もし weak password（脆弱なパスワード）と表示され
+  たら、*Cancel* を押して再設定するか、 *Use anyway* を押してそのまま
+  使用するか選びます。
+
+- 次の画面では *Use All Space* を選択します。 *Next* ボタンを押すと
+  *Confirm* ウィンドウが表示されるので、 *Write changes to disk* をク
+  リックします。
+
 - Live CDのデータがハードドライブにコピーされるまで数分かかります。
-- *Conguraturations, your Fedora installation is complete.* と表示されたら、 VirtualBoxウィンドウ下側にあるCDのアイコンをクリックして *Remove disk from virtual drive* を選択します。 *Reboot* ボタンをクリックして再起動します。
+
+- *Conguraturations, your Fedora installation is complete.* と表示され
+   たら、 VirtualBoxウィンドウ下側にあるCDのアイコンをクリックして
+   *Remove disk from virtual drive* を選択します。 *Reboot* ボタンをク
+   リックして再起動します。
 
 - 再起動後 *Welcome* 画面が開いたら *Forward* ボタンを押します。
+
 - *License Information* を読んで *Forward* ボタンを押します。
 
 :handsonuser: ossforum
 :handsonpw:   nosql2
 
-- *Create User* 画面でハンズオンで使用するユーザー（例 Username: *{handsonuser}* 、Password: *{handsonpw}* ）を作成します。 * Add to Administrators group* をオンにします。
-- *Date and Time* 画面では *Synchronize date and time over the network* をオンにします。
-- *Hardware Profile* 画面では、Fedoraプロジェクトに匿名のハードウェア情報を送信するかどうかを選択してください。
-- *Finish* ボタンを押すとセットアップが完了します。先ほど作成したハンズオン用ユーザーでログインします。
+- *Create User* 画面でハンズオンで使用するユーザー
+  （例 Username: *{handsonuser}* 、Password: *{handsonpw}* ）
+  を作成します。 *Add to Administrators group* をオンにします。
+
+- *Date and Time* 画面では *Synchronize date and time over the
+   network* をオンにします。
+
+- *Hardware Profile* 画面では、Fedoraプロジェクトに匿名のハードウェア
+   情報を送信するかどうかを選択してください。
+
+- *Finish* ボタンを押すとセットアップが完了します。先ほど作成したハン
+   ズオン用ユーザーでログインします。
+
 
 Fedoraの各パッケージを最新版に更新:
 
-- 画面左上の *Activities* をクリックし *up* とタイプします。 *Software Update* のアイコンが表示されたら、クリックして起動します。
-- 更新が必要なパッケージが表示されたら *Install Update* ボタンをクリックしてインストールします。初回は数百個のパッケージが更新されるので少し時間がかかるかもしれません。
+- 画面左上の *Activities* をクリックし *up* とタイプします。 *Software
+  Update* のアイコンが表示されたら、クリックして起動します。
+
+- 更新が必要なパッケージが表示されたら *Install Update* ボタンをクリッ
+  クしてインストールします。初回は数百個のパッケージが更新されるので少
+  し時間がかかるかもしれません。
+
 - もし更新後に再起動を促されたら *Restart* ボタンを押して再起動します。
+
 
 VirtualBox Guest Additionsのインストール:
 
-- ここからは主にターミナル（端末）で作業します。 *Activities* をクリックして *ter* と入力します。 *Terminal* アイコンが表示されたらクリックして起動します。
+- ここからは主にターミナル（端末）で作業します。 *Activities* をクリッ
+  クして *ter* と入力します。 *Terminal* アイコンが表示されたらクリッ
+  クして起動します。
 
-- ターミナルで以下のコマンドを実行します。パスワードを聞かれたら、いまログインしているユーザー（ハンズオンユーザー）のパスワードを入力します。
+
+- ターミナルで以下のコマンドを実行します。パスワードを聞かれたら、いま
+  ログインしているユーザー（ハンズオンユーザー）のパスワードを入力しま
+  す。
+
 
 ----
 # □で改行キーを押します
@@ -200,8 +277,11 @@ $ sudo reboot
 
 再起動したらGuest Additionsをインストールします。
 
-- VirtualBoxの *Devices* メニューから *Install Guest Addtions* を選択します。
+- VirtualBoxの *Devices* メニューから *Install Guest Addtions* を選択
+  します。
+
 - もし自動的に実行するか聞かれたら、*Cancel* をクリックします。
+
 - ターミナルを開き以下のコマンドを実行します。
 
 ----
@@ -216,7 +296,9 @@ $ sudo sh VBoxLinuxAdditions.run □
 $ sudo reboot □
 ----
 
-再起動すると画面のサイズを大きく設定できるようになります。VirtualBoxウィンドウ右下のCDアイコンから *Remove disk from virtual drive* を選び、Guest AddtionsのCDを取り出します。
+再起動すると画面のサイズを大きく設定できるようになります。VirtualBoxウィ
+ンドウ右下のCDアイコンから *Remove disk from virtual drive* を選び、
+Guest AddtionsのCDを取り出します。
 
 
 === インストール後の作業
@@ -268,8 +350,9 @@ $ git checkout v1.1-Jan-2013 □
 ----
 
 任意
+
 ----
-$ sudo yum install -y emacs emacs-erlang ???
+$ sudo yum install -y emacs emacs-erlang
 ----
 
 ----
@@ -293,7 +376,10 @@ bashrc.ossforumによって以下の設定がされます。
 [[N]]
 == N. Erlangのセットアップ
 
-Riak や Hibari のインストールに先立って Erlang をソースコードからビルドしてインストールします。 Erlang のバージョンは現時点（2013年１月）の最新版である R15B03-1 を使います。
+Riak や Hibari のインストールに先立って Erlang をソースコードからビル
+ドしてインストールします。 Erlang のバージョンは現時点（2013年１月）の
+最新版である R15B03-1 を使います。
+
 
 === N.M. Erlangのビルドに必要なソフトウェアのインストール
 
@@ -319,15 +405,19 @@ $ echo 'KERL_CONFIGURE_OPTIONS="--enable-hipe --enable-smp-support --enable-thre
 *TODO* Riakはdisable-hipeがディフォルト？
 
 
-=== N.M. 
+=== N.M.
 
 ----
 $ kerl build R15B03-1 r15b03-1 □
 ----
 
-Erlangのソースコードがダウンロードされ、ビルドが実行されます。マシンの性能によりますが、一般的なマシンなら15分ほどかかります。ビルドに成功したら Erlang/OTP R15B03-1 (r15b03-1) has been successfully built と表示されます。
+Erlangのソースコードがダウンロードされ、ビルドが実行されます。マシンの
+性能によりますが、一般的なマシンなら15分ほどかかります。ビルドに成功し
+たら Erlang/OTP R15B03-1 (r15b03-1) has been successfully built と表示
+されます。
 
-Erlangをログインしているユーザーのホームディレクトリーにインストールします。
+Erlangをログインしているユーザーのホームディレクトリーにインストールし
+ます。
 
 ----
 $ kerl install r15b03-1 ~/erlang/r15b03-1 □
@@ -352,7 +442,7 @@ $ erl □
 Erlang R15B03 (erts-5.9.3.1) [source] [64-bit] [smp:2:2] [async-threads:0] [hipe] [kernel-poll:false]
 
 Eshell V5.9.3.1 (abort with ^G)
-1> 
+1>
 ----
 
 Erlang シェルは q コマンドで終了できます。
@@ -371,7 +461,8 @@ Note:
 Riakは
 http://docs.basho.com/riak/1.2.1/tutorials/installation/Installing-on-RHEL-and-CentOS/
 
-まず Riak のビルドに必要なソフトウェアをインストールします。ターミナルで以下のコマンドを実行します。
+まず Riak のビルドに必要なソフトウェアをインストールします。ターミナル
+で以下のコマンドを実行します。
 
 ----
 $ sudo yum install gcc gcc-c++ glibc-devel make git wget □
@@ -408,7 +499,8 @@ $ cp -rp riak1 riak4
     ** Protocol Buffers: 8091, 8092, 8093, 8094
     ** HTTP: 8081, 8082, 8083, 8084
     ** ハンドオフ: 8191, 8192, 8193, 8194
-  * ストレージバックエンドを Level DB に切り替えることで、インデックス機能が使えるようにします。
+  * ストレージバックエンドを Level DB に切り替えることで、インデックス
+    機能が使えるようにします。
 
 ----
 $ riak-update-node-conf.sh □
@@ -448,7 +540,7 @@ repo initialized in /home/ossforum/hibari
 ----
 $ repo sync □
 ...（中略）
-Fetching projects: 100% (22/22), done.  
+Fetching projects: 100% (22/22), done.
 ----
 
 ----
@@ -495,7 +587,12 @@ $ cp -rp hibari1 hibari3 □
 
 Basho Benchのインストール:
 
+*TODO*
+
 R のインストール:
+
+*TODO*
 
 Riak Client のインストール:
 
+*TODO*
