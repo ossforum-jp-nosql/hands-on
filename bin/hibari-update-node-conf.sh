@@ -49,6 +49,6 @@ update_all_nodes() {
    done
 }
 
-set -x
+# set -x
 check_hibari_home
 update_all_nodes
