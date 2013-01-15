@@ -52,7 +52,9 @@
 == 0. 使用許諾条件
 
 この文書は *クリエイティブ・コモンズ 表示 2.1 日本 (CC BY 2.1 JP) ライセンス*
-の下に提供されています。使用許諾条件を見るには、
+の下に提供されています。原著作者のクレジットを表示する場合に限り、あな
+たは自由に、この文書を再配布したり、二次的著作物を作成したり、営利目的
+で利用したりできます。使用許諾条件を見るには、
 http://creativecommons.org/licenses/by/2.1/jp/ をチェックしてください。
 
 
@@ -118,7 +120,7 @@ Oracle VM VirtualBoxによる仮想マシンの作成方法を説明します。
   推奨
 
 
-VirtualBoxの *ホストオンリーアダプター* の設定:
+VirtualBoxの *ホストオンリーアダプター* の設定::
 
 - VirtualBox メニューから *環境設定* を選びます。
 - *ネットワーク* アイコンをクリックし、ウィンドウ右側の「＋印」のつい
@@ -127,7 +129,7 @@ VirtualBoxの *ホストオンリーアダプター* の設定:
   ンを押します。
 
 
-仮想マシンの作成:
+==== 仮想マシンの作成
 
 - *Oracle VM VirtualBoxマネージャー* ウィンドウの *新規* ボタンをクリッ
    クします。
@@ -163,9 +165,9 @@ VirtualBoxの *ホストオンリーアダプター* の設定:
 - *Oracle VM VirtualBoxマネージャー* ウィンドウに戻ったら、いま作成し
    た仮想マシンが選択されていることを確認し *設定* ボタンを押します。
 
-- 設定用のウィンドウが開いたら *システム* をクリックし、さらに *プロセッ
-  サー* タブに切り替えます。ホストマシンに搭載されたCPUが対応できる範
-  囲で、できるだけ大きなプロセッサー数を設定します。
+- 設定用のウィンドウが開いたら *システム* をクリックし、 さらに
+  *プロセッサー* タブに切り替えます。ホストマシンに搭載されたCPUが対応
+  できる範囲で、できるだけ大きな数を設定します。
 
 - *ネットワーク* をクリックします。
   * *アダプター１* は *NAT* のままにしておきます
@@ -176,13 +178,13 @@ VirtualBoxの *ホストオンリーアダプター* の設定:
 - *OK* をクリックします。
 
 
-Fedora 17のインストール:
+==== Fedora 17のインストール
 
 - *起動* ボタンをクリックします。
 
 - *Select start-up disk* ウィンドウではフォルダーアイコンをクリックし、
-  *Fedora 17 Live CD の ISO イメージファイル
-   （例 *Fedora-17-x86_64-Live-Desktop.iso）を選択します。
+  *Fedora 17 Live CD* の ISO イメージファイル
+   （例 *Fedora-17-x86_64-Live-Desktop.iso* ）を選択します。
 
 - *Start* ボタンを押すと仮想マシンが起動します。
 
@@ -193,8 +195,8 @@ Fedora 17のインストール:
 
 - 次の画面では *Basic Storage Devices* を選択します。
 
-- The storage device below may contain dataと表示されたら *Yes,
-  discard any data*（全データを削除する）をクリックします。
+- The storage device below may contain dataと表示されたら
+  *Yes, discard any data* （全データを削除する）をクリックします。
 
 - 次の画面では任意の *Hostname* を設定します。
   （例 fedora17-nosql.localdomain）
@@ -238,7 +240,7 @@ Fedora 17のインストール:
    ズオン用ユーザーでログインします。
 
 
-Fedoraの各パッケージを最新版に更新:
+==== Fedoraの各パッケージを最新版に更新する
 
 - 画面左上の *Activities* をクリックし *up* とタイプします。 *Software
   Update* のアイコンが表示されたら、クリックして起動します。
@@ -250,7 +252,7 @@ Fedoraの各パッケージを最新版に更新:
 - もし更新後に再起動を促されたら *Restart* ボタンを押して再起動します。
 
 
-VirtualBox Guest Additionsのインストール:
+==== VirtualBox Guest Additionsのインストール
 
 - ここからは主にターミナル（端末）で作業します。 *Activities* をクリッ
   クして *ter* と入力します。 *Terminal* アイコンが表示されたらクリッ
@@ -262,6 +264,7 @@ VirtualBox Guest Additionsのインストール:
   す。
 
 
+[source,shell]
 ----
 # □で改行キーを押します
 
@@ -271,8 +274,9 @@ $ sudo yum -y install kernel-devel kernel-headers dkms gcc gcc-c++ □
 
 念のため再起動します。
 
+[source,shell]
 ----
-$ sudo reboot
+$ sudo reboot □
 ----
 
 再起動したらGuest Additionsをインストールします。
@@ -284,6 +288,7 @@ $ sudo reboot
 
 - ターミナルを開き以下のコマンドを実行します。
 
+[source,shell]
 ----
 # ログインユーザー名の部分を実際のユーザー名（例 ossforum）で
 # 置き換えてください。
@@ -305,6 +310,7 @@ Guest AddtionsのCDを取り出します。
 
 Firewall
 
+[source,shell]
 ----
 $ sudo service iptables stop □
 $ sudo chkconfig iptables off □
@@ -313,12 +319,17 @@ $ sudo chkconfig iptables off □
 
 openssh-server:
 
+[source,shell]
 ----
 $ sudo service sshd start □
 $ sudo chkconfig sshd on □
 ----
 
+SSHで接続::
+
 Macの場合、ホストOSから
+
+[source,shell]
 ----
 $ ssh ossforum@fedora17-nosql
 ----
@@ -339,10 +350,12 @@ Windows側でPuTTYなどを立ち上げ、
 [[N]]
 == N. ハンズオン用ファイルのセットアップ
 
+[source,shell]
 ----
 $ sudo yum install -y git rlwrap □
 ----
 
+[source,shell]
 ----
 $ cd □
 $ git clone git://github.com/ossforum-jp-nosql/hands-on.git □
@@ -351,13 +364,15 @@ $ git checkout v1.1-Jan-2013 □
 
 任意
 
+[source,shell]
 ----
-$ sudo yum install -y emacs emacs-erlang
+$ sudo yum install -y emacs emacs-erlang □
 ----
 
+[source,shell]
 ----
 $ echo "source ~/hands-on/bin/bashrc.ossforum" >> .bashrc □
-$ source ~/.bashrc
+$ source ~/.bashrc □
 ----
 
 bashrc.ossforumによって以下の設定がされます。
@@ -374,27 +389,26 @@ bashrc.ossforumによって以下の設定がされます。
 
 
 [[N]]
-== N. Erlangのセットアップ
+== N. Erlang/OTPのセットアップ
 
-Riak や Hibari のインストールに先立って Erlang をソースコードからビル
-ドしてインストールします。 Erlang のバージョンは現時点（2013年１月）の
-最新版である R15B03-1 を使います。
+Riak や Hibari のインストールに先立って Erlang/OTP（以下Erlang）をソー
+スコードからビルドし、インストールします。 Erlang のバージョンは現時点
+（2013年１月）の最新版である R15B03-1 を使います。
 
 
 === N.M. Erlangのビルドに必要なソフトウェアのインストール
 
 最初に Erlang のビルドに必要なソフトウェアをインストールします。
 
+[source,shell]
 ----
 $ sudo yum install -y gcc glibc-devel make ncurses-devel openssl-devel autoconf □
 ----
 
-NOTE: Debian / Ubuntu や Mac OS X へのインストール
-http://docs.basho.com/riak/1.2.1/tutorials/installation/Installing-Erlang/
-
 
 === N.M. Kerlのインストール
 
+[source,shell]
 ----
 $ mkdir ~/bin □
 $ curl https://raw.github.com/spawngrid/kerl/master/kerl > ~/bin/kerl □
@@ -402,11 +416,10 @@ $ chmod a+x ~/bin/kerl □
 $ echo 'KERL_CONFIGURE_OPTIONS="--enable-hipe --enable-smp-support --enable-threads --enable-kernel-poll" ' > ~/.kerlrc □
 ----
 
-*TODO* Riakはdisable-hipeがディフォルト？
-
 
 === N.M.
 
+[source,shell]
 ----
 $ kerl build R15B03-1 r15b03-1 □
 ----
@@ -426,17 +439,20 @@ $ kerl install r15b03-1 ~/erlang/r15b03-1 □
 Erlang R15B03-1を
 
 
+[source,shell]
 ----
 $ sudo yum install -y nano □
 $ echo ". ~/erlang/r15b03-1/activate" >> .bashrc □
 ----
 
+[source,shell]
 ----
 $ source .bashrc □
 ----
 
 試しに Erlang のシェルを起動してみましょう。
 
+[source,shell]
 ----
 $ erl □
 Erlang R15B03 (erts-5.9.3.1) [source] [64-bit] [smp:2:2] [async-threads:0] [hipe] [kernel-poll:false]
@@ -446,28 +462,36 @@ Eshell V5.9.3.1 (abort with ^G)
 ----
 
 Erlang シェルは q コマンドで終了できます。
+
+[source,shell]
 ----
 1> q(). □
 ok
 ----
 
+これでErlangのセットアップは完了です。
+
 
 [[N]]
 == N. Riakのセットアップ
 
-Riak をソースコードからビルドします。
+Riak をソースコードからビルドして、ハンズオン向けにセットアップします。
 
-Note:
-Riakは
-http://docs.basho.com/riak/1.2.1/tutorials/installation/Installing-on-RHEL-and-CentOS/
+Note: Riakはビルド済みのパッケージからインストールすることもできます。
+詳しくは http://docs.basho.com/riak/1.2.1/tutorials/installation/Installing-on-RHEL-and-CentOS/
+を参照してください。
 
 まず Riak のビルドに必要なソフトウェアをインストールします。ターミナル
 で以下のコマンドを実行します。
 
+[source,shell]
 ----
 $ sudo yum install gcc gcc-c++ glibc-devel make git wget □
 ----
 
+Riakのソースコードをダウンロードします。
+
+[source,shell]
 ----
 $ cd □
 $ wget http://downloads.basho.com.s3-website-us-east-1.amazonaws.com/riak/1.2/1.2.1/riak-1.2.1.tar.gz □
@@ -475,13 +499,17 @@ $ tar zxvf riak-1.2.1.tar.gz □
 $ ln -s riak-1.2.1 riak □
 ----
 
+Riakをビルドします。
+
+[source,shell]
 ----
 $ cd $RIAK_HOME □
 $ make rel □
 ----
 
-マルチノードに対応させる:
+ビルドが終わるとRiakの実行ファイルが $RIAK_HOME/rel のriakディレクトリーに作られます。ハンズオンでは１つのマシンで４つのRiakノードを稼働させるので、riakディレクトリーを４つに複製します。
 
+[source,shell]
 ----
 $ cd $RIAK_HOME/rel
 $ mv riak riak1
@@ -490,7 +518,7 @@ $ cp -rp riak1 riak3
 $ cp -rp riak1 riak4
 ----
 
-設定ファイルの変更
+Riakの設定ファイルを以下のように変更します。
 
 - $RIAK_HOME/rel/riakN/etc/vm.args
   * Riakノード名を riakN@127.0.0.1 に変更
@@ -499,11 +527,14 @@ $ cp -rp riak1 riak4
     ** Protocol Buffers: 8091, 8092, 8093, 8094
     ** HTTP: 8081, 8082, 8083, 8084
     ** ハンドオフ: 8191, 8192, 8193, 8194
-  * ストレージバックエンドを Level DB に切り替えることで、インデックス
+  * ストレージバックエンドを LevelDB に切り替えることで、インデックス
     機能が使えるようにします。
 
+シェルスクリプトを用意しましたので、実行してください。
+
+[source,shell]
 ----
-$ riak-update-node-conf.sh □
+$ riak-update-node-conf-ossforum.sh □
 updated vm.args and app.config for riak1
 updated vm.args and app.config for riak2
 updated vm.args and app.config for riak3
@@ -511,16 +542,100 @@ updated vm.args and app.config for riak4
 ----
 
 
+Riakクラスターを初期化します。シェルスクリプトを用意しましたので、実行
+してください。
+
+まずRiakを起動します。
+
+[source,shell]
+----
+$ riak-start-ossforum.sh □
+riak1 started
+riak2 started
+...（略）
+
+$ riak-ping-ossforum.sh □
+riak1 ... pong
+riak2 ... pong
+...（略）
+----
+
+Riakクラスターを組みます。
+[source,shell]
+----
+$ riak-build-cluster.sh □
+
+ Success: staged join request for 'riak2@127.0.0.1' to 'riak1@127.0.0.1'
+ Success: staged join request for 'riak3@127.0.0.1' to 'riak1@127.0.0.1'
+ =============================== Staged Changes ================================
+ Action         Nodes(s)
+ -------------------------------------------------------------------------------
+ join           'riak2@127.0.0.1'
+ join           'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+
+
+ NOTE: Applying these changes will result in 1 cluster transition
+
+ ###############################################################################
+                         After cluster transition 1/1
+ ###############################################################################
+
+ ================================= Membership ==================================
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid     100.0%     50.0%    'riak1@127.0.0.1'
+ valid       0.0%     25.0%    'riak2@127.0.0.1'
+ valid       0.0%     25.0%    'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+ Valid:3 / Leaving:0 / Exiting:0 / Joining:0 / Down:0
+
+ WARNING: Not all replicas will be on distinct nodes
+
+ Transfers resulting from cluster changes: 4
+   2 transfers from 'riak1@127.0.0.1' to 'riak3@127.0.0.1'
+   2 transfers from 'riak1@127.0.0.1' to 'riak2@127.0.0.1'
+
+ Cluster changes committed
+ ================================= Membership ==================================
+ Status     Ring    Pending    Node
+ -------------------------------------------------------------------------------
+ valid      50.0%      --      'riak1@127.0.0.1'
+ valid      25.0%      --      'riak2@127.0.0.1'
+ valid      25.0%      --      'riak3@127.0.0.1'
+ -------------------------------------------------------------------------------
+ Valid:3 / Leaving:0 / Exiting:0 / Joining:0 / Down:0
+----
+
+バケットを作成します。
+
+[source,shell]
+----
+$ riak-create-buckets-ossforum.escript □
+Created {<<"employee">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+Created {<<"basho_bench_test">>,{n_val,3},{r,quorum},{w,quorum},{dw,quorum}}
+
+----
+
+これでRiakのセットアップは完了です。
+
+
 [[N]]
 == N. Hibariのセットアップ
 
-repoのインストール:
+をソースコードからビルドして、ハンズオン向けにセットアップします。
+
+Hibariのソースコードの取得に必要なrepoというツールをインストールします。
+
+[source,shell]
 ----
 $ curl https://dl-ssl.google.com/dl/googlesource/git-repo/repo > ~/bin/repo □
 $ chmod a+x ~/bin/repo □
 ----
 
-Hibariソースコードのダウンロード（仮　開発版を使用）
+Hibariのソースコードのダウンロードしましょう。まずhibariディレクトリーを作成して、repoのinitコマンドで初期化します。
+
+[source,shell]
 ----
 $ mkdir ~/hibari □
 $ cd ~/hibari □
@@ -537,30 +652,45 @@ Enable color display in this user account (y/N)? y □
 repo initialized in /home/ossforum/hibari
 ----
 
+次にrepoのsyncコマンドを使って、ソースコードを取得します。
+
+[source,shell]
 ----
 $ repo sync □
 ...（中略）
 Fetching projects: 100% (22/22), done.
 ----
 
+git branchとcheckoutコマンドで、Hibariの開発版のソースコードに切り替えます。
+
+[source,shell]
 ----
 $ repo forall -c "git branch dev origin/dev" □
 $ repo forall -c "git checkout dev" □
 ----
 
-----
-$ cd $HIBARI_HOME
-----
+ハンズオンでは１つのマシンで３つのHibariノードを稼働させますが、Hibari
+クライアント向けのThriftポートやS3ポートがノード間で競合してしまいます。
+設定で各ノードのポートをずらすこともできますが、そもそも今回のハンズオ
+ンではThriftやS3は使わないので、これらの機能はオフにしてしまいます。
 
-パッチをあてる
+[source,shell]
 ----
+$ cd $HIBARI_HOME □
 $ git apply ~/hands-on/patches/hibari_no_ubf.patch □
 ----
 
+Hibariをソースコードからビルドします。
+
+[source,shell]
 ----
+cd $HIBARI_HOME □
 $ make package □
 ----
 
+ビルドが終わるとRiakの実行ファイルが $HIBARI_HOME/rel のhibariディレクトリーに作られます。ハンズオンの内容にあわせて、hibariディレクトリーを３つに複製します。
+
+[source,shell]
 ----
 $ cd $HIBARI_HOME/rel □
 $ mv hibari hibari1 □
@@ -568,7 +698,7 @@ $ cp -rp hibari1 hibari2 □
 $ cp -rp hibari1 hibari3 □
 ----
 
-設定ファイルの変更
+Hibariの設定ファイルを以下のように変更します。
 
 - $HIBARI_HOME/rel/hibariN/releases/0.1.9/vm.args
   * Hibariノード名を hibariN@127.0.0.1 に変更
@@ -576,18 +706,34 @@ $ cp -rp hibari1 hibari3 □
   * Hibari Adminノード名を hibari1@127.0.0.1 に変更
   * network_monitor_monitored_nodes を hibari1@127.0.0.1, hibari2@127.0.0.1, hibari3@127.0.0.1 に変更
 
+シェルスクリプトを用意しましたので、実行してください。
+
+[source,shell]
+----
+$ hibari-update-node-conf-ossforum.sh □
+updated vm.args and sys.config for hibari1
+updated vm.args and sys.config for hibari2
+updated vm.args and sys.config for hibari3
 ----
 
-
-----
+これでHibariのセットアップは完了です。
 
 
 [[N]]
 == N. Basho Benchのセットアップ
 
-Basho Benchのインストール:
+=== Basho Benchのインストール
 
-*TODO*
+[source,shell]
+----
+$ cd □
+$ git clone git://github.com/basho/basho_bench.git □
+----
+
+
+----
+$ git checkout  □
+----
 
 R のインストール:
 
